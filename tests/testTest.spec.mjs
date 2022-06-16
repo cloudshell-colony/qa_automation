@@ -1,6 +1,7 @@
 import { addCaptchaBypass } from "./functions/general.mjs";
 import { test, expect } from "@playwright/test";
 import { createAccount, loginToAccount } from "./functions/accounts.mjs";
+import { startSampleSandbox } from "./functions/sandboxes.mjs";
 
 const baseURL = process.env.baseURL;
 const allAccountsPassword = process.env.allAccountsPassword;
@@ -33,25 +34,30 @@ test.describe('test my tests', () => {
     await loginToAccount( page, adminEMail, adminAccount, allAccountsPassword, baseURL );
     await page.waitForURL('http://www.colony.localhost/Sample');
     });
-
+  
+  
+    const sandbox = "helm";
   test('start sample sandbox from "sample sandbox launcher"', async ( ) => {
-    // await page.click('[data-test="launch-[Sample]Bitnami Nginx Helm Chart"]');
-    // await page.locator(/^data-test="launch-\[Sample\]Bitnami/).click();
-    const bitnami = await page.locator(/data-test="launch-\[Sample\]Bitnami/);
-    console.log(await bitnami);
-    console.log(JSON.stringify(await bitnami));
-    await page.pause();
-    await bitnami.click();
-    await page.locator('[data-test="inputs\.replicaCount"]').fill("2");
-    await page.locator('[data-test="wizard-next-button"]').click();
-    await page.waitForSelector('[data-test="sandbox-info-column"]');
-    await page.locator('[data-test="grain-kind-indicator"]').click();
+   await startSampleSandbox(page, sandbox)
+    const items = await page.locator('[data-test="grain-kind-indicator"]');
+    for (let i = 0; i < await items.count(); i++) {
+      await items.nth(i).click();
+    }
     await page.waitForSelector('[data-test="sandbox-info-column"] div:has-text("Sandbox StatusActive")');
-    expect(await page.locator(/PrepareCompletedStarted/)).toContainText(/Completed/);
-    expect(await page.locator('text=/InstallCompletedStarted')).toContainText(/Completed/);
-    expect(await page.locator("'Sandbox StatusActive'")).toContainText(/Active/);
-    await page.pause();
-
+    expect(await page.locator('[data-test="sandbox-info-column"]')).toContainText("Sandbox StatusActive");
+    const prepare = await page.locator('text=/PrepareCompleted.*/');
+    const install = await page.locator('text=/InstallCompleted/');
+    const apply = await page.locator('text=/ApplyCompleted/');
+    for (let i = 0; i < await prepare.count(); i++) {
+      expect(prepare).toContainText(/Completed/)
+    }
+    for (let i = 0; i < await install.count(); i++) {
+      expect(install).toContainText(/Completed/)
+    }
+    for (let i = 0; i < await apply.count(); i++) {
+      expect(apply).toContainText(/Completed/)
+    }
+        
   });
 
 

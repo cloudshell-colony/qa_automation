@@ -1,5 +1,6 @@
 import { test, expect } from "@playwright/test";
 import { createAccount } from "./functions/accounts.mjs";
+import { startSampleSandbox } from "./functions/sandboxes.mjs";
 
 const baseURL = process.env.baseURL;
 const allAccountsPassword = process.env.allAccountsPassword;
@@ -19,9 +20,8 @@ test.describe('onboarding flow', () => {
     const timestemp = Math.floor(Date.now() / 1000);
     const accountName = prefix.concat(timestemp);
     const email = prefix.concat("@").concat(timestemp).concat(".com");
-    await page.pause();
     await createAccount(page, email, accountName, allAccountsPassword, baseURL);
-    await page.waitForURL('http://www.colony.localhost/Sample');
+    await page.waitForURL(`${baseURL}/Sample`);
     await expect(page).toHaveScreenshot({ maxDiffPixels: 3000 });
 
   });
@@ -33,16 +33,25 @@ test.describe('onboarding flow', () => {
   });
 
   test('start sample sandbox from "sample sandbox launcher"', async ( ) => {
-    await page.click('[data-test="launch-[Sample]Bitnami Nginx Helm Chart"]');    
-    await page.locator('[data-test="inputs\.replicaCount"]').fill("22");
-    await page.locator('[data-test="wizard-next-button"]').click();
-    await page.waitForSelector('[data-test="sandbox-info-column"]');
-    await page.locator('[data-test="grain-kind-indicator"]').click();
+    await startSampleSandbox(page, "helm");
     await page.waitForSelector('[data-test="sandbox-info-column"] div:has-text("Sandbox StatusActive")');
-    await page.pause();
-    expect(await page.locator(/PrepareCompletedStarted/)).toContainText(/Completed/);
-    expect(await page.locator('text=/InstallCompletedStarted')).toContainText(/Completed/);
-    expect(await page.locator("'Sandbox StatusActive'")).toContainText(/Active/);    
+    const items = await page.locator('[data-test="grain-kind-indicator"]');
+    for (let i = 0; i < await items.count(); i++) {
+      await items.nth(i).click();
+    }
+    await page.waitForSelector('[data-test="sandbox-info-column"] div:has-text("Sandbox StatusActive")');
+    const prepare = await page.locator('text=/PrepareCompleted.*/');
+    const install = await page.locator('text=/InstallCompleted/');
+    const apply = await page.locator('text=/ApplyCompleted/');
+    for (let i = 0; i < await prepare.count(); i++) {
+      expect(prepare).toContainText(/Completed/)
+    }
+    for (let i = 0; i < await install.count(); i++) {
+      expect(install).toContainText(/Completed/)
+    }
+    for (let i = 0; i < await apply.count(); i++) {
+      expect(apply).toContainText(/Completed/)
+    }
   });
 
 });
