@@ -1,12 +1,12 @@
-const {expect } = require('@playwright/test');
-const clickButton = async (page, selector, timeout = 30000, force=false) => {
+import {expect } from '@playwright/test';
+export const clickButton = async (page, selector, timeout = 30000, force=false) => {
     await page.click(`[data-test=${selector}]`, { timeout, force });
 };
-const getElement = (page, selector) => page.$(`[data-test=${selector}]`);
+export const getElement = (page, selector) => page.$(`[data-test=${selector}]`);
 
-const waitForElement = (page, selector, options = {}) => page.waitForSelector(`[data-test=${selector}]`, options);
+export const waitForElement = (page, selector, options = {}) => page.waitForSelector(`[data-test=${selector}]`, options);
 
-const fillInput = async (page, selector, value, keyToPress) => { 
+export const fillInput = async (page, selector, value, keyToPress) => { 
     await page.fill(`[data-test=${selector}]`, value);
     if (keyToPress) await page.keyboard.press(keyToPress);
 };
@@ -42,13 +42,13 @@ const clearInputThenFill = async (page, selector, value, keyToPress) => {
 const focusOnElement = async (page, selector) => { 
     await page.focus(`[data-test=${selector}]`);
 };
-const waitForElementToDisappear = async (page, selector) => {
+export const waitForElementToDisappear = async (page, selector) => {
     await page.waitForFunction((selector) => !document.querySelector(`[data-test=${selector}]`), selector);
 };
 
 const getElements = async (page, selector) => page.$$(`[data-test=${selector}]`);
 
-const getElementCount = async (page, selector) => {
+export const getElementCount = async (page, selector) => {
     const elements = await getElements(page, selector);
     return elements.length;
 };
@@ -66,27 +66,9 @@ const getTestSelector = (selector) => `[data-test="${selector}"]`;
 
 const checkOrUncheckCheckbox = async (page, dataTest, value, options = {}) => page[value ? "check" : "uncheck"](getTestSelector(dataTest), options);
 
-const waitForInnerText = async (page, selector, innerText, options = {}) => {
+export const waitForInnerText = async (page, selector, innerText, options = {}) => {
     return page.waitForFunction(({selector, innerText}) => {
         const element = document.querySelector(selector);
         return element && element.innerText === innerText;
     }, {selector : getTestSelector(selector), innerText}, options);
-};
-
-module.exports = {
-    clickButton,
-    clickSwitcherValue,
-    getElement,
-    waitForElement,
-    waitForInnerText,
-    getTestSelector,
-    fillInput,
-    clearInputThenFill,
-    getElements,
-    getElementCount,
-    fillSearchableSelectInput,
-    focusOnElement,
-    checkOrUncheckCheckbox,
-    waitForElementToDisappear,
-    pressOptionFromCommonTable
 };
