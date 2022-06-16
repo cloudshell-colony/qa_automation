@@ -1,3 +1,4 @@
+import { addCaptchaBypass } from "./general.mjs";
 import fetch from "node-fetch";
 
 
@@ -87,6 +88,25 @@ export const deleteUserAPI = async (user_email, myURL, session) => {
         }
     });
     return response;
+};
+
+export const createAccount = async ( page, email, accountName, allAccountsPassword, baseURL ) => {
+    await page.goto(`${baseURL}/register`);
+    await addCaptchaBypass(page);
+    await page.locator('[data-test="email"]').fill(email);
+    await page.locator('[data-test="password"]').fill(allAccountsPassword);
+    await page.locator('[data-test="subdomain"]').fill(accountName);
+    await page.click('[data-test="submit-signup"]');
+};
+
+export const loginToAccount = async ( page, email, accountName, allAccountsPassword, baseURL ) => {
+    await page.goto(`${baseURL}`);
+    await page.locator('[data-test="subdomain"]').fill(accountName);
+    await page.click('[data-test="submit"]');
+    await page.click('[data-test="login-with-email"]')
+    await page.locator('[data-test="email"]').fill(email);
+    await page.locator('[data-test="password"]').fill(allAccountsPassword);
+    await page.click('[data-test="submit"]');
 };
 // export {signupUserAPI, getSessionAPI, sendInvitationsAPI, getInvitationAPI};
 // const session = await mySession("gilad.m@quali.com", "Quali!Pass@Fail3", "http://colony.localhost:80", "trial-60b15ddc");

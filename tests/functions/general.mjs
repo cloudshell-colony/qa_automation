@@ -15,10 +15,13 @@ export const addCaptchaBypass = async (page) => {
     await page.goto(url);
 };
 
+<<<<<<< Updated upstream
 
 export default generateSecret;
 // console.log(`testing my secret generator ${generateSecret("abc", "dcd")}`);
 
+=======
+>>>>>>> Stashed changes
 export const initTest = (browserType) => async () => {
     global.browser = await playwright[process.env.TEST_BROWSER || browserType].launch({
         headless: !!process.env.HEADLESS,

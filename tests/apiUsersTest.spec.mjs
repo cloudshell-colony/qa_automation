@@ -10,8 +10,6 @@ the user cannot obtain a new session
 */
 
 import test, { expect } from "@playwright/test";
-import { log } from "console";
-import { request } from "http";
 import generateSecret from './functions/general.mjs';
 import {signupUserAPI, getSessionAPI, sendInvitationsAPI, getInvitationAPI, deleteUserAPI} from "./functions/accounts.mjs";
 import getAllUsersAPI from "./functions/users.mjs";
