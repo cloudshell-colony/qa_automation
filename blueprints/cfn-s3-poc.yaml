@@ -7,7 +7,7 @@ inputs:
    access_control:
        type: string
        display-style: normal
-       default: "Private"
+       default: "BucketOwnerRead"
 
 outputs:
    arn:
