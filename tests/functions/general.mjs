@@ -3,8 +3,8 @@ import playwright from "playwright";
 
 export const generateSecret = (email, account) => {
     let md5sum = crypto.createHash('md5');
-        md5sum.update((email + account), "utf-8");
-        return md5sum.digest('hex').toUpperCase();
+    md5sum.update((email + account), "utf-8");
+    return md5sum.digest('hex').toUpperCase();
 };
 
 export const addCaptchaBypass = async (page) => {
@@ -25,7 +25,7 @@ export const initTest = (browserType) => async () => {
     await global.page.setViewportSize({ width: 1584, height: 864 });
 };
 
-export const cleanUpTest = async() => await global.browser.close();
+export const cleanUpTest = async () => await global.browser.close();
 
 export function randomString(length) {
     const chars = "0123456789abcdefghijklmnopqrstuvwxyz";
@@ -33,3 +33,12 @@ export function randomString(length) {
     for (var i = length; i > 0; --i) result += chars[Math.floor(Math.random() * chars.length)];
     return result;
 }
+
+export const closeModal = async () => {
+    // check if a modal is open and closes it
+    // modal screen include: sample BP launcher, create Execution Host, create Space, Repository Information, 
+    const visi = await page.isVisible('[data-test="close-modal"]', 2000);
+    if (visi) {
+        await page.locator('[data-test="close-modal"]').click();
+    };
+};

@@ -11,7 +11,7 @@ test.describe('onboarding flow', () => {
   test.beforeAll(async ({ browser }) => {
     page = await browser.newPage();
   });
-  
+
   test.afterAll(async () => {
     await page.close();
   });
@@ -27,20 +27,19 @@ test.describe('onboarding flow', () => {
   });
 
   test('sample sandbox launcher contain three samples', async () => {
-    expect( page.locator('[data-test="launch-\[Sample\]MySql Terraform Module"]')).toContainText('Launch');
-    expect( page.locator('[data-test="launch-\[Sample\]Bitnami Nginx Helm Chart"]')).toContainText('Launch');
-    expect( page.locator('[data-test="launch-[Sample]Helm Application with MySql and S3 Deployed by Terraform"]')).toContainText('Launch');
+    expect(page.locator('[data-test="launch-\[Sample\]MySql Terraform Module"]')).toContainText('Launch');
+    expect(page.locator('[data-test="launch-\[Sample\]Bitnami Nginx Helm Chart"]')).toContainText('Launch');
+    expect(page.locator('[data-test="launch-[Sample]Helm Application with MySql and S3 Deployed by Terraform"]')).toContainText('Launch');
   });
 
-  test('start sample sandbox from "sample sandbox launcher"', async ( ) => {
+  test('start sample sandbox from "sample sandbox launcher"', async () => {
     await startSampleSandbox(page, "helm");
     await page.waitForSelector('[data-test="sandbox-info-column"] div:has-text("Sandbox StatusActive")');
     const items = await page.locator('[data-test="grain-kind-indicator"]');
     for (let i = 0; i < await items.count(); i++) {
       await items.nth(i).click();
     }
-    await page.waitForSelector('[data-test="sandbox-info-column"] div:has-text("Sandbox StatusActive")');
-    const prepare = await page.locator('text=/PrepareCompleted.*/');
+    const prepare = await page.locator('text=/PrepareCompleted/');
     const install = await page.locator('text=/InstallCompleted/');
     const apply = await page.locator('text=/ApplyCompleted/');
     for (let i = 0; i < await prepare.count(); i++) {
