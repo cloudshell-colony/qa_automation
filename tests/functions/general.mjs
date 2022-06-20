@@ -15,18 +15,6 @@ export const addCaptchaBypass = async (page) => {
     await page.goto(url);
 };
 
-export const initTest = (browserType) => async () => {
-    global.browser = await playwright[process.env.TEST_BROWSER || browserType].launch({
-        headless: !!process.env.HEADLESS,
-    });
-    const context = await global.browser.newContext();
-    // setting global so we can access the page instance in our custom test Environment
-    global.page = await context.newPage();
-    await global.page.setViewportSize({ width: 1584, height: 864 });
-};
-
-export const cleanUpTest = async () => await global.browser.close();
-
 export function randomString(length) {
     const chars = "0123456789abcdefghijklmnopqrstuvwxyz";
     var result = '';
