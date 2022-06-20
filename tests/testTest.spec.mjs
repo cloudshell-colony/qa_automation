@@ -1,4 +1,4 @@
-import { addCaptchaBypass } from "./functions/general.mjs";
+import { addCaptchaBypass, closeModal } from "./functions/general.mjs";
 import { test, expect } from "@playwright/test";
 import { createAccount, loginToAccount } from "./functions/accounts.mjs";
 import { startSampleSandbox } from "./functions/sandboxes.mjs";
@@ -10,7 +10,7 @@ const adminAccount = process.env.account;
 const adminEMail = process.env.adminEMail;
 
 test.describe('test my tests', () => {
-  
+
   // test('create new account', async ({ page }) => {
   //   const timestemp = Math.floor(Date.now() / 1000);
   //   const accountName = prefix.concat(timestemp);
@@ -23,22 +23,23 @@ test.describe('test my tests', () => {
   let page;
   test.beforeAll(async ({ browser }) => {
     page = await browser.newPage();
-    
+
   });
-  
+
   test.afterAll(async () => {
     await page.close();
   });
 
-  test('login', async () => {
-    await loginToAccount( page, adminEMail, adminAccount, allAccountsPassword, baseURL );
+  test.only('login', async () => {
+    await loginToAccount(page, adminEMail, adminAccount, allAccountsPassword, baseURL);
     await page.waitForURL('http://www.colony.localhost/Sample');
-    });
-  
-  
-    const sandbox = "helm";
-  test('start sample sandbox from "sample sandbox launcher"', async ( ) => {
-   await startSampleSandbox(page, sandbox)
+    await page.pause();
+  });
+
+
+  const sandbox = "helm";
+  test('start sample sandbox from "sample sandbox launcher"', async () => {
+    await startSampleSandbox(page, sandbox)
     const items = await page.locator('[data-test="grain-kind-indicator"]');
     for (let i = 0; i < await items.count(); i++) {
       await items.nth(i).click();
@@ -57,11 +58,18 @@ test.describe('test my tests', () => {
     for (let i = 0; i < await apply.count(); i++) {
       expect(apply).toContainText(/Completed/)
     }
-        
+
   });
 
 
+  test.only('Enter top active sandbox', async () => {
+    // check if "sample sandbox launcher" is open and cklose it:
+    closeModal();
 
+
+  });
+
+  // await page.pause();
 
   // test('start sample sandbox from "sample sandbox launcher"', async () => {
   //   await page.click('[data-test="launch-[Sample]Bitnami Nginx Helm Chart"]');
@@ -76,8 +84,6 @@ test.describe('test my tests', () => {
   //   await page.locator('#react-select-10-option-1').click();
   //   await page.locator('.duration-input__indicators').first().click();
   //   await page.locator('#react-select-7-option-1').click();
-
-  //   await page.waitForTimeout(30000);
 
   // });
 
