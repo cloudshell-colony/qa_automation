@@ -3,7 +3,7 @@ import fetch from "node-fetch";
 
 
 export const getSessionAPI = async (USER, PASSWORD, myURL, account) => {
-// get session for a user to use the APIs
+    // get session for a user to use the APIs
     const data = {
         email: USER,
         password: PASSWORD
@@ -15,10 +15,10 @@ export const getSessionAPI = async (USER, PASSWORD, myURL, account) => {
             'Content-Type': 'application/json'
         }
     });
-    
-    if(response.status != 200) {
-        return(response);
-    } else {        
+
+    if (response.status != 200) {
+        return (response);
+    } else {
         const data = await response.json();
         const tocken = await data.access_token;
         return tocken;
@@ -30,12 +30,12 @@ export const sendInvitationsAPI = async (session, newUserEmail, myURL, space) =>
     // space_role cane be: "Space Developer",,,,,
     // reason can be: "AdminJoinAccount", "TeamMemberJoinSpace", "AdminAuthenticateCloudAccount"
     const data = {
-        "emails": [ newUserEmail ],
+        "emails": [newUserEmail],
         "account_role": "",
         "reason": "TeamMemberJoinSpace",
         "space_name": space,
         "space_role": "Space Developer"
-      }
+    }
     const response = await fetch(`${myURL}/api/accounts/invitations`, {
         "method": "POST",
         "body": JSON.stringify(data),
@@ -44,7 +44,7 @@ export const sendInvitationsAPI = async (session, newUserEmail, myURL, space) =>
             'Content-Type': 'application/json'
         }
     });
-    return response;    
+    return response;
 };
 
 export const getInvitationAPI = async (myURL, secret) => {
@@ -58,7 +58,7 @@ export const getInvitationAPI = async (myURL, secret) => {
     return response;
 };
 
-export const signupUserAPI = async ( myURL, secret) => {
+export const signupUserAPI = async (myURL, secret) => {
     // signup user by approving the secret that was sewnt to his e-mail addrees, the secret is calculated from the user e-mail and the account.
     // after this call the user is a registarted user and can use APIs based hon his role in the system.
     const data = {
@@ -66,7 +66,7 @@ export const signupUserAPI = async ( myURL, secret) => {
         "last_name": "",
         "password": "Quali!Pass@Fail3",
         "secret": secret
-      }
+    }
     const response = await fetch(`${myURL}/api/accounts/signup`, {
         "method": "POST",
         "body": JSON.stringify(data),
@@ -74,11 +74,11 @@ export const signupUserAPI = async ( myURL, secret) => {
             'Content-Type': 'application/json'
         }
     });
-    return response;    
+    return response;
 };
 
 export const deleteUserAPI = async (user_email, myURL, session) => {
-    
+
     const response = fetch(`${myURL}/api/accounts/users/${user_email}`, {
         "method": "DELETE",
         "headers": {
@@ -90,7 +90,7 @@ export const deleteUserAPI = async (user_email, myURL, session) => {
     return response;
 };
 
-export const createAccount = async ( page, email, accountName, allAccountsPassword, baseURL ) => {
+export const createAccount = async (page, email, accountName, allAccountsPassword, baseURL) => {
     await page.goto(`${baseURL}/register`);
     await addCaptchaBypass(page);
     await page.locator('[data-test="email"]').fill(email);
@@ -99,7 +99,7 @@ export const createAccount = async ( page, email, accountName, allAccountsPasswo
     await page.click('[data-test="submit-signup"]');
 };
 
-export const loginToAccount = async ( page, email, accountName, allAccountsPassword, baseURL ) => {
+export const loginToAccount = async (page, email, accountName, allAccountsPassword, baseURL) => {
     await page.goto(`${baseURL}`);
     await page.locator('[data-test="subdomain"]').fill(accountName);
     await page.click('[data-test="submit"]');
@@ -107,6 +107,7 @@ export const loginToAccount = async ( page, email, accountName, allAccountsPassw
     await page.locator('[data-test="email"]').fill(email);
     await page.locator('[data-test="password"]').fill(allAccountsPassword);
     await page.click('[data-test="submit"]');
+    await page.waitForURL('http://www.colony.localhost/Sample');
 };
 // export {signupUserAPI, getSessionAPI, sendInvitationsAPI, getInvitationAPI};
 // const session = await mySession("gilad.m@quali.com", "Quali!Pass@Fail3", "http://colony.localhost:80", "trial-60b15ddc");

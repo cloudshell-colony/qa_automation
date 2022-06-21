@@ -1,8 +1,9 @@
 import { loginToAccount } from './functions/accounts.mjs';
 import { test, expect } from '@playwright/test';
 import { createSpace, editSpace, deleteSpace, goToSpace } from './functions/spaces.mjs';
-import { waitForElementToDisappear } from './functions/general.mjs';
+import { waitForSpaceInListToDisappear } from './functions/general.mjs';
 import goToAdminConsole from './functions/goToAdminConsole.mjs';
+import { closeModal } from './functions/general.mjs';
 
 
 const baseURL = process.env.baseURL;
@@ -13,8 +14,6 @@ const account = process.env.account;
 const timestamp = Math.floor(Date.now() / 1000);
 const spaceName = "qa-" + timestamp;
 const newName = "qa-new-" + timestamp;
-console.log(spaceName);
-console.log(newName);
 
 test.describe("can create new space, validate creation and delete it", () => {
     let page;
@@ -22,7 +21,7 @@ test.describe("can create new space, validate creation and delete it", () => {
         console.log(`Space names are ${spaceName} && ${newName}`);
         page = await browser.newPage();
         await loginToAccount(page, adminEMail, account, password, baseURL);
-        await page.click(`[data-test=close-modal]`);
+        await closeModal(page);
     });
     test.afterAll(async () => {
         await page.close();
@@ -75,8 +74,9 @@ test.describe("can create new space, validate creation and delete it", () => {
 
     test("can delete space", async () => {
         await deleteSpace(page, newName);
-        await waitForElementToDisappear(page, "spaceName");
-        const space = await page.$(`[data-test=space-row-${newName}]`, { timeout: 2000 })
-        expect(space).toBe(null);
+        await waitForSpaceInListToDisappear(page, newName);
+        // const space = await page.$(`[data-test=space-row-${newName}]`, { timeout: 2000 })
+        // expect(space).toBe(null);
+        expect(await page.isVisible(`[data-test=space-row-${newName}]`, 50)).not.toBeTruthy();
     });
 });
