@@ -23,7 +23,7 @@ test.describe('onboarding flow', () => {
     const email = prefix.concat("@").concat(timestemp).concat(".com");
     await createAccount(page, email, accountName, allAccountsPassword, baseURL);
     await page.waitForURL(`${baseURL}/Sample`);
-    await expect(page).toHaveScreenshot({ maxDiffPixels: 3000 });
+    await expect(page).toHaveScreenshot({ maxDiffPixels: 4000 });
 
   });
 
@@ -57,5 +57,6 @@ test.describe('onboarding flow', () => {
       console.log("found Completed apply");
     };
   });
+
 
 });

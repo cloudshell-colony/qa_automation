@@ -1,8 +1,8 @@
 import fetch from "node-fetch";
-import goToAdminSpaces from "./goToAdminSpaces.mjs";
+import goToAdminConsole from "./goToAdminConsole.mjs";
 
 export default function removeUserFromSpaceAPI(user_email, myURL, session, space_name) {
-    
+
     const response = fetch(`${myURL}/api/spaces/${space_name}/users/${user_email}`, {
         "method": "DELETE",
         "headers": {
@@ -14,14 +14,14 @@ export default function removeUserFromSpaceAPI(user_email, myURL, session, space
 };
 
 export const createSpace = async (page, spaceName) => {
-    await goToAdminSpaces(page);
+    await goToAdminConsole(page);
     await page.click(`[data-test=create-new-space]`);
     await page.locator(`[data-test=create-new-space-popup]`).fill(spaceName);
     await page.click("[data-test=create-space]");
 };
 
 export const editSpace = async (page, spaceName, newName) => {
-    await goToAdminSpaces(page);
+    await goToAdminConsole(page);
     await page.waitForSelector('[role=rowgroup]');
     await page.locator(`[data-test=space-row-${spaceName}]`).locator("[data-testid=moreMenu]").click();
     await page.locator(`[data-test=space-row-${spaceName}]`).locator('text=Edit').click();
@@ -30,10 +30,10 @@ export const editSpace = async (page, spaceName, newName) => {
 }
 
 export const deleteSpace = async (page, spaceName, input) => {
-    if (input === undefined){
+    if (input === undefined) {
         input = spaceName;
     }
-    await goToAdminSpaces(page);
+    await goToAdminConsole(page);
     await page.locator(`[data-test=space-row-${spaceName}]`).locator("[data-testid=moreMenu]").click();
     await page.locator(`[data-test=space-row-${spaceName}]`).locator('text=Delete').click();
     await page.fill(`[data-test=spaceName]`, input);
