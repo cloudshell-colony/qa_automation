@@ -5,6 +5,7 @@ import { startSampleSandbox } from "./functions/sandboxes.mjs";
 const baseURL = process.env.baseURL;
 const allAccountsPassword = process.env.allAccountsPassword;
 const prefix = process.env.accountPrefix;
+const sampleBP = process.env.sampleBPToStart;
 
 test.describe('onboarding flow', () => {
   let page;
@@ -33,8 +34,9 @@ test.describe('onboarding flow', () => {
   });
 
   test('start sample sandbox from "sample sandbox launcher"', async () => {
-    await startSampleSandbox(page, "helm");
+    await startSampleSandbox(page, sampleBP);
     await page.waitForSelector('[data-test="sandbox-info-column"] div:has-text("Sandbox StatusActive")');
+    expect(await page.isVisible('[data-test="sandbox-info-column"] div:has-text("Sandbox StatusActive")', 500)).toBeTruthy();
     const items = await page.locator('[data-test="grain-kind-indicator"]');
     for (let i = 0; i < await items.count(); i++) {
       await items.nth(i).click();
@@ -43,14 +45,17 @@ test.describe('onboarding flow', () => {
     const install = await page.locator('text=/InstallCompleted/');
     const apply = await page.locator('text=/ApplyCompleted/');
     for (let i = 0; i < await prepare.count(); i++) {
-      expect(prepare).toContainText(/Completed/)
-    }
+      expect(prepare.nth(i)).toContainText(/Completed/)
+      console.log("found Completed prepare");
+    };
     for (let i = 0; i < await install.count(); i++) {
-      expect(install).toContainText(/Completed/)
-    }
+      expect(install.nth(i)).toContainText(/Completed/)
+      console.log("found Completed install");
+    };
     for (let i = 0; i < await apply.count(); i++) {
-      expect(apply).toContainText(/Completed/)
-    }
+      expect(apply.nth(i)).toContainText(/Completed/)
+      console.log("found Completed apply");
+    };
   });
 
 });

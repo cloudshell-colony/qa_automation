@@ -22,7 +22,7 @@ export function randomString(length) {
     return result;
 }
 
-export const closeModal = async () => {
+export const closeModal = async (page) => {
     // check if a modal is open and closes it
     // modal screen include: sample BP launcher, create Execution Host, create Space, Repository Information, 
     const visi = await page.isVisible('[data-test="close-modal"]', 2000);
