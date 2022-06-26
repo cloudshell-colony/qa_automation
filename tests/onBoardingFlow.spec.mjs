@@ -44,8 +44,10 @@ test.describe('onboarding flow', () => {
     const prepare = await page.locator('text=/PrepareCompleted/');
     const install = await page.locator('text=/InstallCompleted/');
     const apply = await page.locator('text=/ApplyCompleted/');
+    // refactor to use foreach
+    // prepare.forEach(line => { expect(line).toContainText(/Completed/)});
     for (let i = 0; i < await prepare.count(); i++) {
-      expect(prepare.nth(i)).toContainText(/Completed/)
+      expect(prepare.nth(i)).toContainText(/Completed/);
       console.log("found Completed prepare");
     };
     for (let i = 0; i < await install.count(); i++) {

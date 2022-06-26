@@ -107,17 +107,5 @@ export const loginToAccount = async (page, email, accountName, allAccountsPasswo
     await page.locator('[data-test="email"]').fill(email);
     await page.locator('[data-test="password"]').fill(allAccountsPassword);
     await page.click('[data-test="submit"]');
-    await page.waitForURL('http://www.colony.localhost/Sample');
+    await page.waitForURL(`${baseURL}/Sample`);
 };
-// export {signupUserAPI, getSessionAPI, sendInvitationsAPI, getInvitationAPI};
-// const session = await mySession("gilad.m@quali.com", "Quali!Pass@Fail3", "http://colony.localhost:80", "trial-60b15ddc");
-// console.log(`testing my session ${session}`);
-
-// const userInvitation = await sendInvitationsAPI("bfsHSurGeOr62ggap9lTFO4eDN-lzpvwMK6wjlRoo6M", "dc100@marvel.com", "http://colony.localhost:80", "trial-60b15ddc")
-//         console.log(`testing my invitation ${userInvitation.status}, ${await userInvitation.json()}`);
-
-// const deletedUser = await deleteUserAPI("marvel4@dc.com", "http://colony.localhost", "dTc48Kt2GyLSzviT7zf3By6kP6eGIWeOOEJ5AaUpHrI");
-// console.log(`testing my delete ${deletedUser.status}, ${deletedUser.statusText}`);
-// // console.log(`and the body is: ${await deletedUser.text()}`);
-// // console.log(`and the body is: ${await deletedUser.json()}`);
-// console.log(`and the body is: ${await JSON.parse(deletedUser)}`);

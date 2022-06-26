@@ -2,12 +2,22 @@ import { addCaptchaBypass, closeModal } from "./functions/general.mjs";
 import { test, expect } from "@playwright/test";
 import { createAccount, loginToAccount } from "./functions/accounts.mjs";
 import { startSampleSandbox } from "./functions/sandboxes.mjs";
+import goToAdminConsole from "./functions/goToAdminConsole.mjs";
+import { goToSpace } from "./functions/spaces.mjs";
 
 const baseURL = process.env.baseURL;
 const allAccountsPassword = process.env.allAccountsPassword;
 const prefix = process.env.accountPrefix;
 const adminAccount = process.env.account;
 const adminEMail = process.env.adminEMail;
+const githubRepo = process.env.githubRepo;
+const githubUserNAme = process.env.githubUserNAme;
+const githubPassword = process.env.githubPassword;
+const githubRepoNumOfBlueprints = process.env.githubRepoNumOfBlueprints;
+
+
+const timestamp = Math.floor(Date.now() / 1000);
+const newSpaceName = prefix + timestamp;
 
 test.describe('test my tests', () => {
 
@@ -21,70 +31,92 @@ test.describe('test my tests', () => {
   // });
 
   let page;
+  let context;
   test.beforeAll(async ({ browser }) => {
-    page = await browser.newPage();
-
+    context = await browser.newContext();
+    page = await context.newPage();
+    // page = await browser.newPage();
+    await loginToAccount(page, adminEMail, adminAccount, allAccountsPassword, baseURL);
   });
 
   test.afterAll(async () => {
     await page.close();
   });
 
-  test.only('login', async () => {
-    await loginToAccount(page, adminEMail, adminAccount, allAccountsPassword, baseURL);
-    await page.waitForURL('http://www.colony.localhost/Sample');
+  test('create new space with asset repo from quick launcher window', async () => {
+
+
+    // start new space flow from quick sandbox launcher
+    await page.click('text=Start by creating your own Space');
+    await page.fill('[data-test="create-new-space-popup"]', newSpaceName);
+    await page.click('[data-test="color-frogGreen"]');
+    await page.click('[data-test="icon-face"]');
+    await page.click('[data-test="create-space"]');
+    // add repository asset
+    await page.waitForSelector('[data-test="connect-repo-title"]');
+    await page.click('[data-test="setup-modal-container"] svg >> nth=2');
+    await page.fill('[data-test="repositoryUrl"]', githubRepo);
+    await page.fill('[data-test="repositoryName"]', "blueprints");
+    //manage repo provider credentilas
+    const [signinWindow] = await Promise.all([
+      page.waitForEvent("popup"),
+      page.click('button:has-text("Connect")')
+    ])
+    await signinWindow.waitForLoadState();
+    expect(await signinWindow.url()).toContain('login');
+    await signinWindow.fill('input[name="login"]', githubUserNAme);
+    await signinWindow.fill('input[name="password"]', githubPassword);
+    await signinWindow.click('input:has-text("Sign in")');
+    await signinWindow.waitForLoadState();
+    const visi = await signinWindow.isVisible('text=Authorize QualiNext', 500);
+    if (visi) {
+      await signinWindow.click('text=Authorize QualiNext');
+    };
+    // back to torque
+    // seslect BPs for import
+    await page.waitForLoadState();
+    await page.click('[data-test="submit-button"]');
+    // start BP selection after auto discavery
+    expect(await page.isVisible('[data-test="submit-button"]')).toBeTruthy();
+    expect(await page.isEnabled('[data-test="submit-button"]')).not.toBeTruthy();
+    await page.check('th input[type="checkbox"]');
+    expect(await page.isEnabled('[data-test="submit-button"]')).toBeTruthy();
+    await page.click('[data-test="submit-button"]');
+    // Auto-Generated Blueprints page approval
+    await page.isVisible('text=Auto-Generated Blueprints');
+    let numberOfBlueprints = await page.locator('[data-test="setup-modal-container"] td');
+    expect(await numberOfBlueprints.count()).toEqual(parseInt(githubRepoNumOfBlueprints) * 2);
+    await page.click('[data-test="submit-button"]');
+    // skip add execution host for now
+    await page.click('[data-test="skip-for-now"]');
+
+
+    // alternative to craete space every time
+    await closeModal(page);
+    await goToSpace(page, "QA-GMP1656227124");
+    await page.click('[data-test="blueprints-nav-link"]');
+
+    // blueprints page
+
+
+    await page.isVisible(`text=${newSpaceName}Blueprints >> nth=1`);
+    let numberOfBlueprints = await page.locator('tr');
+    console.log(numberOfBlueprints);
+    console.log('number of BPs ' + await numberOfBlueprints.count());
+    console.log('expected number ' + parseInt(githubRepoNumOfBlueprints));
     await page.pause();
-  });
-
-
-  const sandbox = "helm";
-  test('start sample sandbox from "sample sandbox launcher"', async () => {
-    await startSampleSandbox(page, sandbox)
-    const items = await page.locator('[data-test="grain-kind-indicator"]');
-    for (let i = 0; i < await items.count(); i++) {
-      await items.nth(i).click();
-    }
-    await page.waitForSelector('[data-test="sandbox-info-column"] div:has-text("Sandbox StatusActive")');
-    expect(await page.locator('[data-test="sandbox-info-column"]')).toContainText("Sandbox StatusActive");
-    const prepare = await page.locator('text=/PrepareCompleted.*/');
-    const install = await page.locator('text=/InstallCompleted/');
-    const apply = await page.locator('text=/ApplyCompleted/');
-    for (let i = 0; i < await prepare.count(); i++) {
-      expect(prepare).toContainText(/Completed/)
-    }
-    for (let i = 0; i < await install.count(); i++) {
-      expect(install).toContainText(/Completed/)
-    }
-    for (let i = 0; i < await apply.count(); i++) {
-      expect(apply).toContainText(/Completed/)
-    }
+    expect(await numberOfBlueprints.count()).toEqual(parseInt(githubRepoNumOfBlueprints));
+    await page.pause();
 
   });
 
-
-  test.only('Enter top active sandbox', async () => {
-    // check if "sample sandbox launcher" is open and cklose it:
-    closeModal();
-
-
+  test.skip('page functions auto complete', async ({ page }) => {
+    await page.waitForLoadState
+    await page.isEnabled
+    await page.pause();
+    await page.locator
   });
+
+});
 
   // await page.pause();
-
-  // test('start sample sandbox from "sample sandbox launcher"', async () => {
-  //   await page.click('[data-test="launch-[Sample]Bitnami Nginx Helm Chart"]');
-  //   const res = await page.locator('.select-days .duration-input__control .duration-input__indicators .duration-input__indicator').click();
-  //   console.log("*******");
-  //   console.log(await res);
-  //   console.log("*******");
-  //   await page.locator(/option-1/).click();
-  //   await page.locator('.select-hours .duration-input__control .duration-input__indicators .duration-input__indicator').click();
-  //   await page.locator('#react-select-9-option-1').click();
-  //   await page.locator('.select-minutes .duration-input__control .duration-input__indicators .duration-input__indicator').click();
-  //   await page.locator('#react-select-10-option-1').click();
-  //   await page.locator('.duration-input__indicators').first().click();
-  //   await page.locator('#react-select-7-option-1').click();
-
-  // });
-
-});  
