@@ -10,3 +10,4 @@ node_modules/
 /playwright/.cache/
 tests/testTest.spec.mjs
 tests/testTest.spec.mjs
+tests/asafTest.spec.mjs
