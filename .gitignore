@@ -11,3 +11,4 @@ node_modules/
 tests/testTest.spec.mjs
 tests/testTest.spec.mjs
 tests/asafTest.spec.mjs
+asafEnv/.env
