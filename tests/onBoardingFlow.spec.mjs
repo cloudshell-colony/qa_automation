@@ -60,5 +60,33 @@ test.describe('onboarding flow', () => {
     };
   });
 
+  test.skip('End launched sample sandbox', async() => {
+    const sandboxName = "Sample Environment"; //default name when launching from sample sandbox launcher
+    await endSandbox(page);
+    await page.waitForSelector(`tr:has-text("${sandboxName}")`, {has: page.locator("data-testid=moreMenu")});  
+    let visi = page.isVisible(`tr:has-text("${sandboxName}")`, {has: page.locator("data-testid=moreMenu")});
+    expect(await page.locator(`tr:has-text("${sandboxName}")`, {has: page.locator("data-testid=moreMenu")})).toContainText("Terminating");
+    while(await visi){
+        await page.waitForTimeout(50);
+        visi = page.isVisible(`tr:has-text("${sandboxName}")`);
+    }
+    await page.click(`[data-toggle=true]`); //Need UI to add data-test for this button
+    await page.click(`tr:has-text("${sandboxName}")`);
+    await page.waitForSelector("[data-test=sandbox-page-content]");
+    const items = await page.locator('[data-test="grain-kind-indicator"]');
+    for (let i = 0; i < await items.count(); i++) {
+      await items.nth(i).click();
+    }
+    const destroy = await page.locator('text=/DestroyCompleted/');
+    const uninstall = await page.locator('text=/UninstallCompleted/');
+    for (let i = 0; i < await destroy.count(); i++) {
+        expect(destroy.nth(i)).toContainText(/Completed/);
+        console.log("found Completed destroy");
+    };
+    for (let i = 0; i < await uninstall.count(); i++) {
+        expect(uninstall.nth(i)).toContainText(/Completed/);
+        console.log("found Completed uninstall");
+    };
+  });
 
 });
