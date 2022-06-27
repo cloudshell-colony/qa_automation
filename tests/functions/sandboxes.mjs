@@ -1,3 +1,4 @@
+import { goToSpace } from "./spaces.mjs";
 
 export const startSampleSandbox = async (page, sandbox) => {
   // starts a sample sandbox from the "sample sandbox launcher"
@@ -22,3 +23,14 @@ export const startSampleSandbox = async (page, sandbox) => {
   await page.waitForSelector('[data-test="sandbox-info-column"]');
 
 };
+
+export const goToSandbox = async (page, sandboxName) => {
+  await goToSpace(page, "Sample");
+  await page.click("[data-test=sandboxes-nav-link]");
+  await page.click(`tr:has-text("${sandboxName}")`);  
+}
+
+export const endSandbox = async (page) => {
+  await page.click("[data-test=end-sandbox]");
+  await page.click("[data-test=confirm-end-sandbox]");
+}
