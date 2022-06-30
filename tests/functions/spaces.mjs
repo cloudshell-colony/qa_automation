@@ -170,8 +170,6 @@ export const repositoryAssetInfo = async (page, repProvider) => {
     ]);
     await signinWindow.waitForLoadState();
     // sync issue - created a function so I can add "await"
-    await page.pause();
     await fillInRepoData(repoKeys, signinWindow);
-
 
 };

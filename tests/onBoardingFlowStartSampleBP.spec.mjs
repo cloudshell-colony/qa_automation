@@ -6,8 +6,11 @@ const baseURL = process.env.baseURL;
 const allAccountsPassword = process.env.allAccountsPassword;
 const prefix = process.env.accountPrefix;
 const sampleBP = process.env.sampleBPToStart;
+const timestemp = Math.floor(Date.now() / 1000);
+const accountName = prefix.concat(timestemp);
+const email = prefix.concat("@").concat(timestemp).concat(".com");
 
-test.describe('onboarding flow', () => {
+test.describe.serial('onboarding flow', () => {
   let page;
   test.beforeAll(async ({ browser }) => {
     page = await browser.newPage();
@@ -18,13 +21,11 @@ test.describe('onboarding flow', () => {
   });
 
   test('create new account', async () => {
-    const timestemp = Math.floor(Date.now() / 1000);
-    const accountName = prefix.concat(timestemp);
-    const email = prefix.concat("@").concat(timestemp).concat(".com");
+    console.log('creating new account with name: ' + accountName);
     await createAccount(page, email, accountName, allAccountsPassword, baseURL);
     await page.waitForURL(`${baseURL}/Sample`);
+    await page.waitForSelector('[data-test="launch-\[Sample\]MySql Terraform Module"]');
     await expect(page).toHaveScreenshot({ maxDiffPixels: 4000 });
-
   });
 
   test('sample sandbox launcher contain three samples', async () => {
@@ -35,7 +36,7 @@ test.describe('onboarding flow', () => {
 
   test('start sample sandbox from "sample sandbox launcher"', async () => {
     await startSampleSandbox(page, sampleBP);
-    await page.waitForSelector('[data-test="sandbox-info-column"] div:has-text("Sandbox StatusActive")');
+    await page.waitForSelector('[data-test="sandbox-info-column"] div:has-text("Sandbox StatusActive")', { timeout: 120000 });
     expect(await page.isVisible('[data-test="sandbox-info-column"] div:has-text("Sandbox StatusActive")', 500)).toBeTruthy();
     const items = await page.locator('[data-test="grain-kind-indicator"]');
     for (let i = 0; i < await items.count(); i++) {
@@ -44,8 +45,9 @@ test.describe('onboarding flow', () => {
     const prepare = await page.locator('text=/PrepareCompleted/');
     const install = await page.locator('text=/InstallCompleted/');
     const apply = await page.locator('text=/ApplyCompleted/');
-    // refactor to use foreach
-    // prepare.forEach(line => { expect(line).toContainText(/Completed/)});
+    // refactor to use forEach
+    // prepare.forEach((line) => { expect(line).toContainText(/Completed/)});
+
     for (let i = 0; i < await prepare.count(); i++) {
       expect(prepare.nth(i)).toContainText(/Completed/);
       console.log("found Completed prepare");
