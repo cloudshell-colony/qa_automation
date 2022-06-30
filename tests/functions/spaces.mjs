@@ -40,45 +40,104 @@ export const deleteSpace = async (page, spaceName, input) => {
     await page.locator('text=Yes').click();
 };
 
+
+export const deleteSpaceAPI = async (space_name, myURL, session) => {
+
+    const response = fetch(`${myURL}/api/spaces/${space_name}`, {
+        "method": "DELETE",
+        "headers": {
+            'Authorization': `Bearer ${session}`,
+            'Content-Type': 'application/json; charset=utf-8',
+            'Accept': 'application/json'
+        }
+    });
+    return response;
+};
+
+
 export const goToSpace = async (page, spaceName) => {
     await page.click("div[data-test=sidebar-dropdown]");
     await page.click(`[data-test=option__${spaceName}]`);
 };
 
-export const craeteSpaqceFromQuickLauncher = async (page, newSpaceName) => {
+export const craeteSpaceFromQuickLauncher = async (page, newSpaceName) => {
     await page.click('text=Start by creating your own Space');
     await page.fill('[data-test="create-new-space-popup"]', newSpaceName);
     await page.click('[data-test="color-frogGreen"]');
     await page.click('[data-test="icon-face"]');
     await page.click('[data-test="create-space"]');
 };
+export const generateRepoSpecificKeys = async (repProvider) => {
+    const githubRepo = process.env.githubRepo;
+    const githubUserNAme = process.env.githubUserNAme;
+    const githubPassword = process.env.githubPassword;
+    const githubBPsInRepo = process.env.gitlabRepoNumOfBlueprints;
 
-export const RepositoryAssetInfo = async (page, repProvider, repoUrl, repoUsername, repoPassword) => {
-    await page.waitForSelector('[data-test="connect-repo-title"]');
-    let nth = 0;
-    if (repProvider.toLowerCase() === bitbucket) { nth = 1 }
-    else if (repProvider.toLowerCase() === github) { nth = 2 }
-    else if (repProvider.toLowerCase() === gitlab) { nth = 3 }
-    else { console.log('invalid repo proveder'); };
-    await page.click(`[data-test="setup-modal-container"] svg >> nth=${nth}`);
-    await page.fill('[data-test="repositoryUrl"]', repoUrl);
-    await page.fill('[data-test="repositoryName"]', "auto-repo");
-    //manage repo provider credentilas
-    const [signinWindow] = await Promise.all([
-        page.waitForEvent("popup"),
-        page.click('button:has-text("Connect")')
-    ])
-    await signinWindow.waitForLoadState();
+    const gitlabRepo = process.env.gitlabRepo;
+    const gitlabUserNAme = process.env.gitlabUserNAme;
+    const gitlabPassword = process.env.gitlabPassword;
+    const gitlabBPsInRepo = process.env.gitlabRepoNumOfBlueprints;
+
+    const bitbucketRepo = process.env.bitbucketRepo;
+    const bitbucketUserNAme = process.env.bitbucketUserNAme;
+    const bitbucketPassword = process.env.bitbucketPassword;
+    const bitbucketBPsInRepo = process.env.bitbucketRepoNumOfBlueprints;
+
+    let providerKeys = {};
     switch (repProvider.toLowerCase()) {
         case "bitbucket":
-            console.log('missing add repo for BitBucket');
+            providerKeys = {
+                "provider": repProvider,
+                "nth": 1,
+                "repo": bitbucketRepo,
+                "userName": bitbucketUserNAme,
+                "password": bitbucketPassword,
+                "BPscount": bitbucketBPsInRepo
+            }
             break;
         case "github":
-            expect(await signinWindow.url()).toContain('login');
+            providerKeys = {
+                "provider": repProvider,
+                "nth": 2,
+                "repo": githubRepo,
+                "userName": githubUserNAme,
+                "password": githubPassword,
+                "BPscount": githubBPsInRepo
+            }
+            break;
+        case "gitlab":
+            providerKeys = {
+                "provider": repProvider,
+                "nth": 3,
+                "repo": gitlabRepo,
+                "userName": gitlabUserNAme,
+                "password": gitlabPassword,
+                "BPscount": gitlabBPsInRepo
+            }
+            break;
+        default:
+            console.log("invalid repo provider");
+            break;
+    }
+    return providerKeys;
+};
+
+export const fillInRepoData = async (providerKeys, signinWindow) => {
+    // this function was needed to bypass JS synchronos call, that resulted in attempting to use veraiable signinWindow before its load is completrd
+    // inserts the selected repo data based on the selected host- gitlab, github and bitbucket
+    const repoUsername = providerKeys.userName;
+    const repoPassword = providerKeys.password;
+    const provider = providerKeys.provider;
+
+    switch (provider.toLowerCase()) {
+        case "bitbucket":
+            console.log('missing BitBucket repo');
+            break;
+        case "github":
+            await signinWindow.waitForLoadState();
             await signinWindow.fill('input[name="login"]', repoUsername);
             await signinWindow.fill('input[name="password"]', repoPassword);
             await signinWindow.click('input:has-text("Sign in")');
-            await signinWindow.waitForLoadState();
             await signinWindow.waitForLoadState();
             const visi = await signinWindow.isVisible('text=Authorize QualiNext', 500);
             if (visi) {
@@ -86,57 +145,31 @@ export const RepositoryAssetInfo = async (page, repProvider, repoUrl, repoUserna
             };
             break;
         case "gitlab":
-            await page.waitForSelector('[data-test="connect-repo-title"]');
-            await page.click('[data-test="setup-modal-container"] svg >> nth=3');
-            await page.fill('[data-test="repositoryUrl"]', repoUrl);
-            await page.fill('[data-test="repositoryName"]', "blueprints");
-            const [signinWindow] = await Promise.all([
-                page.waitForEvent("popup"),
-                page.click('button:has-text("Connect")')
-            ])
             await signinWindow.waitForLoadState();
-            expect(await signinWindow.url()).toContain('users/sign_in');
             await signinWindow.fill('[data-testid="username-field"]', repoUsername);
             await signinWindow.fill('input[name="user\[password\]"]', repoPassword);
             await signinWindow.click('[data-testid="sign-in-button"]');
             break;
+
         default:
-            console.log('invainvalid repo provederlid ');
+            console.log('invalid repo provederlid ');
             break;
-    }
-
+    };
 };
 
-
-export const newSpaceFromQuickLauncher = async (page, newSpaceName, repProvider, repoUrl, repoUsername, repoPassword) => {
-
-    // start new space flow from quick sandbox launcher
-    await craeteSpaqceFromQuickLauncher(page, newSpaceName);
-
-    // add repository asset
-    await RepositoryAssetInfo(page, repProvider, repoUrl, repoUsername, repoPassword);
-    // back to torque
-    // seslect all BPs for import
-    await page.waitForLoadState();
-    await page.click('[data-test="submit-button"]');
-    // start BP selection after auto discavery
-    expect(await page.isVisible('[data-test="submit-button"]')).toBeTruthy();
-    expect(await page.isEnabled('[data-test="submit-button"]')).not.toBeTruthy();
-    await page.check('th input[type="checkbox"]');
-    expect(await page.isEnabled('[data-test="submit-button"]')).toBeTruthy();
-    await page.click('[data-test="submit-button"]');
-    // Auto-Generated Blueprints page approval
-    await page.isVisible('text=Auto-Generated Blueprints');
-    let numberOfBlueprints = await page.locator('[data-test="setup-modal-container"] td');
-    expect(await numberOfBlueprints.count()).toEqual(parseInt(githubRepoNumOfBlueprints) * 2);
-    await page.click('[data-test="submit-button"]');
-    // skip add execution host for now
-    await page.click('[data-test="skip-for-now"]');
+export const repositoryAssetInfo = async (page, repProvider) => {
+    await page.waitForSelector('[data-test="connect-repo-title"]');
+    const repoKeys = await generateRepoSpecificKeys(repProvider);
+    await page.click(`[data-test="setup-modal-container"] svg >> nth=${repoKeys.nth}`);
+    await page.fill('[data-test="repositoryUrl"]', repoKeys.repo);
+    await page.fill('[data-test="repositoryName"]', "auto-repo");
+    //manage repo provider credentilas
+    const [signinWindow] = await Promise.all([
+        page.waitForEvent("popup"),
+        page.click('button:has-text("Connect")')
+    ]);
+    await signinWindow.waitForLoadState();
+    // sync issue - created a function so I can add "await"
+    await fillInRepoData(repoKeys, signinWindow);
 
 };
-
-// export default deleteUser;
-
-// const deleteTheblip = await deleteUser("marvel2@dc.com", "http://colony.localhost:80", "dTc48Kt2GyLSzviT7zf3By6kP6eGIWeOOEJ5AaUpHrI", "gmp");
-// const deleteTheblipjson = await deleteTheblip.text()
-// console.log(`testing my delete ${deleteTheblip.status}, ${await deleteTheblipjson}`);
