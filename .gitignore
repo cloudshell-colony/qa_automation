@@ -11,3 +11,5 @@ node_modules/
 tests/asafTest.spec.mjs
 asafEnv/.env
 giladEnv/.env
+tests/testTestCleanBPsAndProvider.spec.mjs
+deploymentFile.yaml

@@ -1,6 +1,4 @@
-const account = 'qa';
-
-export default async(page, user, password) => {
+export default async (page, user, password, account) => {
     await page.goto(`https://preview.qtorque.io/login`);
     await page.waitForSelector(`[data-test=subdomain]`);
     await page.fill(`[data-test=subdomain]`, account);

@@ -20,5 +20,10 @@ export const startSampleSandbox = async (page, sandbox) => {
   }
   await page.locator('[data-test="wizard-next-button"]').click();
   await page.waitForSelector('[data-test="sandbox-info-column"]');
+};
 
+export const goToSandboxListPage = async (page, account) => {
+
+  await page.click('[data-test="sandboxes-nav-link"]');
+  // todo  
 };
