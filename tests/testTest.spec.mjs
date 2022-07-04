@@ -1,4 +1,4 @@
-import { closeModal, executeCLIcommand, overwriteAndSaveToFile } from "./functions/general.mjs";
+import { closeModal, executeCLIcommand, overwriteAndSaveToFile, togleBlueprintPublishToggle } from "./functions/general.mjs";
 import { test, expect } from "@playwright/test";
 import { getSessionAPI, loginToAccount } from "./functions/accounts.mjs";
 import { goToSpace } from "./functions/spaces.mjs";
@@ -38,11 +38,18 @@ test.describe.serial('test my tests', () => {
     await closeModal(page);
   });
 
-  test('enter space', async () => {
+  test.skip('enter space', async () => {
     goToSpace(page, spaceName);
     await page.waitForNavigation();
     const url = await page.url();
     expect(url).toContain(spaceName);
+  });
+
+  test('enter Blueprints page', async () => {
+    await page.click('[data-test="blueprints-nav-link"]');
+    await page.waitForLoadState();
+    togleBlueprintPublishToggle(page, "Helm Application with MySql and S3 Deployed by Terraform");
+    await page.pause();
   });
 
   test.skip('add execution host from space settings', async () => {
@@ -83,7 +90,7 @@ test.describe.serial('test my tests', () => {
     await page.click('[data-test="submit-button"]');
   });
 
-  test('enter add execution host to page', async () => {
+  test.skip('enter add execution host to page', async () => {
     goToSpace(page, spaceName);
     await page.click('[data-test="settings-nav-tab"]');
     await page.click('[data-test="manage-cloud-accounts-button-wrapper"]');
@@ -91,7 +98,7 @@ test.describe.serial('test my tests', () => {
     await page.click('[data-test="add-host-to-space-more-menu-option"]');
   });
 
-  test('add execution host to space', async () => {
+  test.skip('add execution host to space', async () => {
     await page.click(`[class~="select-space"]`);
     await page.type(`[class~="select-space"]`, spaceName);
     await page.keyboard.press("Enter");

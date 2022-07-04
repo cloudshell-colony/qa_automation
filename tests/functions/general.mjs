@@ -73,3 +73,16 @@ export const overwriteAndSaveToFile = async (fielName, fileContent) => {
         console.log(`${fielName} was saved`);
     });
 };
+
+export const pressOptionFromCommonTable = async (page, rowIdentifier, optionSelector = "edit-more-menu-option") => {
+    // allow selection of space from more-menu in the execusion hosts page
+    const moreMenuOptionsSelector = `[data-test=${rowIdentifier}] [data-testid=moreMenu]`;
+    await page.click(moreMenuOptionsSelector);
+    const optionToSelect = `${moreMenuOptionsSelector} [data-test="${optionSelector}"]`;
+    await page.click(optionToSelect);
+};
+
+export const publishBlueprint = async (page, BPFullName) => {
+    await page.waitForLoadState();
+    await page.click(`[data-test="tf-based-blueprint-row-${BPFullName}"] [data-test="blueprint-publish-toggle"]`);
+};

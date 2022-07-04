@@ -1,7 +1,7 @@
 import { test, expect } from "@playwright/test";
 import { createAccount, getSessionAPI } from "./functions/accounts.mjs";
 import { getdeploymentFileAPI } from "./functions/executionHosts.mjs";
-import { executeCLIcommand, overwriteAndSaveToFile } from "./functions/general.mjs";
+import { executeCLIcommand, overwriteAndSaveToFile, publishBlueprint } from "./functions/general.mjs";
 import { startSampleSandbox } from "./functions/sandboxes.mjs";
 import { craeteSpaceFromQuickLauncher, generateRepoSpecificKeys, repositoryAssetInfo } from "./functions/spaces.mjs";
 
@@ -16,6 +16,7 @@ const email = prefix.concat("@").concat(timestemp).concat(".com");
 
 const executionHostName = process.env.execHostName;
 const executionHostSpaceName = process.env.execHostNameSpace;
+const BPFullName = process.env.BPFullName;
 
 test.describe.serial('onboarding flow', () => {
     let page;
@@ -31,7 +32,7 @@ test.describe.serial('onboarding flow', () => {
         await createAccount(page, email, accountName, allAccountsPassword, baseURL);
         await page.waitForURL(`${baseURL}/Sample`);
         await page.waitForSelector('[data-test="launch-\[Sample\]MySql Terraform Module"]');
-        await expect(page).toHaveScreenshot({ maxDiffPixels: 4000 });
+        await expect(page).toHaveScreenshot({ maxDiffPixels: 5000 });
 
     });
 
@@ -65,7 +66,7 @@ test.describe.serial('onboarding flow', () => {
         let numberOfBlueprints = await page.locator('[data-test="setup-modal-container"] td');
         expect(await numberOfBlueprints.count()).toEqual(parseInt(specificRepoData.BPscount) * 2);
         // complete the flow of adding asset repo and open the next step of adding execution host
-        await page.click('[data-test="submit-button"]');
+        // await page.click('[data-test="submit-button"]');
         await page.waitForSelector('text=Auto-Generated Blueprints');
         await page.click('[data-test="submit-button"]');
     });
@@ -110,10 +111,17 @@ test.describe.serial('onboarding flow', () => {
         // await page.type(`[class~="select-space"]`, spaceName);
         // await page.keyboard.press("Enter");
 
+        await page.waitForSelector('[data-test="namespace"]');
         await page.fill('[data-test="namespace"]', executionHostSpaceName);
         await page.click('[data-test="submit-button"]');
-        await page.pause();
+
+    });
+
+    test('Publish the blueprint', async () => {
+        // publish BP after autodiscovery
         await page.waitForLoadState();
+        await publishBlueprint(page, BPFullName);
+        await page.pause();
     });
 
 
