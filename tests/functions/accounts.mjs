@@ -97,10 +97,12 @@ export const createAccount = async (page, email, accountName, allAccountsPasswor
     await page.locator('[data-test="password"]').fill(allAccountsPassword);
     await page.locator('[data-test="subdomain"]').fill(accountName);
     await page.click('[data-test="submit-signup"]');
+    console.log(`new domain name: ${accountName}`);
+    console.log(`new user email: ${email}`);
 };
 
 export const loginToAccount = async (page, email, accountName, allAccountsPassword, baseURL) => {
-    await page.goto(`${baseURL}`);
+    await page.goto(`${baseURL}`, { timeout: 90000 });
     await page.locator('[data-test="subdomain"]').fill(accountName);
     await page.click('[data-test="submit"]');
     await page.click('[data-test="login-with-email"]')

@@ -1,5 +1,8 @@
 import crypto from "crypto";
-import playwright from "playwright";
+import { expect } from "@playwright/test";
+import fs from "fs";
+import { exec } from "child_process";
+
 
 export const generateSecret = (email, account) => {
     let md5sum = crypto.createHash('md5');
@@ -43,4 +46,30 @@ export const waitForSpaceInListToDisappear = async (page, newName) => {
             isVisi = await page.isVisible(`[data-test=space-row-${newName}]`, 500)
         };
     };
+};
+
+export const executeCLIcommand = async (command) => {
+    console.log('starting to apply the execution host yaml file');
+    exec(command, (error, stdout, stderr) => {
+        if (error) {
+            console.log(`error: ${error.message}`);
+            expect(error).toBeNull();
+            return 0;
+        }
+        if (stderr) {
+            console.log(`stderr: ${stderr}`);
+            expect(error).toBeNull();
+            return 0;
+        }
+        console.log(`stdout: ${stdout}`);
+        console.log('should have now active execution host');
+        return 1;
+    });
+};
+
+export const overwriteAndSaveToFile = async (fielName, fileContent) => {
+    fs.writeFile(fielName, fileContent, function (err) {
+        if (err) throw err;
+        console.log(`${fielName} was saved`);
+    });
 };
