@@ -2,8 +2,8 @@ import { test, expect } from "@playwright/test";
 import { createAccount, getSessionAPI } from "./functions/accounts.mjs";
 import { getdeploymentFileAPI } from "./functions/executionHosts.mjs";
 import { executeCLIcommand, overwriteAndSaveToFile, publishBlueprint } from "./functions/general.mjs";
-import { startSampleSandbox } from "./functions/sandboxes.mjs";
-import { craeteSpaceFromQuickLauncher, generateRepoSpecificKeys, repositoryAssetInfo } from "./functions/spaces.mjs";
+import { endSandbox } from "./functions/sandboxes.mjs";
+import { craeteSpaceFromQuickLauncher, generateRepoSpecificKeys, goToSpace, repositoryAssetInfo } from "./functions/spaces.mjs";
 
 const baseURL = process.env.baseURL;
 const allAccountsPassword = process.env.allAccountsPassword;
@@ -20,6 +20,7 @@ const BPFullName = process.env.BPFullName;
 
 test.describe.serial('onboarding flow', () => {
     let page;
+    let sandboxName;
     test.beforeAll(async ({ browser }) => {
         page = await browser.newPage();
     });
@@ -64,7 +65,7 @@ test.describe.serial('onboarding flow', () => {
         // reference number is set in .env file
         const specificRepoData = await generateRepoSpecificKeys(repProvider);
         let numberOfBlueprints = await page.locator('[data-test="setup-modal-container"] td');
-        expect(await numberOfBlueprints.count()).toEqual(parseInt(specificRepoData.BPscount) * 2);
+        expect(await numberOfBlueprints.count()).toEqual(parseInt(specificRepoData.BPscount));
         // complete the flow of adding asset repo and open the next step of adding execution host
         // await page.click('[data-test="submit-button"]');
         await page.waitForSelector('text=Auto-Generated Blueprints');
@@ -121,9 +122,69 @@ test.describe.serial('onboarding flow', () => {
         // publish BP after autodiscovery
         await page.waitForLoadState();
         await publishBlueprint(page, BPFullName);
-        await page.pause();
     });
 
+    test('Launch sandbox', async() => {
+        const bitnami = "Bitnami Nginx Helm Chart";
+        await goToSpace(page, "Sample");
+        //await page.click(`[data-test="tf-based-blueprint-row-${BPFullName}"] button:has-text("Launch Sandbox")`);
+        await page.click(`[data-test="blueprint-row-${bitnami}"] button:has-text("Launch Sandbox")`);
+        sandboxName = await page.getAttribute("[data-test=sandboxName]", "value");
+        console.log(`Sandbox name is ${sandboxName}`);
+        await page.locator('[data-test="wizard-next-button"]').click();
+        await page.waitForSelector('[data-test="sandbox-info-column"]');
+        expect(await page.isVisible('[data-test="sandbox-info-column"] div:has-text("Sandbox StatusLaunching")', 500)).toBeTruthy();
+        let visi = await page.isVisible('[data-test="sandbox-info-column"] div:has-text("Sandbox StatusLaunching")');
+        while(await visi){
+            visi = await page.isVisible('[data-test="sandbox-info-column"] div:has-text("Sandbox StatusLaunching")');
+        }
+        expect(await page.isVisible('[data-test="sandbox-info-column"] div:has-text("Sandbox StatusActive")', 500)).toBeTruthy();
+        const items = await page.locator('[data-test="grain-kind-indicator"]');
+        for (let i = 0; i < await items.count(); i++) {
+          await items.nth(i).click();
+        }
+        const prepare = await page.locator('text=/PrepareCompleted/');
+        const install = await page.locator('text=/InstallCompleted/');
+        const apply = await page.locator('text=/ApplyCompleted/');    
+        /*for (let i = 0; i < await prepare.count(); i++) {
+          expect(prepare.nth(i)).toContainText(/Completed/);
+          console.log("found Completed prepare");
+        };
+        for (let i = 0; i < await install.count(); i++) {
+          expect(install.nth(i)).toContainText(/Completed/)
+          console.log("found Completed install");
+        };
+        for (let i = 0; i < await apply.count(); i++) {
+          expect(apply.nth(i)).toContainText(/Completed/)
+          console.log("found Completed apply");
+        };*/
+    });
 
-
+    test('End launched sandbox', async() => {
+        await endSandbox(page);
+        await page.waitForSelector(`tr:has-text("${sandboxName}")`, {has: page.locator("data-testid=moreMenu")});  
+        let visi = page.isVisible(`tr:has-text("${sandboxName}")`, {has: page.locator("data-testid=moreMenu")});
+        expect(await page.locator(`tr:has-text("${sandboxName}")`, {has: page.locator("data-testid=moreMenu")})).toContainText("Terminating");
+        while(await visi){
+            await page.waitForTimeout(50);
+            visi = page.isVisible(`tr:has-text("${sandboxName}")`);
+        }
+        await page.click(`[data-toggle=true]`); //Need UI to add data-test for this button
+        await page.click(`tr:has-text("${sandboxName}")`);
+        await page.waitForSelector("[data-test=sandbox-page-content]");
+        const items = await page.locator('[data-test="grain-kind-indicator"]');
+        for (let i = 0; i < await items.count(); i++) {
+          await items.nth(i).click();
+        }
+        const destroy = await page.locator('text=/DestroyCompleted/');
+        const uninstall = await page.locator('text=/UninstallCompleted/');
+        for (let i = 0; i < await destroy.count(); i++) {
+            expect(destroy.nth(i)).toContainText(/Completed/);
+            console.log("found Completed destroy");
+        };
+        for (let i = 0; i < await uninstall.count(); i++) {
+            expect(uninstall.nth(i)).toContainText(/Completed/);
+            console.log("found Completed uninstall");
+        };
+      });
 });
