@@ -23,9 +23,6 @@ export const startSampleSandbox = async (page, sandbox) => {
   await page.waitForSelector('[data-test="sandbox-info-column"]');
 };
 
-<<<<<<< HEAD
-};
-
 export const goToSandbox = async (page, sandboxName) => {
   await goToSpace(page, "Sample");
   await page.click("[data-test=sandboxes-nav-link]");
@@ -36,10 +33,8 @@ export const endSandbox = async (page) => {
   await page.click("[data-test=end-sandbox]");
   await page.click("[data-test=confirm-end-sandbox]");
 }
-=======
 export const goToSandboxListPage = async (page, account) => {
 
   await page.click('[data-test="sandboxes-nav-link"]');
   // todo  
 };
->>>>>>> 49b0111ed670edb26b46bcd828cfb9146a3902a8
