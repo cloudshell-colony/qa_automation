@@ -1,120 +1,124 @@
-import { addCaptchaBypass, closeModal } from "./functions/general.mjs";
+import { closeModal, executeCLIcommand, overwriteAndSaveToFile, togleBlueprintPublishToggle } from "./functions/general.mjs";
 import { test, expect } from "@playwright/test";
-import { createAccount, loginToAccount } from "./functions/accounts.mjs";
-import { startSampleSandbox } from "./functions/sandboxes.mjs";
-import goToAdminConsole from "./functions/goToAdminConsole.mjs";
+import { getSessionAPI, loginToAccount } from "./functions/accounts.mjs";
 import { goToSpace } from "./functions/spaces.mjs";
+import { getdeploymentFileAPI } from "./functions/executionHosts.mjs";
+import fs from "fs";
+import { exec } from "child_process";
 
 const baseURL = process.env.baseURL;
 const allAccountsPassword = process.env.allAccountsPassword;
 const prefix = process.env.accountPrefix;
 const adminAccount = process.env.account;
 const adminEMail = process.env.adminEMail;
-const githubRepo = process.env.githubRepo;
-const githubUserNAme = process.env.githubUserNAme;
-const githubPassword = process.env.githubPassword;
-const githubRepoNumOfBlueprints = process.env.githubRepoNumOfBlueprints;
+const repProvider = process.env.repProvider;
+const spaceName = "QA-GMP1655982743";
+
+// execution host parameters
+const executionHostName = "eks09";
+const executionHostNameSpace = "gmp-agent-test";
 
 
-const timestamp = Math.floor(Date.now() / 1000);
-const newSpaceName = prefix + timestamp;
 
-test.describe('test my tests', () => {
-
-  // test('create new account', async ({ page }) => {
-  //   const timestemp = Math.floor(Date.now() / 1000);
-  //   const accountName = prefix.concat(timestemp);
-  //   const email = prefix.concat("@").concat(timestemp).concat(".com");
-  //   await createAccount(page, email, accountName, allAccountsPassword, baseURL);
-  //   await page.waitForURL('http://www.colony.localhost/Sample');
-  //   await expect(page).toHaveScreenshot({ maxDiffPixels: 3000 });
-  // });
-
+test.describe.serial('test my tests', () => {
   let page;
   let context;
   test.beforeAll(async ({ browser }) => {
     context = await browser.newContext();
     page = await context.newPage();
-    // page = await browser.newPage();
-    await loginToAccount(page, adminEMail, adminAccount, allAccountsPassword, baseURL);
   });
 
   test.afterAll(async () => {
     await page.close();
   });
 
-  test('create new space with asset repo from quick launcher window', async () => {
-
-
-    // start new space flow from quick sandbox launcher
-    await page.click('text=Start by creating your own Space');
-    await page.fill('[data-test="create-new-space-popup"]', newSpaceName);
-    await page.click('[data-test="color-frogGreen"]');
-    await page.click('[data-test="icon-face"]');
-    await page.click('[data-test="create-space"]');
-    // add repository asset
-    await page.waitForSelector('[data-test="connect-repo-title"]');
-    await page.click('[data-test="setup-modal-container"] svg >> nth=2');
-    await page.fill('[data-test="repositoryUrl"]', githubRepo);
-    await page.fill('[data-test="repositoryName"]', "blueprints");
-    //manage repo provider credentilas
-    const [signinWindow] = await Promise.all([
-      page.waitForEvent("popup"),
-      page.click('button:has-text("Connect")')
-    ])
-    await signinWindow.waitForLoadState();
-    expect(await signinWindow.url()).toContain('login');
-    await signinWindow.fill('input[name="login"]', githubUserNAme);
-    await signinWindow.fill('input[name="password"]', githubPassword);
-    await signinWindow.click('input:has-text("Sign in")');
-    await signinWindow.waitForLoadState();
-    const visi = await signinWindow.isVisible('text=Authorize QualiNext', 500);
-    if (visi) {
-      await signinWindow.click('text=Authorize QualiNext');
-    };
-    // back to torque
-    // seslect BPs for import
-    await page.waitForLoadState();
-    await page.click('[data-test="submit-button"]');
-    // start BP selection after auto discavery
-    expect(await page.isVisible('[data-test="submit-button"]')).toBeTruthy();
-    expect(await page.isEnabled('[data-test="submit-button"]')).not.toBeTruthy();
-    await page.check('th input[type="checkbox"]');
-    expect(await page.isEnabled('[data-test="submit-button"]')).toBeTruthy();
-    await page.click('[data-test="submit-button"]');
-    // Auto-Generated Blueprints page approval
-    await page.isVisible('text=Auto-Generated Blueprints');
-    let numberOfBlueprints = await page.locator('[data-test="setup-modal-container"] td');
-    expect(await numberOfBlueprints.count()).toEqual(parseInt(githubRepoNumOfBlueprints) * 2);
-    await page.click('[data-test="submit-button"]');
-    // skip add execution host for now
-    await page.click('[data-test="skip-for-now"]');
-
-
-    // alternative to craete space every time
+  test('login to account', async () => {
+    await loginToAccount(page, adminEMail, adminAccount, allAccountsPassword, baseURL);
+    await page.waitForSelector('[data-test="launch-\[Sample\]MySql Terraform Module"]');
     await closeModal(page);
-    await goToSpace(page, "QA-GMP1656227124");
+  });
+
+  test.skip('enter space', async () => {
+    goToSpace(page, spaceName);
+    await page.waitForNavigation();
+    const url = await page.url();
+    expect(url).toContain(spaceName);
+  });
+
+  test('enter Blueprints page', async () => {
     await page.click('[data-test="blueprints-nav-link"]');
-
-    // blueprints page
-
-
-    await page.isVisible(`text=${newSpaceName}Blueprints >> nth=1`);
-    let numberOfBlueprints = await page.locator('tr');
-    console.log(numberOfBlueprints);
-    console.log('number of BPs ' + await numberOfBlueprints.count());
-    console.log('expected number ' + parseInt(githubRepoNumOfBlueprints));
+    await page.waitForLoadState();
+    togleBlueprintPublishToggle(page, "Helm Application with MySql and S3 Deployed by Terraform");
     await page.pause();
-    expect(await numberOfBlueprints.count()).toEqual(parseInt(githubRepoNumOfBlueprints));
-    await page.pause();
+  });
+
+  test.skip('add execution host from space settings', async () => {
+    await page.click('[data-test="settings-nav-tab"]');
+    await page.click('button:has-text("Manage Cloud Accounts")');
+    await page.click('[data-test="add-new-execution-host"]');
+  });
+
+  test.skip('enter execution host information to generate the yaml deployment file', async () => {
+    await page.locator('[data-test="computeServiceName"]').fill(executionHostName);
+    await page.click('[data-test="service-type-EKS"]');
+    await page.fill('[data-test="agentNameSpace"]', executionHostNameSpace);
+
+    await page.fill('.react-tagsinput-input', executionHostNameSpace);
+    await page.click('[data-test="submit-button"]');
+    await page.waitForLoadState();
 
   });
 
+  test.skip('Create execution host and add to Space', async () => {
+    // get session for API call
+    const session = await getSessionAPI(adminEMail, allAccountsPassword, baseURL, adminAccount);
+    const response = await getdeploymentFileAPI(session, baseURL, executionHostName, executionHostNameSpace);
+    await overwriteAndSaveToFile("deploymentFile.yaml", response);
+  });
+
+  test.skip('apply the execution host yaml file to K8S', async () => {
+    // seperating the commands to different tests in order to "fource" sync actions
+    const applyExecutionHost = await executeCLIcommand("kubectl apply -f deploymentFile.yaml");
+  });
+
+  test.skip('complete the actions in the GUI after execution host agent was created in K8S', async () => {
+
+    await page.click('[data-test="submit-button"]');
+    await page.waitForLoadState();
+    await page.waitForSelector('[data-test="agent-connected"]', { timeout: 180000 });
+    // expect(await page.locator('[data-test="agent-connected"]')).toContain('You have successfully connected the Agent to Torque');
+    await page.click('[data-test="submit-button"]');
+  });
+
+  test.skip('enter add execution host to page', async () => {
+    goToSpace(page, spaceName);
+    await page.click('[data-test="settings-nav-tab"]');
+    await page.click('[data-test="manage-cloud-accounts-button-wrapper"]');
+    await page.click('[data-testid="moreMenu"]');
+    await page.click('[data-test="add-host-to-space-more-menu-option"]');
+  });
+
+  test.skip('add execution host to space', async () => {
+    await page.click(`[class~="select-space"]`);
+    await page.type(`[class~="select-space"]`, spaceName);
+    await page.keyboard.press("Enter");
+
+    await page.fill('[data-test="namespace"]', executionHostNameSpace);
+    await page.click('[data-test="submit-button"]');
+    await page.pause();
+  });
+
+
+
   test.skip('page functions auto complete', async ({ page }) => {
     await page.waitForLoadState
-    await page.isEnabled
+    await page.waitForNavigation
+    await page.waitForSelector
+    await page.waitForLoadState
+    await page.mouse.move()
     await page.pause();
-    await page.locator
+    await page.waitForTimeout
+    page.locator().selectOption
   });
 
 });
