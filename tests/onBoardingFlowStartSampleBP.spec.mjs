@@ -62,7 +62,7 @@ test.describe.serial('onboarding flow', () => {
     };
   });
 
-  test.skip('End launched sample sandbox', async() => {
+  test('End launched sample sandbox', async() => {
     const sandboxName = "Sample Environment"; //default name when launching from sample sandbox launcher
     await endSandbox(page);
     await page.waitForSelector(`tr:has-text("${sandboxName}")`, {has: page.locator("data-testid=moreMenu")});  

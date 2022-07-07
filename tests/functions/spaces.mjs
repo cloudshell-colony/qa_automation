@@ -56,8 +56,10 @@ export const deleteSpaceAPI = async (space_name, myURL, session) => {
 
 
 export const goToSpace = async (page, spaceName) => {
-    await page.click("div[data-test=sidebar-dropdown]");
+    await page.click("[data-test=sidebar-dropdown]");
     await page.click(`[data-test=option__${spaceName}]`);
+    await page.waitForSelector(`[data-test=page-title-prefix]:has-Text("${spaceName}")`);
+    await page.waitForSelector(`[data-test=currently-selected-space]:has-Text("${spaceName}")`);
 };
 
 export const craeteSpaceFromQuickLauncher = async (page, newSpaceName) => {

@@ -105,7 +105,7 @@ export const loginToAccount = async (page, email, accountName, allAccountsPasswo
     await page.goto(`${baseURL}`, { timeout: 90000 });
     await page.locator('[data-test="subdomain"]').fill(accountName);
     await page.click('[data-test="submit"]');
-    await page.click('[data-test="login-with-email"]')
+    await page.click('[data-test="login-with-email"]');
     await page.locator('[data-test="email"]').fill(email);
     await page.locator('[data-test="password"]').fill(allAccountsPassword);
     await page.click('[data-test="submit"]');
