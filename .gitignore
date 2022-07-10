@@ -13,3 +13,4 @@ giladEnv/.env
 tests/testTestCleanBPsAndProvider.spec.mjs
 deploymentFile.yaml
 tests/testTest.spec.mjs
+tests/AlexTest.spec.mjs

@@ -9,10 +9,11 @@
   "license": "ISC",
   "devDependencies": {
     "@playwright/test": "^1.22.2",
-    "playwright": "^1.21.1"
+    "playwright": "^1.23.2"
   },
   "dependencies": {
     "dotenv": "^16.0.1",
-    "node-fetch": "^3.2.6"
+    "node-fetch": "^3.2.6",
+    "node.js": "^0.0.1-security"
   }
 }
