@@ -1,4 +1,3 @@
-node_modules/
 /test-results/
 /playwright-report/
 /dist-pw/
@@ -13,3 +12,4 @@ asafEnv/.env
 giladEnv/.env
 tests/testTestCleanBPsAndProvider.spec.mjs
 deploymentFile.yaml
+tests/testTest.spec.mjs
