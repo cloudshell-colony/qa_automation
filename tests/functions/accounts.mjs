@@ -1,5 +1,6 @@
 import { addCaptchaBypass } from "./general.mjs";
 import fetch from "node-fetch";
+import { expect } from "@playwright/test";
 
 
 export const getSessionAPI = async (USER, PASSWORD, myURL, account) => {
@@ -110,4 +111,12 @@ export const loginToAccount = async (page, email, accountName, allAccountsPasswo
     await page.locator('[data-test="password"]').fill(allAccountsPassword);
     await page.click('[data-test="submit"]');
     await page.waitForURL(`${baseURL}/Sample`);
+};
+
+export const validateSbLauncher = async (page, baseURL) => {
+    await page.waitForURL(`${baseURL}/Sample`);
+    await page.waitForSelector('[data-test="launch-\[Sample\]MySql Terraform Module"]');
+    expect(page.locator('[data-test="launch-\[Sample\]MySql Terraform Module"]')).toContainText('Launch');
+    expect(page.locator('[data-test="launch-\[Sample\]Bitnami Nginx Helm Chart"]')).toContainText('Launch');
+    expect(page.locator('[data-test="launch-[Sample]Helm Application with MySql and S3 Deployed by Terraform"]')).toContainText('Launch');
 };
