@@ -10,6 +10,12 @@ variable "region" {
     default = "eu-west-1"
 }
 
+variable "host" {
+    description = "execution host" 
+    type = string
+    default = "eks"
+}
+
 variable "acl" {
     description = "Canned ACL to apply to the bucket. Default is private."
     type = string
