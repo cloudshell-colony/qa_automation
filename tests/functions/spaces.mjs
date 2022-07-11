@@ -1,3 +1,4 @@
+import { expect } from "@playwright/test";
 import fetch from "node-fetch";
 import goToAdminConsole from "./goToAdminConsole.mjs";
 
@@ -57,6 +58,7 @@ export const deleteSpaceAPI = async (space_name, myURL, session) => {
 
 export const goToSpace = async (page, spaceName) => {
     await page.click("[data-test=sidebar-dropdown]");
+    expect(page.locator(`[data-test=option__${spaceName}]`), 'The requested space was not found in the account').toHaveText(spaceName);
     await page.click(`[data-test=option__${spaceName}]`);
     await page.waitForSelector(`[data-test=page-title-prefix]:has-Text("${spaceName}")`);
     await page.waitForSelector(`[data-test=currently-selected-space]:has-Text("${spaceName}")`);

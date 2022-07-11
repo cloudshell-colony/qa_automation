@@ -14,3 +14,5 @@ tests/testTestCleanBPsAndProvider.spec.mjs
 deploymentFile.yaml
 tests/testTest.spec.mjs
 tests/AlexTest.spec.mjs
+tests/testAPIs.spec.mjs
+tests/giladTestTest.spec.mjs

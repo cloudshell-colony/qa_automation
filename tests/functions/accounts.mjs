@@ -80,7 +80,7 @@ export const signupUserAPI = async (myURL, secret) => {
 
 export const deleteUserAPI = async (user_email, myURL, session) => {
 
-    const response = fetch(`${myURL}/api/accounts/users/${user_email}`, {
+    const response = await fetch(`${myURL}/api/accounts/users/${user_email}`, {
         "method": "DELETE",
         "headers": {
             'Authorization': `Bearer ${session}`,
