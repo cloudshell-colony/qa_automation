@@ -2,7 +2,7 @@
 variable "name" {
     description = "Name of S3 bucket"
     type = string
-    default = "qa automation"
+    default = "qa-automation"
 }
 
 variable "region" {
