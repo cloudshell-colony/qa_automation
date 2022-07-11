@@ -5,6 +5,12 @@ variable "name" {
     default = "qa automation"
 }
 
+variable "host" {
+    description = "Name of S3 bucket"
+    type = string
+    default = "eks"
+}
+
 variable "region" {
     description = "Region where to create resources" 
     type = string
