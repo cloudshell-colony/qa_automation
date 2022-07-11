@@ -2,6 +2,7 @@
 variable "name" {
     description = "Name of S3 bucket"
     type = string
+    default = "qa automation"
 }
 
 variable "region" {
@@ -10,7 +11,7 @@ variable "region" {
     default = "eu-west-1"
 }
 
-variable "host" {
+variable "host_name" {
     description = "execution host" 
     type = string
     default = "eks"
