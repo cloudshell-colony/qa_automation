@@ -14,10 +14,8 @@ export const getPublishedBlueprints = async (session, space_name, myURL) => {
     return (PBPList);
 };
 
-//Assumes you are already in blueprints page
 export const countBlueprintsInSpace = async (page, baseURL, space) => {
-    // const baseURL = process.env.baseURL;
-    // const space = await page.innerText("[data-test=currently-selected-space]");
+    //Assumes you are already in blueprints page
     await page.waitForResponse(`${baseURL}/api/spaces/${space}/blueprints`);
     //await page.waitForSelector("[data-test=space-blueprints-tab-test]");
     const visi = await page.isVisible('button:has-text("Add a Repository")', { timeout: 3000 });
@@ -30,4 +28,15 @@ export const countBlueprintsInSpace = async (page, baseURL, space) => {
         const num = await BPList.count();
         return num;
     }
+};
+
+
+export const publishBlueprint = async (page, BPFullName) => {
+    await page.waitForLoadState();
+    await page.click(`[data-test="tf-based-blueprint-row-${BPFullName}"] [data-test="blueprint-publish-toggle"]`);
+};
+
+export const publishSampleBlueprint = async (page, BPFullName) => {
+    await page.waitForLoadState();
+    await page.click(`[data-test="blueprint-row-${BPFullName}"] [data-test="blueprint-publish-toggle"]`);
 };

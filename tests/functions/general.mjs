@@ -82,13 +82,3 @@ export const pressOptionFromCommonTable = async (page, rowIdentifier, optionSele
     await page.click(optionToSelect);
 };
 
-export const publishBlueprint = async (page, BPFullName) => {
-    await page.waitForLoadState();
-    await page.click(`[data-test="tf-based-blueprint-row-${BPFullName}"] [data-test="blueprint-publish-toggle"]`);
-};
-
-export const publishSampleBlueprint = async (page, BPFullName) => {
-    await page.waitForLoadState();
-    await page.click(`[data-test="blueprint-row-${BPFullName}"] [data-test="blueprint-publish-toggle"]`);
-};
-
