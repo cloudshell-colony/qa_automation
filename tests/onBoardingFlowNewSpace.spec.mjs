@@ -1,9 +1,11 @@
 import { test, expect } from "@playwright/test";
 import { createAccount, getSessionAPI, validateSbLauncher } from "./functions/accounts.mjs";
+import { launchBlueprint, publishBlueprint } from "./functions/blueprints.mjs";
 import { getdeploymentFileAPI } from "./functions/executionHosts.mjs";
-import { executeCLIcommand, overwriteAndSaveToFile, publishBlueprint } from "./functions/general.mjs";
-import { endSandbox } from "./functions/sandboxes.mjs";
-import { craeteSpaceFromQuickLauncher, generateRepoSpecificKeys, goToSpace, repositoryAssetInfo } from "./functions/spaces.mjs";
+import { executeCLIcommand, overwriteAndSaveToFile } from "./functions/general.mjs";
+import { endSandbox, validateS3BucketWasCreatedInSB, validateSBisActive } from "./functions/sandboxes.mjs";
+import { craeteSpaceFromQuickLauncher, generateRepoSpecificKeys, repositoryAssetInfo } from "./functions/spaces.mjs";
+
 
 const baseURL = process.env.baseURL;
 const allAccountsPassword = process.env.allAccountsPassword;
@@ -16,17 +18,21 @@ const email = prefix.concat("@").concat(timestemp).concat(".com");
 
 const executionHostName = process.env.execHostName;
 const executionHostSpaceName = process.env.execHostNameSpace;
-const BPFullName = process.env.BPFullName;
 
+let sandboxName; // we will need it later on to terminate the  sandbox we create
+const bucketName = ("qa-auto-bucket-").concat(timestemp);
+let repoKeys;
 test.describe.serial('onboarding flow', () => {
+
     let page;
-    let sandboxName;
     test.beforeAll(async ({ browser }) => {
+        repoKeys = await generateRepoSpecificKeys(repProvider);
         page = await browser.newPage();
     });
 
     test.afterAll(async () => {
         await page.close();
+        // need to add delete account
     });
 
     test('create new account', async () => {
@@ -46,7 +52,7 @@ test.describe.serial('onboarding flow', () => {
         await craeteSpaceFromQuickLauncher(page, accountName)
         // add repository asset
         // done in the provider web page
-        await repositoryAssetInfo(page, repProvider)
+        await repositoryAssetInfo(page, repoKeys)
         // back to torque - start DP auto discavery
         await page.waitForLoadState();
         await page.click('[data-test="submit-button"]');
@@ -60,9 +66,8 @@ test.describe.serial('onboarding flow', () => {
         await page.isVisible('text=Auto-Generated Blueprints');
         // validate that after auto discovery the number of BPs is as expected 
         // reference number is set in .env file
-        const specificRepoData = await generateRepoSpecificKeys(repProvider);
-        let numberOfBlueprints = await page.locator('[data-test="setup-modal-container"] td');
-        expect(await numberOfBlueprints.count()).toEqual(parseInt(specificRepoData.BPscount));
+        let numberOfBlueprints = await page.locator('[data-test="setup-modal-container"] tr');
+        expect(await numberOfBlueprints.count()).toEqual(parseInt(repoKeys.BPscount) + 1);
         // complete the flow of adding asset repo and open the next step of adding execution host
         // await page.click('[data-test="submit-button"]');
         await page.waitForSelector('text=Auto-Generated Blueprints');
@@ -117,47 +122,33 @@ test.describe.serial('onboarding flow', () => {
 
     test('Publish the blueprint', async () => {
         // publish BP after autodiscovery        
-        await publishBlueprint(page, BPFullName);
+        await publishBlueprint(page, repoKeys.BPName);
     });
 
-    test('Launch sandbox', async () => {
-        const bitnami = "Bitnami Nginx Helm Chart";
-        await goToSpace(page, "Sample");
-        //await page.click(`[data-test="tf-based-blueprint-row-${BPFullName}"] button:has-text("Launch Sandbox")`);
-        await page.click(`[data-test="blueprint-row-${bitnami}"] button:has-text("Launch Sandbox")`);
-        sandboxName = await page.getAttribute("[data-test=sandboxName]", "value");
-        console.log(`Sandbox name is ${sandboxName}`);
+    test('launch s3 blueprint', async () => {
+        sandboxName = await launchBlueprint(page, repoKeys.BPName);
+        // fill in "eks" for the host_name
+        await page.locator('[data-test="inputs\.host_name"]').fill("eks");
+        await page.click('[data-test="parameters-section"]');
+        await page.locator('[data-test="inputs\.name"]').fill(bucketName);
+        await page.click('[data-test="parameters-section"]');
         await page.locator('[data-test="wizard-next-button"]').click();
-        await page.waitForSelector('[data-test="sandbox-info-column"]');
-        expect(await page.isVisible('[data-test="sandbox-info-column"] div:has-text("Sandbox StatusLaunching")', 500)).toBeTruthy();
-        let visi = await page.isVisible('[data-test="sandbox-info-column"] div:has-text("Sandbox StatusLaunching")');
-        while (await visi) {
-            visi = await page.isVisible('[data-test="sandbox-info-column"] div:has-text("Sandbox StatusLaunching")');
-        }
-        expect(await page.isVisible('[data-test="sandbox-info-column"] div:has-text("Sandbox StatusActive")', 500)).toBeTruthy();
-        const items = await page.locator('[data-test="grain-kind-indicator"]');
-        for (let i = 0; i < await items.count(); i++) {
-            await items.nth(i).click();
-        }
-        const prepare = await page.locator('text=/PrepareCompleted/');
-        const install = await page.locator('text=/InstallCompleted/');
-        const apply = await page.locator('text=/ApplyCompleted/');
-        /*for (let i = 0; i < await prepare.count(); i++) {
-          expect(prepare.nth(i)).toContainText(/Completed/);
-          console.log("found Completed prepare");
-        };
-        for (let i = 0; i < await install.count(); i++) {
-          expect(install.nth(i)).toContainText(/Completed/)
-          console.log("found Completed install");
-        };
-        for (let i = 0; i < await apply.count(); i++) {
-          expect(apply.nth(i)).toContainText(/Completed/)
-          console.log("found Completed apply");
-        };*/
     });
 
-    test('End launched sandbox', async () => {
+    test('Validate sandbox is active without errors', async () => {
+        await validateSBisActive(page)
+    });
+
+    test('Validate an s3_bucket_arn was created', async () => {
+        await validateS3BucketWasCreatedInSB(page, bucketName);
+    });
+
+    test('End sandbox', async () => {
         await endSandbox(page);
+    });
+
+
+    test('Validate sandbox is completed', async () => {
         await page.waitForSelector(`tr:has-text("${sandboxName}")`, { has: page.locator("data-testid=moreMenu") });
         let visi = page.isVisible(`tr:has-text("${sandboxName}")`, { has: page.locator("data-testid=moreMenu") });
         expect(await page.locator(`tr:has-text("${sandboxName}")`, { has: page.locator("data-testid=moreMenu") })).toContainText("Terminating");

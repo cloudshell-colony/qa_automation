@@ -76,7 +76,9 @@ export const generateRepoSpecificKeys = async (repProvider) => {
     const githubRepo = process.env.githubRepo;
     const githubUserNAme = process.env.githubUserNAme;
     const githubPassword = process.env.githubPassword;
-    const githubBPsInRepo = process.env.gitlabRepoNumOfBlueprints;
+    const githubBPsInRepo = process.env.githubRepoNumOfBlueprints;
+    const githubBPFullName = process.env.githubAssetBPFullName;
+
 
     const gitlabRepo = process.env.gitlabRepo;
     const gitlabUserNAme = process.env.gitlabUserNAme;
@@ -107,7 +109,8 @@ export const generateRepoSpecificKeys = async (repProvider) => {
                 "repo": githubRepo,
                 "userName": githubUserNAme,
                 "password": githubPassword,
-                "BPscount": githubBPsInRepo
+                "BPscount": githubBPsInRepo,
+                "BPName": githubBPFullName
             }
             break;
         case "gitlab":
@@ -142,11 +145,15 @@ export const fillInRepoData = async (providerKeys, signinWindow) => {
             await signinWindow.waitForLoadState();
             await signinWindow.fill('input[name="login"]', repoUsername);
             await signinWindow.fill('input[name="password"]', repoPassword);
-            await signinWindow.click('input:has-text("Sign in")');
+            signinWindow.click('input:has-text("Sign in")');
             await signinWindow.waitForLoadState();
-            const visi = await signinWindow.isVisible('text=Authorize QualiNext', 500);
-            if (visi) {
-                await signinWindow.click('text=Authorize QualiNext');
+            await signinWindow.waitForTimeout(500);
+            const isPage = await signinWindow.isClosed();
+            if (!isPage) {
+                const visi = await signinWindow.isVisible('text=Authorize QualiNext', 500);
+                if (visi) {
+                    await signinWindow.click('text=Authorize QualiNext');
+                };
             };
             break;
         case "gitlab":
@@ -162,9 +169,10 @@ export const fillInRepoData = async (providerKeys, signinWindow) => {
     };
 };
 
-export const repositoryAssetInfo = async (page, repProvider) => {
+export const repositoryAssetInfo = async (page, repoKeys) => {
+    // fill in all repository asset info
+    // expect to get repoKeys librery generated from generateRepoSpecificKeys(repProvider)
     await page.waitForSelector('[data-test="connect-repo-title"]');
-    const repoKeys = await generateRepoSpecificKeys(repProvider);
     await page.click(`[data-test="setup-modal-container"] svg >> nth=${repoKeys.nth}`);
     await page.fill('[data-test="repositoryUrl"]', repoKeys.repo);
     await page.fill('[data-test="repositoryName"]', "auto-repo");
