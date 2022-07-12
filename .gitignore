@@ -16,3 +16,14 @@ tests/testTest.spec.mjs
 tests/AlexTest.spec.mjs
 tests/testAPIs.spec.mjs
 tests/giladTestTest.spec.mjs
+sem_env
+tests/semTest.spec.mjs
+tests/semtest2.spec.mjs
+temp.spec.mjs
+acount.txt
+Sandbox.txt
+tacount.txt
+tests/semTest.spec.mjs-snapshots/test-my-tests-Delete-Account-1-firefox-win32.png
+tests/semTest.spec.mjs-snapshots/test-my-tests-DeleteaccountWithSandbox-1-firefox-win32.png
+tests/semtest2.spec.mjs-snapshots/test-my-tests-Delete-Account-1-firefox-win32.png
+tests/testTest.spec.mjs-snapshots/test-my-tests-create-new-account-1-firefox-win32.png
