@@ -1,3 +1,4 @@
+import { expect } from "@playwright/test";
 import fetch from "node-fetch";
 import { goToSpace } from "./spaces.mjs";
 
@@ -30,13 +31,37 @@ export const countBlueprintsInSpace = async (page, baseURL, space) => {
     }
 };
 
+export const enterBlueprintPage = async (page) => {
+    page.click('[data-test="blueprints-nav-link"]');
+    await page.waitForNavigation();
+    const visi = await page.isVisible('button:has-text("Add a Repository")', { timeout: 3000 });
+    if (!visi) {
+        await page.waitForSelector('div:has-text("Launch Sandbox")');
+        await page.waitForSelector('.main-table-container-scrollable');
+    }
+};
 
 export const publishBlueprint = async (page, BPFullName) => {
     await page.waitForLoadState();
-    await page.click(`[data-test="tf-based-blueprint-row-${BPFullName}"] [data-test="blueprint-publish-toggle"]`);
+    const isPublished = await page.isVisible(`[data-test="tf-based-blueprint-row-${BPFullName}"] [data-toggle="true"]`)
+    if (!isPublished) {
+        console.log("publishing blueprint: " + BPFullName);
+        await page.click(`[data-test="tf-based-blueprint-row-${BPFullName}"] [data-test="blueprint-publish-toggle"]`);
+    } else {
+        console.log(`bBueprint: ${BPFullName} was already published`);
+    }
 };
 
 export const publishSampleBlueprint = async (page, BPFullName) => {
     await page.waitForLoadState();
     await page.click(`[data-test="blueprint-row-${BPFullName}"] [data-test="blueprint-publish-toggle"]`);
+};
+
+export const launchBlueprint = async (page, BPFullName) => {
+    await page.click(`[data-test="tf-based-blueprint-row-${BPFullName}"] button:has-text("Launch Sandbox")`);
+    const sandboxName = await page.getAttribute("[data-test=sandboxName]", "value");
+    console.log(sandboxName);
+    const result = sandboxName.includes(BPFullName, 0);
+    expect(result, `the sandbox name: \"${sandboxName}\" should have started with the BP name: \"${BPFullName}\"`).toBeTruthy();
+    return sandboxName;
 };
