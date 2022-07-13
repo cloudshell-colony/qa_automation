@@ -77,7 +77,7 @@ test.describe.serial('onboarding flow', () => {
     test('enter execution host information to generate the yaml deployment file', async () => {
         await page.waitForLoadState();
         console.log(`host name: ${executionHostName}`);
-        console.log(`host name: ${executionHostSpaceName}`);
+        console.log(`host space name: ${executionHostSpaceName}`);
         // await page.click('[data-test="computeServiceName"]');
         await page.fill('[data-test="computeServiceName"]', executionHostName);
         await page.click('[data-test="service-type-EKS"]');

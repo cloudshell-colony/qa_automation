@@ -145,10 +145,10 @@ export const fillInRepoData = async (providerKeys, signinWindow) => {
             await signinWindow.waitForLoadState();
             await signinWindow.fill('input[name="login"]', repoUsername);
             await signinWindow.fill('input[name="password"]', repoPassword);
-            signinWindow.click('input:has-text("Sign in")');
-            await signinWindow.waitForLoadState();
-            await signinWindow.waitForTimeout(500);
+            await signinWindow.click('input:has-text("Sign in")');
+            await signinWindow.waitForTimeout(1000);
             const isPage = await signinWindow.isClosed();
+            console.log(`apperntly the check if the ${provider} login page is closed ended with: ${isPage}`);
             if (!isPage) {
                 const visi = await signinWindow.isVisible('text=Authorize QualiNext', 500);
                 if (visi) {
