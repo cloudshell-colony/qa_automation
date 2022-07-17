@@ -28,3 +28,4 @@ tests/semTest.spec.mjs-snapshots/test-my-tests-DeleteaccountWithSandbox-1-firefo
 tests/semtest2.spec.mjs-snapshots/test-my-tests-Delete-Account-1-firefox-win32.png
 tests/testTest.spec.mjs-snapshots/test-my-tests-create-new-account-1-firefox-win32.png
 AlexEnv/.env
+tests/cloudshel.spec.mjs
