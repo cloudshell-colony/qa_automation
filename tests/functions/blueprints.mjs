@@ -60,7 +60,7 @@ export const publishSampleBlueprint = async (page, BPFullName) => {
 export const launchBlueprint = async (page, BPFullName) => {
     await page.click(`[data-test="tf-based-blueprint-row-${BPFullName}"] button:has-text("Launch Sandbox")`);
     const sandboxName = await page.getAttribute("[data-test=sandboxName]", "value");
-    console.log(sandboxName);
+    console.log(`the new sandbox name is: ${sandboxName}`);
     const result = sandboxName.includes(BPFullName, 0);
     expect(result, `the sandbox name: \"${sandboxName}\" should have started with the BP name: \"${BPFullName}\"`).toBeTruthy();
     return sandboxName;

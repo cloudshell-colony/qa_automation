@@ -77,6 +77,7 @@ export const generateRepoSpecificKeys = async (repProvider) => {
     const githubUserNAme = process.env.githubUserNAme;
     const githubPassword = process.env.githubPassword;
     const githubBPsInRepo = process.env.githubRepoNumOfBlueprints;
+    const githubBPFullName = process.env.githubAssetBPFullName;
 
     const gitlabRepo = process.env.gitlabRepo;
     const gitlabUserNAme = process.env.gitlabUserNAme;
@@ -87,7 +88,6 @@ export const generateRepoSpecificKeys = async (repProvider) => {
     const bitbucketUserNAme = process.env.bitbucketUserNAme;
     const bitbucketPassword = process.env.bitbucketPassword;
     const bitbucketBPsInRepo = process.env.bitbucketRepoNumOfBlueprints;
-
 
     let providerKeys = {};
     switch (repProvider.toLowerCase()) {
@@ -108,7 +108,8 @@ export const generateRepoSpecificKeys = async (repProvider) => {
                 "repo": githubRepo,
                 "userName": githubUserNAme,
                 "password": githubPassword,
-                "BPscount": githubBPsInRepo
+                "BPscount": githubBPsInRepo,
+                "BPName": githubBPFullName
             }
             break;
         case "gitlab":
