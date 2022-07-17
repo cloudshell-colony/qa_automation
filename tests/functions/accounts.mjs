@@ -98,7 +98,7 @@ export const createAccount = async (page, email, accountName, allAccountsPasswor
     await page.locator('[data-test="password"]').fill(allAccountsPassword);
     await page.locator('[data-test="subdomain"]').fill(accountName);
     await page.click('[data-test="submit-signup"]');
-    console.log(`new domain name: ${accountName}`);
+    console.log(`new account name: ${accountName}`);
     console.log(`new user email: ${email}`);
 };
 
@@ -120,4 +120,25 @@ export const validateSbLauncher = async (page, baseURL) => {
     expect(page.locator('[data-test="launch-\[Sample\]MySql Terraform Module"]'), errorMessage).toContainText('Launch');
     expect(page.locator('[data-test="launch-\[Sample\]Bitnami Nginx Helm Chart"]'), errorMessage).toContainText('Launch');
     expect(page.locator('[data-test="launch-[Sample]Helm Application with MySql and S3 Deployed by Terraform"]'), errorMessage).toContainText('Launch');
+};
+
+export const DeleteAcountUI = async (accountName, page, baseURL) => {
+    await page.goto(`${baseURL}/admin/account_billing`);
+    await page.click('[data-test="delete-account"]');
+    await page.click('[data-test="confirm-delete-account"]');
+};
+
+export const ValidteBackButtonAfterDelition = async (accountName, page, baseURL) => {
+    await page.goBack();
+    await page.goBack();
+    let result = await page.locator('[data-test="signup-with-email"]');
+    await expect(result, "Back option should navigate to sign up page").toContainText("Sign");
+};
+
+export const ValidteLoginFalureAfterDelition = async (accountName, allAccountsPassword, email, page, baseURL) => {
+
+
+    await loginToAccount(page, email, accountName, allAccountsPassword, baseURL);
+    expect(await page.locator('[data-test="auth-error"]'), "Login Should Fail");
+
 };
