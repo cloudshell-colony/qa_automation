@@ -30,6 +30,7 @@ export const goToSandbox = async (page, sandboxName) => {
 }
 
 export const endSandbox = async (page) => {
+  //end sandbox from sandbox detals page (not from sandbox list)
   await page.click("[data-test=end-sandbox]");
   await page.click("[data-test=confirm-end-sandbox]");
 }
