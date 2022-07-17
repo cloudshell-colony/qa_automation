@@ -87,6 +87,18 @@ test.describe.serial('Add and delete user', () => {
             expect(signupUserAPIrequest.ok).toBeTruthy();
         }
 
+    }); test("User can only signup once useing his secret", async () => {
+
+        const signupUserAPIrequest = await signupUserAPI(baseURL, secret);
+        if (signupUserAPIrequest.status != 404) {
+            console.log(await signupUserAPIrequest.json());
+            expect(signupUserAPIrequest.status).toBe(404);
+        } else {
+            console.log('user can signup only once');
+            console.log(await signupUserAPIrequest.json());
+            expect(signupUserAPIrequest.status).toBe(404);
+        }
+
     });
 
     test('User invitation by secret is no longer available after the user registrated', async () => {
