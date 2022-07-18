@@ -15,26 +15,32 @@ export default function removeUserFromSpaceAPI(user_email, myURL, session, space
 };
 
 export const createSpace = async (page, spaceName) => {
-    await goToAdminConsole(page);
+    if(!page.url().endsWith("admin/spaces")){
+        await goToAdminConsole(page);
+    }
     await page.click(`[data-test=create-new-space]`);
     await page.locator(`[data-test=create-new-space-popup]`).fill(spaceName);
     await page.click("[data-test=create-space]");
 };
 
 export const editSpace = async (page, spaceName, newName) => {
-    await goToAdminConsole(page);
+    if(!page.url().endsWith("admin/spaces")){
+        await goToAdminConsole(page);
+    }
     await page.waitForSelector('[role=rowgroup]');
     await page.locator(`[data-test=space-row-${spaceName}]`).locator("[data-testid=moreMenu]").click();
     await page.locator(`[data-test=space-row-${spaceName}]`).locator('text=Edit').click();
     await page.fill("[data-test=spaceName]", newName);
-    await page.locator('text=Apply').nth(0).click();
+    await page.locator('button:has-Text("Apply")').nth(1).click();
 }
 
 export const deleteSpace = async (page, spaceName, input) => {
     if (input === undefined) {
         input = spaceName;
     }
-    await goToAdminConsole(page);
+    if(!page.url().endsWith("admin/spaces")){
+        await goToAdminConsole(page);
+    }
     await page.locator(`[data-test=space-row-${spaceName}]`).locator("[data-testid=moreMenu]").click();
     await page.locator(`[data-test=space-row-${spaceName}]`).locator('text=Delete').click();
     await page.fill(`[data-test=spaceName]`, input);
