@@ -15,7 +15,7 @@ const timestamp = Math.floor(Date.now() / 1000);
 const spaceName = "qa-" + timestamp;
 const newName = "qa-new-" + timestamp;
 
-test.describe("can create new space, validate creation and delete it", () => {
+test.describe.serial("can create new space, validate creation and delete it", () => {
     let page;
     test.beforeAll(async ({ browser }) => {
         console.log(`Space names are ${spaceName} && ${newName}`);
