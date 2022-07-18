@@ -1,7 +1,7 @@
 import { addCaptchaBypass } from "./functions/general.mjs";
 import { test, expect } from "@playwright/test";
 import { createAccount, loginToAccount, DeleteAcountUI, ValidteBackButtonAfterDelition, ValidteLoginFalureAfterDelition, validateSbLauncher, } from "./functions/accounts.mjs";
-import { startSampleSandbox, endSandbox } from "./functions/sandboxes.mjs";
+import { startSampleSandbox, endSandbox, validateSBisActive, endSandboxValidation } from "./functions/sandboxes.mjs";
 import * as fs from 'fs';
 import { resolve } from "path";
 const baseURL = process.env.baseURL;
@@ -41,71 +41,26 @@ test.describe('test my tests', () => {
         await validateSbLauncher(page, baseURL)
     });
 
-    test.skip('start sample sandbox from "sample sandbox launcher"', async () => {
+    test('start sample sandbox from "sample sandbox launcher"', async () => {
         await startSampleSandbox(page, sampleBP);
-        await page.waitForSelector('[data-test="sandbox-info-column"] div:has-text("Sandbox StatusActive")', { timeout: 120000 });
-        expect(await page.isVisible('[data-test="sandbox-info-column"] div:has-text("Sandbox StatusActive")', 500)).toBeTruthy();
-        const items = await page.locator('[data-test="grain-kind-indicator"]');
-        for (let i = 0; i < await items.count(); i++) {
-            await items.nth(i).click();
-        }
-
-        const prepare = await page.locator('text=/PrepareCompleted/');
-        const install = await page.locator('text=/InstallCompleted/');
-        const apply = await page.locator('text=/ApplyCompleted/');
-
-        for (let i = 0; i < await prepare.count(); i++) {
-            expect(prepare.nth(i)).toContainText(/Completed/);
-            console.log("found Completed prepare");
-        };
-        for (let i = 0; i < await install.count(); i++) {
-            expect(install.nth(i)).toContainText(/Completed/)
-            console.log("found Completed install");
-        };
-        for (let i = 0; i < await apply.count(); i++) {
-            expect(apply.nth(i)).toContainText(/Completed/)
-            console.log("found Completed apply");
-        };
-        // getting the sandbox URL in order to easlly end it later on
+        await validateSBisActive(page)
         SBUrl = page.url();
     });
 
 
-    test.skip('FailDeleteAccountWithSandbox', async () => {
+    test('FailDeleteAccountWithSandbox', async () => {
         await DeleteAcountUI(accountName, page, baseURL);
         expect(await page.locator('[data-test="close-popup"]', "Deleteaccount failed"));
         await page.click('[data-test="close-popup"]');
 
     });
 
-    test.skip('End launched sample sandbox', async () => {
+    test('End launched sample sandbox', async () => {
         await page.goto(SBUrl)
         const sandboxName = "Sample Environment"; //default name when launching from sample sandbox launcher
         await endSandbox(page);
-        await page.waitForSelector(`tr:has-text("${sandboxName}")`, { has: page.locator("data-testid=moreMenu") });
-        let visi = page.isVisible(`tr:has-text("${sandboxName}")`, { has: page.locator("data-testid=moreMenu") });
-        expect(await page.locator(`tr:has-text("${sandboxName}")`, { has: page.locator("data-testid=moreMenu") })).toContainText("Terminating");
-        while (await visi) {
-            await page.waitForTimeout(50);
-            visi = page.isVisible(`tr:has-text("${sandboxName}")`);
-        }
-        await page.click(`[data-toggle=true]`); //Need UI to add data-test for this button
-        await page.click(`tr:has-text("${sandboxName}")`);
-        await page.waitForSelector("[data-test=sandbox-page-content]");
-        const items = await page.locator('[data-test="grain-kind-indicator"]');
-        for (let i = 0; i < await items.count(); i++) {
-            await items.nth(i).click();
-        }
-        const destroy = await page.locator('text=/DestroyCompleted/');
-        const uninstall = await page.locator('text=/UninstallCompleted/');
-        for (let i = 0; i < await destroy.count(); i++) {
-            expect(destroy.nth(i)).toContainText(/Completed/);
-            console.log("found Completed destroy");
-        };
-        for (let i = 0; i < await uninstall.count(); i++) {
-            expect(uninstall.nth(i)).toContainText(/Completed/);
-            console.log("found Completed uninstall");
-        };
+        await endSandboxValidation(page, sandboxName);
+
     });
 
     test('Delete Account', async () => {
