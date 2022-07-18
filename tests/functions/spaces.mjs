@@ -27,7 +27,7 @@ export const editSpace = async (page, spaceName, newName) => {
     await page.locator(`[data-test=space-row-${spaceName}]`).locator("[data-testid=moreMenu]").click();
     await page.locator(`[data-test=space-row-${spaceName}]`).locator('text=Edit').click();
     await page.fill("[data-test=spaceName]", newName);
-    await page.locator('text=Apply').click();
+    await page.locator('text=Apply').nth(0).click();
 }
 
 export const deleteSpace = async (page, spaceName, input) => {
