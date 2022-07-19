@@ -30,4 +30,4 @@ tests/testTest.spec.mjs-snapshots/test-my-tests-create-new-account-1-firefox-win
 AlexEnv/.env
 tests/cloudshel.spec.mjs
 tests/basicDeliteAccountUIFlow.spec.mjs
-node_modules/
+node_modules/*
