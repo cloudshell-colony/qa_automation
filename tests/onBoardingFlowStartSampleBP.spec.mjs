@@ -1,6 +1,6 @@
 import { test, expect } from "@playwright/test";
 import { createAccount } from "./functions/accounts.mjs";
-import { startSampleSandbox } from "./functions/sandboxes.mjs";
+import { startSampleSandbox,endSandbox } from "./functions/sandboxes.mjs";
 
 const baseURL = process.env.baseURL;
 const allAccountsPassword = process.env.allAccountsPassword;

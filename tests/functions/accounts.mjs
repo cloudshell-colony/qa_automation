@@ -113,6 +113,17 @@ export const loginToAccount = async (page, email, accountName, allAccountsPasswo
     await page.waitForURL(`${baseURL}/Sample`);
 };
 
+export const loginToAccountAfterDelite = async (page, email, accountName, allAccountsPassword, baseURL) => {
+    //await page.goto(`${baseURL}`, { timeout: 90000 });
+    await page.pause();
+    await page.locator('[data-test="subdomain"]').fill(accountName);
+    await page.click('[data-test="submit"]');
+    await page.click('[data-test="login-with-email"]');
+    await page.locator('[data-test="email"]').fill(email);
+    await page.locator('[data-test="password"]').fill(allAccountsPassword);
+    await page.click('[data-test="submit"]');
+    await page.waitForURL(`${baseURL}/Sample`);
+};
 export const validateSbLauncher = async (page, baseURL) => {
     await page.waitForURL(`${baseURL}/Sample`);
     await page.waitForSelector('[data-test="launch-\[Sample\]MySql Terraform Module"]');
@@ -136,8 +147,6 @@ export const ValidteBackButtonAfterDelition = async (accountName, page, baseURL)
 };
 
 export const ValidteLoginFalureAfterDelition = async (accountName, allAccountsPassword, email, page, baseURL) => {
-
-
     await loginToAccount(page, email, accountName, allAccountsPassword, baseURL);
     expect(await page.locator('[data-test="auth-error"]'), "Login Should Fail");
 
