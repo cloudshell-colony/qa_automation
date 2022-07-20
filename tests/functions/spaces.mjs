@@ -15,7 +15,7 @@ export default function removeUserFromSpaceAPI(user_email, myURL, session, space
 };
 
 export const createSpace = async (page, spaceName) => {
-    if(!page.url().endsWith("admin/spaces")){
+    if (!page.url().endsWith("admin/spaces")) {
         await goToAdminConsole(page);
     }
     await page.click(`[data-test=create-new-space]`);
@@ -24,7 +24,7 @@ export const createSpace = async (page, spaceName) => {
 };
 
 export const editSpace = async (page, spaceName, newName) => {
-    if(!page.url().endsWith("admin/spaces")){
+    if (!page.url().endsWith("admin/spaces")) {
         await goToAdminConsole(page);
     }
     await page.waitForSelector('[role=rowgroup]');
@@ -38,7 +38,7 @@ export const deleteSpace = async (page, spaceName, input) => {
     if (input === undefined) {
         input = spaceName;
     }
-    if(!page.url().endsWith("admin/spaces")){
+    if (!page.url().endsWith("admin/spaces")) {
         await goToAdminConsole(page);
     }
     await page.locator(`[data-test=space-row-${spaceName}]`).locator("[data-testid=moreMenu]").click();
@@ -155,6 +155,9 @@ export const fillInRepoData = async (providerKeys, signinWindow) => {
             const isPage = await signinWindow.isClosed();
             console.log(`apperntly the check if the ${provider} login page is closed ended with: ${isPage}`);
             if (!isPage) {
+                await signinWindow.waitForTimeout(3 * 1000);
+                const isPage = await signinWindow.isClosed();
+                if (isPage) { break; };
                 const visi = await signinWindow.isVisible('text=Authorize QualiNext', 500);
                 if (visi) {
                     await signinWindow.click('text=Authorize QualiNext');
