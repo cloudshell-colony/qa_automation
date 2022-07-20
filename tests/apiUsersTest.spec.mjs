@@ -10,18 +10,19 @@ the user cannot obtain a new session
 */
 
 import test, { expect } from "@playwright/test";
-import { generateSecret } from './functions/general.mjs';
-import { signupUserAPI, getSessionAPI, sendInvitationsAPI, getInvitationAPI, deleteUserAPI } from "./functions/accounts.mjs";
+import { generateSecret, validateAPIResponseis200 } from './functions/general.mjs';
+import { signupUserAPI, getSessionAPI, sendInvitationsAPI, getInvitationAPI, deleteUserAPI, validateGetSessionAPI } from "./functions/accounts.mjs";
 import getAllUsersAPI from "./functions/users.mjs";
 import { getPublishedBlueprints } from "./functions/blueprints.mjs";
 
 const baseURL = process.env.baseURL;
-const PASSWORD = process.env.allAccountsPassword;
+const password = process.env.allAccountsPassword;
 const account = process.env.account;
-const USER = process.env.adminEMail
+const user = process.env.adminEMail
 const space = process.env.space
 const timestemp = Math.floor(Date.now() / 10000);
 
+let session = "empty session";
 let initialNumberOfUsersInDomain = 0;
 let newNumberOfUsersInDomain = 0;
 let newUserSession = "";
@@ -30,10 +31,12 @@ let newUserSession = "";
 const newUserEmail = ("qaAuto").concat(timestemp).concat("10@dc.com");
 const secret = generateSecret(newUserEmail, account);
 
-// get admin session
-const session = await getSessionAPI(USER, PASSWORD, baseURL, account);
-
 test.describe.serial('Add and delete user', () => {
+    test.beforeAll(async () => {
+        // get admin session
+        session = await getSessionAPI(user, password, baseURL, account);
+        await validateGetSessionAPI(session);
+    });
 
     test('Get all users', async () => {
         const usersList = await getAllUsersAPI(session, baseURL);
@@ -65,30 +68,16 @@ test.describe.serial('Add and delete user', () => {
 
     test('Get invitation by secret', async () => {
         const invitationInfo = await getInvitationAPI(baseURL, secret);
-        if (invitationInfo.status === 200) {
-            expect(invitationInfo.ok).toBeTruthy();
-            console.log(await invitationInfo.json());
-        } else {
-            console.log(await invitationInfo.json());
-            expect(invitationInfo.status).toBe(200);
-        };
-
+        await validateAPIResponseis200(invitationInfo);
+        console.log(await invitationInfo.json());
     });
 
     test("User signup by useing his secret", async () => {
-
         const signupUserAPIrequest = await signupUserAPI(baseURL, secret);
-        if (signupUserAPIrequest.status != 200) {
-            console.log(await signupUserAPIrequest.json());
-            expect(signupUserAPIrequest.status).toBe(200);
-            expect(signupUserAPIrequest.ok).toBeTruthy();
-        } else {
-            expect(signupUserAPIrequest.status).toBe(200);
-            expect(signupUserAPIrequest.ok).toBeTruthy();
-        }
+        await validateAPIResponseis200(signupUserAPIrequest);
+    });
 
-    }); test("User can only signup once useing his secret", async () => {
-
+    test("User can only signup once useing his secret", async () => {
         const signupUserAPIrequest = await signupUserAPI(baseURL, secret);
         if (signupUserAPIrequest.status != 404) {
             console.log(await signupUserAPIrequest.json());
@@ -117,8 +106,7 @@ test.describe.serial('Add and delete user', () => {
 
     test('Get all users again', async () => {
         const usersList = await getAllUsersAPI(session, baseURL);
-        expect(usersList.status).toBe(200);
-        expect(usersList.ok).toBeTruthy();
+        await validateAPIResponseis200(usersList);
         const response = await usersList.json()
         console.log(await response);
         newNumberOfUsersInDomain = Object.keys(await response).length;
@@ -127,20 +115,13 @@ test.describe.serial('Add and delete user', () => {
     });
 
     test('New user can get a session', async () => {
-        newUserSession = await getSessionAPI(newUserEmail, PASSWORD, baseURL, account);
-        if (typeof (newUserSession) === "object") {
-            console.log(await newUserSession.json())
-            expect(typeof (newUserSession)).toBe("string");
-        } else {
-            expect(typeof (newUserSession)).toBe("string");
-            console.log(`email: ${newUserEmail},   session: ${newUserSession}`);
-        };
+        newUserSession = await getSessionAPI(newUserEmail, password, baseURL, account);
+        validateGetSessionAPI(newUserSession);
     });
 
     test('New user can get all published blueprints', async () => {
         const publishedBlueprints = await getPublishedBlueprints(newUserSession, space, baseURL);
-        expect(publishedBlueprints.status).toBe(200);
-        expect(publishedBlueprints.ok).toBeTruthy();
+        await validateAPIResponseis200(publishedBlueprints);
         const publishedBlueprintsData = await publishedBlueprints.json();
         console.log(`new user found ${Object.keys(publishedBlueprintsData).length} published blueprints and they are: ${publishedBlueprintsData}`);
     });
@@ -167,7 +148,7 @@ test.describe.serial('Add and delete user', () => {
     });
 
     test('Deleted user cannot obtain a session', async () => {
-        newUserSession = await getSessionAPI(newUserEmail, PASSWORD, baseURL, account);
+        newUserSession = await getSessionAPI(newUserEmail, password, baseURL, account);
         if (typeof (newUserSession) === "object") {
             const response = await newUserSession.json();
             console.log(await response);

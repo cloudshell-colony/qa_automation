@@ -26,6 +26,15 @@ export const getSessionAPI = async (USER, PASSWORD, myURL, account) => {
     };
 };
 
+export const validateGetSessionAPI = async (getSessionApiResponse) => {
+    if (typeof (getSessionApiResponse) === "object") {
+        console.log(await getSessionApiResponse.json())
+        expect(typeof (getSessionApiResponse)).toBe("string");
+    } else {
+        expect(typeof (getSessionApiResponse)).toBe("string");
+    };
+};
+
 export const sendInvitationsAPI = async (session, newUserEmail, myURL, space) => {
     // send invitation for a user, invitation must contain the user email (can be invalid if no SMTP is needed)
     // space_role cane be: "Space Developer",,,,,
