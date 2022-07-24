@@ -152,16 +152,21 @@ export const fillInRepoData = async (providerKeys, signinWindow) => {
             await signinWindow.fill('input[name="password"]', repoPassword);
             await signinWindow.click('input:has-text("Sign in")');
             await signinWindow.waitForTimeout(1000);
-            const isPage = await signinWindow.isClosed();
+            let isPage = await signinWindow.isClosed();
             console.log(`apperntly the check if the ${provider} login page is closed ended with: ${isPage}, entering additional wait`);
             if (!isPage) {
                 console.log('waiting fore aditional 3 seconds');
                 await signinWindow.waitForTimeout(3 * 1000);
-                const isPage = await signinWindow.isClosed();
-                if (isPage) { break; };
-                const visi = await signinWindow.isVisible('text=Authorize QualiNext', 500);
-                if (visi) {
-                    await signinWindow.click('text=Authorize QualiNext');
+                isPage = await signinWindow.isClosed();
+                if (isPage) {
+                    break;
+                } else {
+                    const visi = await signinWindow.isVisible('text=Authorize QualiNext', 500);
+                    if (visi) {
+                        await signinWindow.click('text=Authorize QualiNext');
+                    } else {
+                        console.log('we have a problem, the popup is still open and we dont know why');
+                    };
                 };
             };
             break;
