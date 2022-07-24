@@ -40,17 +40,23 @@ test.describe.serial('Add and delete user', () => {
 
     test('Get all users', async () => {
         const usersList = await getAllUsersAPI(session, baseURL);
+        await validateAPIResponseis200(usersList);
+        const usersListJson = await usersList.json();
+        console.log(await usersListJson);
+        initialNumberOfUsersInDomain = Object.keys(await usersListJson).length;
+        console.log(`the total number of users in the first users request is: ${initialNumberOfUsersInDomain}`);
 
-        const usersListJson = await usersList.json()
-        if (usersList.status === 200) {
-            console.log(await usersListJson);
-            initialNumberOfUsersInDomain = Object.keys(await usersListJson).length;
-            console.log(`the total number of users in the first users request is: ${initialNumberOfUsersInDomain}`);
-        } else {
-            console.log(usersListJson);
-            expect(usersList.status).toBe(200);
-            expect(usersList.ok).toBeTruthy();
-        }
+
+
+        // if (usersList.status === 200) {
+        //     console.log(await usersListJson);
+        //     initialNumberOfUsersInDomain = Object.keys(await usersListJson).length;
+        //     console.log(`the total number of users in the first users request is: ${initialNumberOfUsersInDomain}`);
+        // } else {
+        //     console.log(usersListJson);
+        //     expect(usersList.status).toBe(200);
+        //     expect(usersList.ok).toBeTruthy();
+        // }
 
     });
 
@@ -117,9 +123,10 @@ test.describe.serial('Add and delete user', () => {
     test('New user can get a session', async () => {
         newUserSession = await getSessionAPI(newUserEmail, password, baseURL, account);
         validateGetSessionAPI(newUserSession);
+        console.log(`new user ${newUserEmail} got session ${newUserSession}`);
     });
 
-    test('New user can get all published blueprints', async () => {
+    test.skip('New user can get all published blueprints', async () => {
         const publishedBlueprints = await getPublishedBlueprints(newUserSession, space, baseURL);
         await validateAPIResponseis200(publishedBlueprints);
         const publishedBlueprintsData = await publishedBlueprints.json();
@@ -127,15 +134,18 @@ test.describe.serial('Add and delete user', () => {
     });
 
     test('Admin can delete a user from the system', async () => {
-        const deleteUserAPIResponse = await deleteUserAPI(newUserEmail, baseURL, session);
-        if (deleteUserAPIResponse.status != 200) {
-            console.log(`my log text should be: ${await deleteUserAPIResponse.text()}`);
-            expect(deleteUserAPIResponse.status).toBe(200);
-            expect(deleteUserAPIResponse.ok).toBeTruthy();
-        } else {
-            expect(deleteUserAPIResponse.status).toBe(200);
-            expect(deleteUserAPIResponse.ok).toBeTruthy();
-        }
+        const deleteUserAPIResponse = await deleteUserAPI("newUserEmail", baseURL, session);
+        validateAPIResponseis200(deleteUserAPIResponse);
+        console.log(`user ${newUserEmail} was deleted`);
+
+        // if (deleteUserAPIResponse.status != 200) {
+        //     console.log(`my log text should be: ${await deleteUserAPIResponse.text()}`);
+        //     expect(deleteUserAPIResponse.status).toBe(200);
+        //     expect(deleteUserAPIResponse.ok).toBeTruthy();
+        // } else {
+        //     expect(deleteUserAPIResponse.status).toBe(200);
+        //     expect(deleteUserAPIResponse.ok).toBeTruthy();
+        // }
 
     });
 
