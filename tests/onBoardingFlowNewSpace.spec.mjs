@@ -32,7 +32,7 @@ test.describe.serial('onboarding flow', () => {
     });
 
     test.afterAll(async () => {
-        console.log(`delete account: ${accountName}, after test compl,eted`);
+        console.log(`delete account: ${accountName}, after test complteted`);
         await DeleteAcountUI(accountName, page, baseURL);
         await page.close();
     });
