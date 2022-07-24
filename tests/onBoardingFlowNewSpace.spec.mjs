@@ -1,5 +1,5 @@
 import { test, expect } from "@playwright/test";
-import { createAccount, getSessionAPI, validateSbLauncher } from "./functions/accounts.mjs";
+import { createAccount, DeleteAcountUI, getSessionAPI, validateSbLauncher } from "./functions/accounts.mjs";
 import { launchBlueprint, publishBlueprint } from "./functions/blueprints.mjs";
 import { getdeploymentFileAPI } from "./functions/executionHosts.mjs";
 import { executeCLIcommand, overwriteAndSaveToFile } from "./functions/general.mjs";
@@ -23,16 +23,18 @@ let sandboxName; // we will need it later on to terminate the  sandbox we create
 const bucketName = ("qa-auto-bucket-").concat(timestemp);
 let repoKeys;
 test.describe.serial('onboarding flow', () => {
-
+    let context;
     let page;
     test.beforeAll(async ({ browser }) => {
         repoKeys = await generateRepoSpecificKeys(repProvider);
+        context = await browser.newContext();
         page = await browser.newPage();
     });
 
     test.afterAll(async () => {
+        console.log(`delete account: ${accountName}, after test compl,eted`);
+        await DeleteAcountUI(accountName, page, baseURL);
         await page.close();
-        // need to add delete account
     });
 
     test('create new account', async () => {
