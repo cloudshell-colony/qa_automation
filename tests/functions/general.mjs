@@ -82,3 +82,14 @@ export const pressOptionFromCommonTable = async (page, rowIdentifier, optionSele
     await page.click(optionToSelect);
 };
 
+export const validateAPIResponseis200 = async (response) => {
+    if (response.status != 200) {
+        // console.log(`response error is: ${await response.text()}`);
+        console.log(await response.json());
+        expect(response.status).toBe(200);
+        expect(response.ok).toBeTruthy();
+    } else {
+        expect(response.status).toBe(200);
+        expect(response.ok).toBeTruthy();
+    }
+};
