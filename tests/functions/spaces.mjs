@@ -166,6 +166,7 @@ export const fillInRepoData = async (providerKeys, signinWindow) => {
                         await signinWindow.click('text=Authorize QualiNext');
                     } else {
                         console.log('we have a problem, the popup is still open and we dont know why');
+                        console.log(await signinWindow.content());
                     };
                 };
             };
