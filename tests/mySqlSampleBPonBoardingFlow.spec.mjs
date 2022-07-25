@@ -1,11 +1,11 @@
 import { test, expect } from "@playwright/test";
 import { createAccount } from "./functions/accounts.mjs";
-import { startSampleSandbox,endSandbox } from "./functions/sandboxes.mjs";
+import { startSampleSandbox, endSandbox } from "./functions/sandboxes.mjs";
 
 const baseURL = process.env.baseURL;
 const allAccountsPassword = process.env.allAccountsPassword;
 const prefix = process.env.accountPrefix;
-const sampleBP = process.env.sampleBPToStart;
+const sampleBP = "MySql";
 const timestemp = Math.floor(Date.now() / 1000);
 const accountName = prefix.concat(timestemp);
 const email = prefix.concat("@").concat(timestemp).concat(".com");
