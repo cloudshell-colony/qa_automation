@@ -4,7 +4,7 @@ import { goToSpace } from "./spaces.mjs";
 export const startSampleSandbox = async (page, sandbox) => {
   // starts a sample sandbox from the "sample sandbox launcher"
   // suppoert all three out of the box sample blueprint
-  // select BP by passing "Bitnami", "MySql" or "Helm"
+  // select BP by passing "Bitnami", "MySql" or "Helm"  
   switch (sandbox.toLowerCase()) {
     case "helm":
       await page.click('[data-test="launch-\[Sample\]Helm Application with MySql and S3 Deployed by Terraform"]');
@@ -68,35 +68,53 @@ export const endSandbox = async (page) => {
   await page.waitForNavigation();
 };
 
-export const endSandboxValidation = async (page,sandboxName) => {
-await page.waitForSelector(`tr:has-text("${sandboxName}")`, { has: page.locator("data-testid=moreMenu") });
-        let visi = page.isVisible(`tr:has-text("${sandboxName}")`, { has: page.locator("data-testid=moreMenu") });
-        expect(await page.locator(`tr:has-text("${sandboxName}")`, { has: page.locator("data-testid=moreMenu") })).toContainText("Terminating");
-        while (await visi) {
-            await page.waitForTimeout(50);
-            visi = page.isVisible(`tr:has-text("${sandboxName}")`);
-        }
-        await page.click(`[data-toggle=true]`); //Need UI to add data-test for this button
-        await page.click(`tr:has-text("${sandboxName}")`);
-        await page.waitForSelector("[data-test=sandbox-page-content]");
-        const items = await page.locator('[data-test="grain-kind-indicator"]');
-        for (let i = 0; i < await items.count(); i++) {
-            await items.nth(i).click();
-        }
-        const destroy = await page.locator('text=/DestroyCompleted/');
-        const uninstall = await page.locator('text=/UninstallCompleted/');
-        for (let i = 0; i < await destroy.count(); i++) {
-            expect(destroy.nth(i)).toContainText(/Completed/);
-            console.log("found Completed destroy");
-        };
-        for (let i = 0; i < await uninstall.count(); i++) {
-            expect(uninstall.nth(i)).toContainText(/Completed/);
-            console.log("found Completed uninstall");
-        }; 
-      };
+export const endSandboxValidation = async (page, sandboxName) => {
+  await page.waitForSelector(`tr:has-text("${sandboxName}")`, { has: page.locator("data-testid=moreMenu") });
+  let visi = page.isVisible(`tr:has-text("${sandboxName}")`, { has: page.locator("data-testid=moreMenu") });
+  expect(await page.locator(`tr:has-text("${sandboxName}")`, { has: page.locator("data-testid=moreMenu") })).toContainText("Terminating");
+  while (await visi) {
+    await page.waitForTimeout(50);
+    visi = page.isVisible(`tr:has-text("${sandboxName}")`);
+  }
+  await page.click(`[data-toggle=true]`); //Need UI to add data-test for this button
+  await page.click(`tr:has-text("${sandboxName}")`);
+  await page.waitForSelector("[data-test=sandbox-page-content]");
+  const items = await page.locator('[data-test="grain-kind-indicator"]');
+  for (let i = 0; i < await items.count(); i++) {
+    await items.nth(i).click();
+  }
+  const destroy = await page.locator('text=/DestroyCompleted/');
+  const uninstall = await page.locator('text=/UninstallCompleted/');
+  for (let i = 0; i < await destroy.count(); i++) {
+    expect(destroy.nth(i)).toContainText(/Completed/);
+    console.log("found Completed destroy");
+  };
+  for (let i = 0; i < await uninstall.count(); i++) {
+    expect(uninstall.nth(i)).toContainText(/Completed/);
+    console.log("found Completed uninstall");
+  };
+};
 
 export const goToSandboxListPage = async (page, account) => {
 
   await page.click('[data-test="sandboxes-nav-link"]');
   // todo  
+};
+
+export const startSandbox = async (page, sandbokFirstWord) => {
+
+};
+
+
+
+export const sampleSBOrder = async () => {
+  const day = (new Date()).getDay();
+  const placeA = (day % 3);
+  const placeB = ((day + 1) % 3);
+  const placeC = ((day + 2) % 3);
+  const sbOrder = [];
+  sbOrder[placeA] = "Helm"
+  sbOrder[placeB] = "MySql"
+  sbOrder[placeC] = "Bitnamy"
+  return sbOrder;
 };
