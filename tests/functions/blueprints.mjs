@@ -65,3 +65,30 @@ export const launchBlueprint = async (page, BPFullName) => {
     expect(result, `the sandbox name: \"${sandboxName}\" should have started with the BP name: \"${BPFullName}\"`).toBeTruthy();
     return sandboxName;
 };
+
+export const launchSampleBlueprint = async (page, BPFirstWord) => {
+    let dataTest = "";
+    switch (BPFirstWord.toLowerCase()) {
+        case "helm":
+            dataTest = '[data-test="blueprint-row-Helm Application with MySql and S3 Deployed by Terraform"]';
+            break;
+        case "mysql":
+            dataTest = '[data-test="blueprint-row-MySql Terraform Module"]';
+            break;
+        case "bitnami":
+            dataTest = '[data-test="blueprint-row-Bitnami Nginx Helm Chart"]';
+            break;
+        default:
+            console.log("invalid sample sandbox name");
+            break;
+    }
+    await page.click(`${dataTest} button:has-text("Launch Sandbox")`);
+    const sandboxName = await page.getAttribute("[data-test=sandboxName]", "value");
+    console.log(`the new sandbox name is: ${sandboxName}`);
+    const result = sandboxName.includes(BPFirstWord, 0);
+    expect(result, `the sandbox name: \"${sandboxName}\" should have started with the BP name: \"${BPFirstWord}\"`).toBeTruthy();
+    await page.locator('[data-test="wizard-next-button"]').click();
+    await page.waitForSelector('[data-test="sandbox-info-column"]');
+    return sandboxName;
+};
+

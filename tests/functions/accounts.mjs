@@ -107,8 +107,9 @@ export const createAccount = async (page, email, accountName, allAccountsPasswor
     await page.locator('[data-test="password"]').fill(allAccountsPassword);
     await page.locator('[data-test="subdomain"]').fill(accountName);
     await page.click('[data-test="submit-signup"]');
-    console.log(`new account name: ${accountName}`);
-    console.log(`new user email: ${email}`);
+    console.log(`New account name: ${accountName}`);
+    console.log(`New user email: ${email}`);
+    console.log(`Account created at ${baseURL}`);
 };
 
 export const loginToAccount = async (page, email, accountName, allAccountsPassword, baseURL) => {
@@ -136,7 +137,7 @@ export const loginToAccountAfterDelite = async (page, email, accountName, allAcc
 export const validateSbLauncher = async (page, baseURL) => {
     await page.waitForURL(`${baseURL}/Sample`);
     await page.waitForSelector('[data-test="launch-\[Sample\]MySql Terraform Module"]');
-    const errorMessage = 'something went wrong in our quick launcher page'
+    const errorMessage = 'something went wrong in our quick launcher page, Launch action is miisng'
     expect(page.locator('[data-test="launch-\[Sample\]MySql Terraform Module"]'), errorMessage).toContainText('Launch');
     expect(page.locator('[data-test="launch-\[Sample\]Bitnami Nginx Helm Chart"]'), errorMessage).toContainText('Launch');
     expect(page.locator('[data-test="launch-[Sample]Helm Application with MySql and S3 Deployed by Terraform"]'), errorMessage).toContainText('Launch');
