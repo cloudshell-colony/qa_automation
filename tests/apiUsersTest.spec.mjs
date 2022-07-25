@@ -122,7 +122,7 @@ test.describe.serial('Add and delete user', () => {
 
     test('New user can get a session', async () => {
         newUserSession = await getSessionAPI(newUserEmail, password, baseURL, account);
-        validateGetSessionAPI(newUserSession);
+        await validateGetSessionAPI(newUserSession);
         console.log(`new user ${newUserEmail} got session ${newUserSession}`);
     });
 
@@ -134,19 +134,9 @@ test.describe.serial('Add and delete user', () => {
     });
 
     test('Admin can delete a user from the system', async () => {
-        const deleteUserAPIResponse = await deleteUserAPI("newUserEmail", baseURL, session);
-        validateAPIResponseis200(deleteUserAPIResponse);
+        const deleteUserAPIResponse = await deleteUserAPI(newUserEmail, baseURL, session);
+        await validateAPIResponseis200(deleteUserAPIResponse);
         console.log(`user ${newUserEmail} was deleted`);
-
-        // if (deleteUserAPIResponse.status != 200) {
-        //     console.log(`my log text should be: ${await deleteUserAPIResponse.text()}`);
-        //     expect(deleteUserAPIResponse.status).toBe(200);
-        //     expect(deleteUserAPIResponse.ok).toBeTruthy();
-        // } else {
-        //     expect(deleteUserAPIResponse.status).toBe(200);
-        //     expect(deleteUserAPIResponse.ok).toBeTruthy();
-        // }
-
     });
 
     test('Deleted user should NOT be able to use his active session', async () => {
