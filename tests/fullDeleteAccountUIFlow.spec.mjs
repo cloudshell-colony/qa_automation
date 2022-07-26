@@ -67,6 +67,11 @@ test.describe('test my tests', () => {
         await DeleteAcountUI(accountName, page, baseURL);
         expect(await page.waitForSelector('[data-test="signup-with-email"]'), "Delete account should navigate to signup page ");
         await page.goto(`${baseURL}`, { timeout: 90000 });
+        
+
+    });
+    //Skiped till bugs no  9051,8608
+    test.skip('Validate Delete Account', async () => {
         await ValidteBackButtonAfterDelition(accountName, page, baseURL);
         await ValidteLoginFalureAfterDelition(accountName, allAccountsPassword, email, page, baseURL);
 
