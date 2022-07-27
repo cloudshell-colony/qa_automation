@@ -1,25 +1,12 @@
 import { expect } from "@playwright/test";
 import { goToSpace } from "./spaces.mjs";
 
-export const startSampleSandbox = async (page, sandbox) => {
+export const startSampleSandbox = async (page, sandboxFullName) => {
   // starts a sample sandbox from the "sample sandbox launcher"
   // suppoert all three out of the box sample blueprint
   // select BP by passing "Bitnami", "MySql" or "Helm"  
-  switch (sandbox.toLowerCase()) {
-    case "helm":
-      await page.click('[data-test="launch-\[Sample\]Helm Application with MySql and S3 Deployed by Terraform"]');
-      break;
-    case "mysql":
-      await page.click('[data-test="launch-\[Sample\]MySql Terraform Module"]');
-      break;
-    case "bitnami":
-      await page.click('[data-test="launch-[Sample]Bitnami Nginx Helm Chart"]');
-      await page.locator('[data-test="inputs\.replicaCount"]').fill("22");
-      break;
-    default:
-      console.log("invalid sample sandbox name");
-      break;
-  }
+
+  await page.click(`[data-test="launch-\[Sample\]${sandboxFullName}"]`);
   await page.locator('[data-test="wizard-next-button"]').click();
   await page.waitForSelector('[data-test="sandbox-info-column"]');
 };
@@ -95,26 +82,25 @@ export const endSandboxValidation = async (page, sandboxName) => {
   };
 };
 
-export const goToSandboxListPage = async (page, account) => {
+export const validateAllSBCompleted = async (page) => {
+  let visi = await page.isVisible(`tr:has-text("Active")`, { has: page.locator("data-testid=moreMenu") });
+  if (await visi) {
+    console.log("active SBs");
+  }
+  for (let index = 0; index < 4; index++) {
+    visi = await page.isVisible(`tr:has-text("Terminating")`, { has: page.locator("data-testid=moreMenu") });
+    if (await visi) {
+      await page.waitForTimeout(30 * 1000);
+    } else {
+      break;
+    }
+  }
+  visi = await page.isVisible(`tr:has-text("Terminating")`, { has: page.locator("data-testid=moreMenu") });
+  if (await visi) {
+    expect(visi, "we have a problem, SB are not completed after two minutes").toBeFalsy();
+  }
+};
 
+export const goToSandboxListPage = async (page) => {
   await page.click('[data-test="sandboxes-nav-link"]');
-  // todo  
-};
-
-export const startSandbox = async (page, sandbokFirstWord) => {
-
-};
-
-
-
-export const sampleSBOrder = async () => {
-  const day = (new Date()).getDay();
-  const placeA = (day % 3);
-  const placeB = ((day + 1) % 3);
-  const placeC = ((day + 2) % 3);
-  const sbOrder = [];
-  sbOrder[placeA] = "Helm"
-  sbOrder[placeB] = "MySql"
-  sbOrder[placeC] = "Bitnamy"
-  return sbOrder;
 };
