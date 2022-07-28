@@ -4,8 +4,6 @@ import { goToSpace } from "./spaces.mjs";
 export const startSampleSandbox = async (page, sandboxFullName) => {
   // starts a sample sandbox from the "sample sandbox launcher"
   // suppoert all three out of the box sample blueprint
-  // select BP by passing "Bitnami", "MySql" or "Helm"  
-
   await page.click(`[data-test="launch-\[Sample\]${sandboxFullName}"]`);
   await page.locator('[data-test="wizard-next-button"]').click();
   await page.waitForSelector('[data-test="sandbox-info-column"]');
