@@ -1,18 +1,16 @@
 import { test, expect } from "@playwright/test";
 import { createAccount, DeleteAcountUI, loginToAccount, validateSbLauncher } from "./functions/accounts.mjs";
-import { launchBlueprintFromSandboxPage, launchSampleBlueprint } from "./functions/blueprints.mjs";
+import { launchBlueprintFromSandboxPage, launchBlueprintFromBPList } from "./functions/blueprints.mjs";
 import { startSampleSandbox, endSandbox, validateSBisActive, endSandboxValidation, validateAllSBCompleted } from "./functions/sandboxes.mjs";
 
 const baseURL = process.env.baseURL;
 const allAccountsPassword = process.env.allAccountsPassword;
 const prefix = process.env.accountPrefix;
-const sampleBP = "MySql";
 const timestemp = Math.floor(Date.now() / 1000);
 const accountName = prefix.concat(timestemp);
 const email = prefix.concat("@").concat(timestemp).concat(".com");
-
+let lastBPname = "";
 // generating new order of samples every day
-// sample names are :  "Bitnami", "MySql" or "Helm" ; case insensative
 const day = (new Date()).getDay();
 const placeA = (day % 3);
 const placeB = ((day + 1) % 3);
@@ -29,20 +27,16 @@ test.describe.serial('onboarding flow', () => {
   });
 
   test.afterAll(async () => {
-    // DeleteAcountUI(accountName, page, baseURL);
+    DeleteAcountUI(accountName, page, baseURL);
     await page.close();
   });
 
-  test.skip('create new account', async () => {
+  test('create new account', async () => {
     await createAccount(page, email, accountName, allAccountsPassword, baseURL);
     await page.waitForURL(`${baseURL}/Sample`);
     await page.waitForSelector('[data-test="launch-\[Sample\]MySql Terraform Module"]');
     // comment out screenshot validation due to docker image path issue - windows vs ubuntu
     // await expect(page).toHaveScreenshot({ maxDiffPixels: 4000 });
-  });
-
-  test('login to account to by pass localhost issue', async () => {
-    await loginToAccount(page, "gilad.m@quali.com", "qa", allAccountsPassword, baseURL);
   });
 
   test('sample sandbox launcher contain three samples', async () => {
@@ -62,13 +56,13 @@ test.describe.serial('onboarding flow', () => {
     await endSandbox(page);
   });
 
-  test('redirect to blueprint catyalog page for next step', async () => {
+  test('start sample sandbox from blueprints page', async () => {
+    // redirect to blueprint catalog page
     page.click('[data-test="blueprints-nav-link"]')
     await page.waitForNavigation();
-  });
-
-  test('start sample sandbox from blueprints page', async () => {
-    const BPfromBPPage = await launchSampleBlueprint(page, sbOrder[1]);
+    // launch sandbox from BP list page
+    console.log(`starting \"${sbOrder[1]}\" sample SB from blueprints page`);
+    const BPfromBPPage = await launchBlueprintFromBPList(page, sbOrder[1]);
   });
 
   test('validate sample SB started from blueprint catalog page is active', async () => {
@@ -81,8 +75,8 @@ test.describe.serial('onboarding flow', () => {
 
 
   test('start sample sandbox from sandbox page', async () => {
-    await page.click('[data-test="create-sandbox-btn"]');
-    const BPfromBPPage = await launchBlueprintFromSandboxPage(page, sbOrder[2]);
+    console.log(`starting \"${sbOrder[2]}\" sample SB from sandbox list page`);
+    lastBPname = await launchBlueprintFromSandboxPage(page, sbOrder[2]);
   });
 
   test('validate sample SB started from sandbox catalog page is active', async () => {
@@ -93,9 +87,8 @@ test.describe.serial('onboarding flow', () => {
     await endSandbox(page);
   });
 
-  test('validate all sandboxes are completed', async () => {
-    await validateAllSBCompleted(page);
+  test('validate last sandboxes is completed', async () => {
+    endSandboxValidation(page, lastBPname);
   });
-
 
 });
