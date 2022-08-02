@@ -187,6 +187,7 @@ export const fillInRepoData = async (providerKeys, signinWindow) => {
 export const repositoryAssetInfo = async (page, repoKeys) => {
     // fill in all repository asset info
     // expect to get repoKeys librery generated from generateRepoSpecificKeys(repProvider)
+    console.log(`connecting to ${repoKeys.repo}`);
     await page.waitForSelector('[data-test="connect-repo-title"]');
     await page.click(`[data-test="setup-modal-container"] svg >> nth=${repoKeys.nth}`);
     await page.fill('[data-test="repositoryUrl"]', repoKeys.repo);
