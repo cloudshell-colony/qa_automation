@@ -27,7 +27,7 @@ test.describe.serial('onboarding flow', () => {
   });
 
   test.afterAll(async () => {
-    DeleteAcountUI(accountName, page, baseURL);
+    await DeleteAcountUI(accountName, page, baseURL);
     await page.close();
   });
 
@@ -88,7 +88,7 @@ test.describe.serial('onboarding flow', () => {
   });
 
   test('validate last sandboxes is completed', async () => {
-    endSandboxValidation(page, lastBPname);
+    await endSandboxValidation(page, lastBPname);
   });
 
 });

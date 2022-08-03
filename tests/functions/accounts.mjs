@@ -144,10 +144,7 @@ export const validateSbLauncher = async (page, baseURL) => {
 };
 
 export const DeleteAcountUI = async (accountName, page, baseURL) => {
-    await Promise.all([
-        page.waitForNavigation(),
-        page.goto(`${baseURL}/admin/account_billing`),
-    ]);
+    await page.goto(`${baseURL}/admin/account_billing`);
     await page.click('[data-test="delete-account"]');
     await page.click('[data-test="confirm-delete-account"]');
 };
