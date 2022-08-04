@@ -89,3 +89,33 @@ export const launchBlueprintFromSandboxPage = async (page, sampleFullName) => {
     return sandboxName;
 };
 
+export const getBlueprintErrors = async (page, BPName, space) => {
+    if (!page.url().endsWith("/blueprints")) {
+        await goToSpace(page, space);
+        await page.click("[data-test=blueprints-nav-link]");
+    }
+    await page.waitForSelector(`[data-test=blueprint-row-${BPName}]`);
+    const bpRow = await page.locator(`[data-test=blueprint-row-${BPName}]`);
+    //await bpRow.innerText(); //for some reason when i didn't do this the next locator didn't work
+    const errList = [];
+    const list = await bpRow.locator("ol li");
+    const count = await list.count();
+    for (let i =0; i< count; i++){
+        console.log(`Received error: "` + await list.nth(i).innerText() + `" from "${BPName}" blueprint`);
+        errList.push(await list.nth(i))
+    };
+    return errList;
+}
+
+/*
+errList should contain the locators of the errors, as returned by the getBlueprintErrors function
+expectedErrors should be a list of strings representing part of the expected error message
+*/
+export const validateBlueprintErrors = async(page, BPName, errList, expectedErrors) => {
+    expect(errList.length, `Blueprint "${BPName}" has ${errList.length} error messages instead of expected ${expectedErrors.length}`).toBe(expectedErrors.length);
+    const bpRow = await page.locator(`[data-test=blueprint-row-${BPName}]`);
+    expect(bpRow.locator(`button:has-Text("Launch Sandbox")`), `Launch Sandbox button is not disabled on blueprint "${BPName}"`).toBeDisabled();
+    for(let i =0; i<expectedErrors.length; i++){
+        expect(errList[i], `Wrong error returned from "${BPName}" blueprint`).toContainText(expectedErrors[i]);
+    }
+}

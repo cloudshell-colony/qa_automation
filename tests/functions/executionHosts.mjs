@@ -44,3 +44,17 @@ export const getdeploymentFileAPI = async (session, myURL, name, nameSpace) => {
     const responseBody = await response.text();
     return responseBody;
 };
+
+export const disassociateExecutionHostAPI = async (session, myURL, space, executionHost) => {
+    const data = {};
+    const response = await fetch(`${myURL}/api/spaces/${space}/computeservices/${executionHost}`, {
+        "method": "DELETE",
+        "body": JSON.stringify(data),
+        "headers": {
+            'Authorization': `Bearer ${session}`,
+            'Content-Type': 'application/json',
+            'Accept': '*/*'
+        }
+    });
+    return response;
+}
