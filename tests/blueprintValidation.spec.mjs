@@ -89,9 +89,4 @@ test.describe('Blueprint validation', ()=> {
         console.log("Validating blueprint errors after removing execution host");
         await validateBlueprintErrors(page, blueprintName, errList, expectedErrors);
     });
-
-    test("Sandobx launch fails when providing wrong store input", async() => {
-        blueprintName = "store and host inputs";
-    });
-
 });
