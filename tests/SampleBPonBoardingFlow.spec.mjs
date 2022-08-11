@@ -7,6 +7,9 @@ const baseURL = process.env.baseURL;
 const allAccountsPassword = process.env.allAccountsPassword;
 const prefix = process.env.accountPrefix;
 const timestemp = Math.floor(Date.now() / 1000);
+const firstName = "FN.".concat(prefix).concat(timestemp);
+const lastName = "LN.".concat(prefix).concat(timestemp);
+const companyName = "Company.".concat(prefix).concat(timestemp);
 const accountName = prefix.concat(timestemp);
 const email = prefix.concat("@").concat(timestemp).concat(".com");
 let lastBPname = "";
@@ -32,7 +35,7 @@ test.describe.serial('onboarding flow', () => {
   });
 
   test('create new account', async () => {
-    await createAccount(page, email, accountName, allAccountsPassword, baseURL);
+    await createAccount(page, firstName, lastName, companyName, email, accountName, allAccountsPassword, baseURL);
     await page.waitForURL(`${baseURL}/Sample`);
     await page.waitForSelector('[data-test="launch-\[Sample\]MySql Terraform Module"]');
     // comment out screenshot validation due to docker image path issue - windows vs ubuntu
