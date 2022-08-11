@@ -89,11 +89,7 @@ export const launchBlueprintFromSandboxPage = async (page, sampleFullName) => {
     return sandboxName;
 };
 
-export const getBlueprintErrors = async (page, BPName, space) => {
-    if (!page.url().endsWith("/blueprints")) {
-        await goToSpace(page, space);
-        await page.click("[data-test=blueprints-nav-link]");
-    }
+export const getBlueprintErrors = async (page, BPName) => {
     await page.waitForSelector(`[data-test=blueprint-row-${BPName}]`);
     const bpRow = await page.locator(`[data-test=blueprint-row-${BPName}]`);
     const errList = [];

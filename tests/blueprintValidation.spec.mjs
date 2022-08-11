@@ -20,13 +20,18 @@ let blueprintName;
 test.describe('Blueprint validation', ()=> {
     let page;
     test.beforeAll(async ({ browser }) => {
+        session = await getSessionAPI(user, password, baseURL, account);
+        await validateGetSessionAPI(session);
         page = await browser.newPage();
         await loginToAccount(page, user, account, password, baseURL);
         await closeModal(page);
     });
     test.afterAll(async () => {
         await page.close();
-        
+        const response = await disassociateExecutionHostAPI(session, baseURL, space, bpValidationEKS);   
+        if(response.status != 200 && response.status != 404){
+            console.error(`Execution host ${bpValidationEKS} possibly not removed from space ${space}, received response: ` + await response.text());
+        }
     });
 
     const blueprintErrors = {"bad-yaml-format": ["Blueprint YAML file contains syntax error(s)"], 
@@ -36,14 +41,16 @@ test.describe('Blueprint validation', ()=> {
     
     for(const [BPName, expectedErrors] of Object.entries(blueprintErrors)){
         test(`Static validation - blueprint "${BPName}" has relevent errors`, async() => {
-            const errList = await getBlueprintErrors(page, BPName, space);
+            if (!page.url().endsWith(`/${space}/blueprints`)) {
+                await goToSpace(page, space);
+                await page.click("[data-test=blueprints-nav-link]");
+            }
+            const errList = await getBlueprintErrors(page, BPName);
             await validateBlueprintErrors(page, BPName, errList, expectedErrors);
         })
     };
 
     test("Static validation - Adding & removing execution host changes blueprint errors", async () => {
-        session = await getSessionAPI(user, password, baseURL, account);
-        await validateGetSessionAPI(session);
         blueprintName = "bad-eks";
         let expectedErrors = ["host missing compute-service field"];
         //go to execution hosts management, needs to be a function
@@ -51,21 +58,21 @@ test.describe('Blueprint validation', ()=> {
         await page.click("[data-test=option__admin]");
         console.log("Associating execution host to space");
         await associateExecutionHost(page, bpValidationEKS, executionHostSpaceName, space);
+        await goToSpace(page, space);
+        await page.click("[data-test=blueprints-nav-link]");
         //get and validate blueprint errors
-        let errList = await getBlueprintErrors(page, blueprintName, space);
+        await page.waitForTimeout(10000); // wait for 10 seconds for blueprint errors to update
+        let errList = await getBlueprintErrors(page, blueprintName);
         console.log("Validating blueprint errors after associating execution host");
         await validateBlueprintErrors(page, blueprintName, errList, expectedErrors);
         //disassociate eks from space, tries for 5 seconds
         console.log("Removing execution host from space");
-        await expect.poll(async () => {
-            const response = await disassociateExecutionHostAPI(session, baseURL, space, bpValidationEKS);
-            return response.status;
-          }, {
-            message: 'Execution host was not removed from space, MUST remove it manually', // custom error message
-          }).toBe(200);
+        const response = await disassociateExecutionHostAPI(session, baseURL, space, bpValidationEKS);   
+        expect(response.status, 'Execution host was not removed from space, MUST remove it manually').toBe(200)
         expectedErrors.unshift(`The compute service '${bpValidationEKS}`); //Adding error that should appear after removing EKS
         //get and validate blueprint errors
-        errList = await getBlueprintErrors(page, blueprintName, space);
+        await page.waitForTimeout(10000); // wait for 10 seconds for blueprint errors to update
+        errList = await getBlueprintErrors(page, blueprintName);
         console.log("Validating blueprint errors after removing execution host");
         await validateBlueprintErrors(page, blueprintName, errList, expectedErrors);
     });
