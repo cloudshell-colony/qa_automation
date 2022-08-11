@@ -1,9 +1,7 @@
 import { test, expect } from "@playwright/test";
-import fetch from "node-fetch";
 import { loginToAccount, getSessionAPI, validateGetSessionAPI } from "./functions/accounts.mjs";
-import { countBlueprintsInSpace, getBlueprintErrors, validateBlueprintErrors } from "./functions/blueprints.mjs";
+import { getBlueprintErrors, launchBlueprintWithInputs, validateBlueprintErrors } from "./functions/blueprints.mjs";
 import { closeModal } from "./functions/general.mjs";
-import goToAdminConsole from "./functions/goToAdminConsole.mjs";
 import { goToSpace } from "./functions/spaces.mjs";
 import { associateExecutionHost, disassociateExecutionHostAPI } from "./functions/executionHosts.mjs";
 
@@ -11,7 +9,7 @@ const baseURL = process.env.baseURL;
 const password = process.env.allAccountsPassword;
 const account = process.env.account;
 const user = process.env.adminEMail
-const space = "asaf-test";
+const space = "bp-validation";
 const bpValidationEKS = "bpValidation-eks";
 const executionHostSpaceName = process.env.execHostNameSpace;
 let session = "empty session";
@@ -22,8 +20,6 @@ let blueprintName;
 test.describe('Blueprint validation', ()=> {
     let page;
     test.beforeAll(async ({ browser }) => {
-        session = await getSessionAPI(user, password, baseURL, account);
-        await validateGetSessionAPI(session);
         page = await browser.newPage();
         await loginToAccount(page, user, account, password, baseURL);
         await closeModal(page);
@@ -33,37 +29,21 @@ test.describe('Blueprint validation', ()=> {
         
     });
 
-    test("Blueprint with invalid yaml has relevant errors", async () => {
-        blueprintName = "bad-yaml-format";
-        let expectedErrors = ["Blueprint YAML file contains syntax error(s)"];
-        const errList = await getBlueprintErrors(page, blueprintName, space);
-        // expect(errList.length, `Blueprint ${blueprintName} has ${errList.length} error messages instead of expected 1`).toBe(1);
-        // expect(errList[0], `Wrong error returned from ${blueprintName} blueprint`).toContainText("Blueprint YAML file contains syntax error(s)");
-        await validateBlueprintErrors(page, blueprintName, errList, expectedErrors);
-    });
+    const blueprintErrors = {"bad-yaml-format": ["Blueprint YAML file contains syntax error(s)"], 
+        "unsupported-and-empty-grain": ["The following grains in the blueprint don't contains 'kind' definition:", "Blueprint contains unsupported grains"],
+        "bad-inputs-outputs": ["field 'outputs->output' can't be resolved", "inputs->test' can't be resolved"], 
+        "store-not-found": ["Repository 'wrong-store (in grains->bucket_1->spec->source->store)' does not exist"]};
+    
+    for(const [BPName, expectedErrors] of Object.entries(blueprintErrors)){
+        test(`Static validation - blueprint "${BPName}" has relevent errors`, async() => {
+            const errList = await getBlueprintErrors(page, BPName, space);
+            await validateBlueprintErrors(page, BPName, errList, expectedErrors);
+        })
+    };
 
-    test("Blueprint with unsupported and empty grain has relevant errors", async () => {
-        blueprintName = "unsupported-and-empty-grain";
-        let expectedErrors = ["The following grains in the blueprint don't contains 'kind' definition:", "Blueprint contains unsupported grains"];
-        const errList = await getBlueprintErrors(page, blueprintName, space);
-        await validateBlueprintErrors(page, blueprintName, errList, expectedErrors);
-    });
-
-    test("Blueprint with invalid inputs and outputs definitions has relevant errors", async () => {
-        blueprintName = "bad-inputs-outputs";
-        let expectedErrors = ["field 'outputs->output' can't be resolved", "inputs->test' can't be resolved"];
-        const errList = await getBlueprintErrors(page, blueprintName, space);
-        await validateBlueprintErrors(page, blueprintName, errList, expectedErrors);
-    });
-
-    test("Blueprint with store name that doesn't exist has relevant errors", async () => {
-        blueprintName = "store-not-found";
-        let expectedErrors = ["Repository 'wrong-store (in grains->bucket_1->spec->source->store)' does not exist"];
-        const errList = await getBlueprintErrors(page, blueprintName, space);
-        await validateBlueprintErrors(page, blueprintName, errList, expectedErrors);
-    });
-
-    test("Adding & removing execution host changes blueprint errors", async () => {
+    test("Static validation - Adding & removing execution host changes blueprint errors", async () => {
+        session = await getSessionAPI(user, password, baseURL, account);
+        await validateGetSessionAPI(session);
         blueprintName = "bad-eks";
         let expectedErrors = ["host missing compute-service field"];
         //go to execution hosts management, needs to be a function
@@ -89,4 +69,40 @@ test.describe('Blueprint validation', ()=> {
         console.log("Validating blueprint errors after removing execution host");
         await validateBlueprintErrors(page, blueprintName, errList, expectedErrors);
     });
+
+    test("Dynamic validation - Sandobx launch fails when providing wrong store and host name inputs", async() => {
+        blueprintName = "store and host inputs";
+        const inputsDict = {"inputs\.store" : "wrong value", "inputs\.host" : "wrong value"};
+        await goToSpace(page, space);
+        await page.click("[data-test=blueprints-nav-link]");
+        console.log("Launching sandbox with bad inputs for store and execution host name");
+        await launchBlueprintWithInputs(page, blueprintName, inputsDict);
+        await page.waitForSelector("[data-testid=error-details-text]");
+        const errMsg = await page.locator("[data-testid=error-details-text]");
+        expect(errMsg, "Did not receive expected error when providing wrong store value").toContainText("Repository 'wrong value (in grains->bucket_1->spec->source->store)' does not exist");
+        expect(errMsg, "Did not receive expected error when providing wrong host name value").toContainText("The compute service 'wrong value (in grains->bucket_1->spec->host->name)' was not found");
+        await page.click("[data-test=close-popup]");
+        await page.click("[data-test=wizard-cancel-button]");
+    });
+
+    test("Dynamic validation - Sandbox launches successfully when providing correct store and host name inputs", async() => {
+        blueprintName = "store and host inputs";
+        const inputsDict = {"inputs\.store" : "qa-assets", "inputs\.host" : "qa-eks"};
+        await goToSpace(page, space);
+        await page.click("[data-test=blueprints-nav-link]");
+        console.log("Launching sandbox with correct inputs for store and execution host name");
+        await launchBlueprintWithInputs(page, blueprintName, inputsDict);
+        try{
+            await page.waitForSelector(`[data-testid="error-details-text"]`, { timeout: 3000 })
+        }
+        catch{}
+        let visi = await page.isVisible('[data-testid="error-details-text"]');
+        expect(visi, `Sandbox launch failed, received following error: ` + await page.locator("[data-testid=error-details-text]").innerText()).toBeFalsy();
+        console.log("Waiting for sandbox page");
+        await page.waitForSelector('[data-test="sandbox-info-column"]');
+        console.log("Ending sandbox");
+        await page.click("[data-test=end-sandbox]");
+        await page.click("[data-test=confirm-end-sandbox]");
+    });
+
 });
