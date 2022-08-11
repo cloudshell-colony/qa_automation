@@ -96,7 +96,6 @@ export const getBlueprintErrors = async (page, BPName, space) => {
     }
     await page.waitForSelector(`[data-test=blueprint-row-${BPName}]`);
     const bpRow = await page.locator(`[data-test=blueprint-row-${BPName}]`);
-    //await bpRow.innerText(); //for some reason when i didn't do this the next locator didn't work
     const errList = [];
     const list = await bpRow.locator("ol li");
     const count = await list.count();
@@ -112,10 +111,27 @@ errList should contain the locators of the errors, as returned by the getBluepri
 expectedErrors should be a list of strings representing part of the expected error message
 */
 export const validateBlueprintErrors = async(page, BPName, errList, expectedErrors) => {
-    expect(errList.length, `Blueprint "${BPName}" has ${errList.length} error messages instead of expected ${expectedErrors.length}`).toBe(expectedErrors.length);
+    expect.soft(errList.length, `Blueprint "${BPName}" has ${errList.length} error messages instead of expected ${expectedErrors.length}`).toBe(expectedErrors.length);
     const bpRow = await page.locator(`[data-test=blueprint-row-${BPName}]`);
-    expect(bpRow.locator(`button:has-Text("Launch Sandbox")`), `Launch Sandbox button is not disabled on blueprint "${BPName}"`).toBeDisabled();
+    expect.soft(bpRow.locator(`button:has-Text("Launch Sandbox")`), `Launch Sandbox button is not disabled on blueprint "${BPName}"`).toBeDisabled();
     for(let i =0; i<expectedErrors.length; i++){
-        expect(errList[i], `Wrong error returned from "${BPName}" blueprint`).toContainText(expectedErrors[i]);
+        expect.soft(errList[i], `Wrong error returned from "${BPName}" blueprint`).toContainText(expectedErrors[i]);
     }
+}
+
+export const launchBlueprintWithInputs = async(page, BPName, inputsDict) => {
+    await page.click(`[data-test="blueprint-row-${BPName}"] button:has-text("Launch Sandbox")`);
+    for(const [key, val] of Object.entries(inputsDict)){
+        console.log(`Entering value "${val}" for sandbox input with selector "${key}"`)
+        if(key.startsWith("select")){ // Dropdown inputs like new execution host
+            await page.click(`[class~="${key}"]`);
+            await page.type(`[class~="${key}"]`, val);
+            await page.keyboard.press("Enter");
+        }
+        else{
+            await page.fill(`[data-test="${key}"]`, val);
+        }
+    }
+    await page.keyboard.press("Tab"); // Needed for the page to realise last input was filled
+    await page.click('[data-test="wizard-next-button"]');
 }
