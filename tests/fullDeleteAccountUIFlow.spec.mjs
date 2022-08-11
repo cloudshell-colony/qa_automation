@@ -9,6 +9,9 @@ const allAccountsPassword = process.env.allAccountsPassword;
 const prefix = process.env.accountPrefix;
 const timestemp = Math.floor(Date.now() / 1000);
 const sampleBP = process.env.sampleBPToStart;
+const firstName = "FN.".concat(prefix).concat(timestemp);
+const lastName = "LN.".concat(prefix).concat(timestemp);
+const companyName = "Company.".concat(prefix).concat(timestemp);
 let accountName = prefix.concat(timestemp);
 let email = prefix.concat("@").concat(timestemp).concat(".com");
 let SBUrl = '';
@@ -32,7 +35,7 @@ test.describe('test my tests', () => {
 
 
     test('create new account', async () => {
-        await createAccount(page, email, accountName, allAccountsPassword, baseURL);
+        await createAccount(page, firstName, lastName, companyName, email, accountName, allAccountsPassword, baseURL);
         await page.waitForURL(`${baseURL}/Sample`);
         await page.waitForSelector('[data-test="launch-\[Sample\]MySql Terraform Module"]');
     });
@@ -67,7 +70,7 @@ test.describe('test my tests', () => {
         await DeleteAcountUI(accountName, page, baseURL);
         expect(await page.waitForSelector('[data-test="signup-with-email"]'), "Delete account should navigate to signup page ");
         await page.goto(`${baseURL}`, { timeout: 90000 });
-        
+
 
     });
     //Skiped till bugs no  9051,8608
