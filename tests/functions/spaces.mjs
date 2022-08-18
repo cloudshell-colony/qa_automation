@@ -72,6 +72,7 @@ export const goToSpace = async (page, spaceName) => {
 };
 
 export const craeteSpaceFromQuickLauncher = async (page, newSpaceName) => {
+    console.log("Creating new space from the quick launcher\nThe new space name is " + newSpaceName);
     await page.click('text=Start by creating your own Space');
     await page.fill('[data-test="create-new-space-popup"]', newSpaceName);
     await page.click('[data-test="color-frogGreen"]');
@@ -200,5 +201,29 @@ export const repositoryAssetInfo = async (page, repoKeys) => {
     await signinWindow.waitForLoadState();
     // sync issue - created a function so I can add "await"
     await fillInRepoData(repoKeys, signinWindow);
+
+};
+
+export const addRepositoryAsset = async (page, repoKeys) => {
+    await repositoryAssetInfo(page, repoKeys)
+    // back to torque - start BP auto discavery
+    await page.waitForLoadState();
+    await page.click('[data-test="submit-button"]');
+    //  select ALL BPs for import after auto discavery
+    expect(await page.isVisible('[data-test="submit-button"]')).toBeTruthy();
+    expect(await page.isEnabled('[data-test="submit-button"]')).not.toBeTruthy();
+    await page.check('th input[type="checkbox"]');
+    expect(await page.isEnabled('[data-test="submit-button"]')).toBeTruthy();
+    await page.click('[data-test="submit-button"]');
+    // Auto-Generated Blueprints page approval
+    await page.isVisible('text=Auto-Generated Blueprints');
+    // validate that after auto discovery the number of BPs is as expected 
+    // reference number is set in .env file
+    let numberOfBlueprints = await page.locator('[data-test="setup-modal-container"] tr');
+    expect(await numberOfBlueprints.count()).toEqual(parseInt(repoKeys.BPscount) + 1);
+    // complete the flow of adding asset repo and open the next step of adding execution host
+    // await page.click('[data-test="submit-button"]');
+    await page.waitForSelector('text=Auto-Generated Blueprints');
+    await page.click('[data-test="submit-button"]');
 
 };

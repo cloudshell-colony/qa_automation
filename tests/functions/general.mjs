@@ -49,7 +49,7 @@ export const waitForSpaceInListToDisappear = async (page, newName) => {
 };
 
 export const executeCLIcommand = async (command) => {
-    console.log('starting to apply the execution host yaml file');
+    console.log('running the following CLI command: ' + command);
     exec(command, (error, stdout, stderr) => {
         if (error) {
             console.log(`error: ${error.message}`);
@@ -58,8 +58,8 @@ export const executeCLIcommand = async (command) => {
         }
         if (stderr) {
             console.log(`stderr: ${stderr}`);
-            expect(error).toBeNull();
-            return 0;
+            // expect(error).toBeNull();
+            // return 0;
         }
         console.log(`stdout: ${stdout}`);
         console.log('should have now active execution host');
@@ -94,4 +94,9 @@ export const validateAPIResponseis200 = async (response) => {
     }
 };
 
+export const selectFromDropbox = async (page, name, text = "") => {
+    await page.click(`[class~="select-${name}"]`);
+    await page.type(`[class~="select-${name}"]`, text);
+    await page.keyboard.press("Enter");
+};
 
