@@ -142,7 +142,6 @@ test.describe.serial('onboarding flow', () => {
     });
 
     test('Validate sandbox is active without errors', async () => {
-        await page.pause();
         await validateSBisActive(page);
     });
 
