@@ -18,6 +18,8 @@ export const getSessionAPI = async (USER, PASSWORD, myURL, account) => {
     });
 
     if (response.status != 200) {
+        console.log("got an issue with gettin session, login API ended with " + response.status);
+        console.log(`user: ${USER}, in account ${account}, faild to get session`);
         return (response);
     } else {
         const data = await response.json();

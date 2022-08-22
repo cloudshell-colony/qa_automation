@@ -34,7 +34,7 @@ export const validateSBisActive = async (page) => {
 };
 
 export const validateS3BucketWasCreatedInSB = async (page, bucketName) => {
-  await page.click('text=/ApplyCompleted/');
+  await page.click('text=/ApplyCompleted/', { timeout: 120 * 1000 });
   const applyResultedText = await page.locator('[data-test="log-block"]');
   expect(applyResultedText).toContainText(`s3_bucket_arn = "arn:aws:s3:::${bucketName}`, { timeout: 120 * 1000 });
 };
