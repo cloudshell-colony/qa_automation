@@ -208,6 +208,7 @@ export const addRepositoryAsset = async (page, repoKeys) => {
     await repositoryAssetInfo(page, repoKeys)
     // back to torque - start BP auto discavery
     await page.waitForLoadState();
+    console.log(await page.content());
     await page.click('[data-test="submit-button"]');
     //  select ALL BPs for import after auto discavery
     expect(await page.isVisible('[data-test="submit-button"]')).toBeTruthy();
