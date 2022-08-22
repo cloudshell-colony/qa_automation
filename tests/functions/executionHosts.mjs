@@ -40,14 +40,9 @@ export const getdeploymentFileAPI = async (session, myURL, name, nameSpace) => {
             'Accept': '*/*'
         }
     });
-    if (response.status != 200) {
-        const responseBody = await response.text();
-        console.log(responseBody);
-        expect(response.status).toBe(200);
-    };
-    expect(response.status).toBe(200);
-    expect(response.ok).toBeTruthy();
     const responseBody = await response.text();
+    expect(response.status, responseBody).toBe(200);
+    expect(response.ok).toBeTruthy();
     return responseBody;
 };
 

@@ -38,7 +38,8 @@ test.describe.serial('onboarding flow', () => {
     test.afterAll(async () => {
         console.log(`delete account: ${accountName}, after test complteted`);
         await DeleteAcountUI(accountName, page, baseURL);
-        const deleteCommand = "kubectl delete namespace " + executionHostName
+        const deleteCommand = "kubectl get namespaces | grep " + executionHostName + " | awk '{print $1}' | kubectl delete namespace `sed 's/}//'`"
+
         const deleteNamespace = executeCLIcommand(deleteCommand);
         await page.close();
     });
