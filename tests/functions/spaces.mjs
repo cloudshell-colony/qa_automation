@@ -171,6 +171,7 @@ export const fillInRepoData = async (providerKeys, signinWindow) => {
                     };
                 };
             };
+
             break;
         case "gitlab":
             await signinWindow.waitForLoadState();
@@ -181,9 +182,9 @@ export const fillInRepoData = async (providerKeys, signinWindow) => {
 
         default:
             console.log('invalid repo provederlid ');
+            console.log(await signinWindow.content());
             break;
     };
-    console.log(await signinWindow.content());
 };
 
 export const repositoryAssetInfo = async (page, repoKeys) => {
