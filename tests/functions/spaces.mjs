@@ -159,6 +159,7 @@ export const fillInRepoData = async (providerKeys, signinWindow) => {
                 console.log('waiting fore aditional 3 seconds since the page is still open');
                 await signinWindow.waitForTimeout(3 * 1000);
                 isPage = await signinWindow.isClosed();
+                console.log('after 3 seconds the page isClosed validation ended with: ' + await isPage);
                 if (isPage) {
                     console.log(await signinWindow.content());
                     break;
