@@ -36,16 +36,19 @@ export const closeModal = async (page) => {
 
 export const waitForSpaceInListToDisappear = async (page, newName) => {
     // to be used after space delete - maybe can be extended to other delete actions
-    // attempt during one sec to see that space is removed from list
+    // attempt during 10 seconds to see that space is removed from list
     let isVisi = await page.isVisible(`[data-test=space-row-${newName}]`, 500)
     let i = 0;
     while (i < 20) {
         i++;
         if (await isVisi) {
-            await page.waitForTimeout(50);
+            await page.waitForTimeout(500);
             isVisi = await page.isVisible(`[data-test=space-row-${newName}]`, 500)
         };
     };
+    if (isVisi) {
+        console.log('Sandbox is still in the list after 10 seconds');
+    }
 };
 
 export const executeCLIcommand = async (command) => {

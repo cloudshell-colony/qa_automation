@@ -75,8 +75,6 @@ test.describe.serial("can create new space, validate creation and delete it", ()
     test("can delete space", async () => {
         await deleteSpace(page, newName);
         await waitForSpaceInListToDisappear(page, newName);
-        // const space = await page.$(`[data-test=space-row-${newName}]`, { timeout: 2000 })
-        // expect(space).toBe(null);
         expect(await page.isVisible(`[data-test=space-row-${newName}]`, 50)).not.toBeTruthy();
     });
 });
