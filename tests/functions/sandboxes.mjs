@@ -34,7 +34,8 @@ export const validateSBisActive = async (page) => {
 };
 
 export const validateS3BucketWasCreatedInSB = async (page, bucketName) => {
-  await page.click('text=/ApplyCompleted/');
+  // await page.click('text=/ApplyCompleted/');
+  await page.click(`[data-test=event-name]:has-text("Apply")`);
   const applyResultedText = await page.locator('[data-test="log-block"]');
   // expect(applyResultedText).toContainText(`s3_bucket_arn = "arn:aws:s3:::${bucketName}`, { timeout: 120 * 1000 });
   expect(applyResultedText).toContainText(`s3_bucket_arn = "arn:aws:s3:::${bucketName}`);
@@ -56,16 +57,13 @@ export const endSandbox = async (page) => {
 };
 
 export const endSandboxValidation = async (page, sandboxName) => {
-  await page.waitForSelector(`tr:has-text("${sandboxName}")`, { has: page.locator("data-testid=moreMenu") });
-  let visi = page.isVisible(`tr:has-text("${sandboxName}")`, { has: page.locator("data-testid=moreMenu") });
-  expect(await page.locator(`tr:has-text("${sandboxName}")`, { has: page.locator("data-testid=moreMenu") })).toContainText("Terminating");
-  while (await visi) {
-    await page.waitForTimeout(50);
-    visi = page.isVisible(`tr:has-text("${sandboxName}")`);
+  try{
+    await page.click(`[data-toggle=true]`); //Need UI to add data-test for this button
   }
-  await page.click(`[data-toggle=true]`); //Need UI to add data-test for this button
+  catch{}
   await page.click(`tr:has-text("${sandboxName}")`);
   await page.waitForSelector("[data-test=sandbox-page-content]");
+  await page.waitForSelector('[data-test="sandbox-info-column"] div:has-text("Sandbox StatusEnded")', { timeout: 5 * 60 * 1000 });
   const items = await page.locator('[data-test="grain-kind-indicator"]');
   for (let i = 0; i < await items.count(); i++) {
     await items.nth(i).click();
@@ -73,11 +71,11 @@ export const endSandboxValidation = async (page, sandboxName) => {
   const destroy = await page.locator('text=/DestroyCompleted/');
   const uninstall = await page.locator('text=/UninstallCompleted/');
   for (let i = 0; i < await destroy.count(); i++) {
-    expect(destroy.nth(i)).toContainText(/Completed/);
+    expect(destroy.nth(i), "Destroy did not complete properly").toContainText(/Completed/);
     console.log("found Completed destroy");
   };
   for (let i = 0; i < await uninstall.count(); i++) {
-    expect(uninstall.nth(i)).toContainText(/Completed/);
+    expect(uninstall.nth(i), "Uninstall did not complete properly").toContainText(/Completed/);
     console.log("found Completed uninstall");
   };
 };

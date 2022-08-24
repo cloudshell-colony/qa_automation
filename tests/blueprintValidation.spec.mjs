@@ -50,7 +50,7 @@ test.describe('Blueprint validation', ()=> {
         })
     };
 
-    test("Static validation - Adding & removing execution host changes blueprint errors", async () => {
+    test.skip("Static validation - Adding & removing execution host changes blueprint errors", async () => {
         blueprintName = "bad-eks";
         let expectedErrors = ["host missing compute-service field"];
         //go to execution hosts management, needs to be a function
@@ -77,36 +77,44 @@ test.describe('Blueprint validation', ()=> {
         await validateBlueprintErrors(page, blueprintName, errList, expectedErrors);
     });
 
-    test("Dynamic validation - Sandobx launch fails when providing wrong store and host name inputs", async() => {
-        blueprintName = "store and host inputs";
-        const inputsDict = {"inputs\.store" : "wrong value", "inputs\.host" : "wrong value"};
+    test("Dynamic validation - Sandobx launch fails when providing wrong store input", async() => {
+        blueprintName = "host input";
+        const inputsDict = {"inputs\.host" : "wrong value"};
         await goToSpace(page, space);
         await page.click("[data-test=blueprints-nav-link]");
-        console.log("Launching sandbox with bad inputs for store and execution host name");
+        console.log("Launching sandbox with bad inputs for execution host name");
         await launchBlueprintWithInputs(page, blueprintName, inputsDict);
         await page.waitForSelector("[data-testid=error-details-text]");
         const errMsg = await page.locator("[data-testid=error-details-text]");
-        expect(errMsg, "Did not receive expected error when providing wrong store value").toContainText("Repository 'wrong value (in grains->bucket_1->spec->source->store)' does not exist");
         expect(errMsg, "Did not receive expected error when providing wrong host name value").toContainText("The compute service 'wrong value (in grains->bucket_1->spec->host->name)' was not found");
         await page.click("[data-test=close-popup]");
         await page.click("[data-test=wizard-cancel-button]");
     });
 
-    test("Dynamic validation - Sandbox launches successfully when providing correct store and host name inputs", async() => {
-        blueprintName = "store and host inputs";
-        const inputsDict = {"inputs\.store" : "qa-assets", "inputs\.host" : "qa-eks"};
+    test("Dynamic validation - Sandbox launches successfully when providing correct execution host input", async() => {
+        let err;
+        blueprintName = "host input";
+        const inputsDict = {"inputs\.host" : "qa-eks"};
         await goToSpace(page, space);
         await page.click("[data-test=blueprints-nav-link]");
-        console.log("Launching sandbox with correct inputs for store and execution host name");
+        console.log("Launching sandbox with correct inputs for execution host name");
         await launchBlueprintWithInputs(page, blueprintName, inputsDict);
         try{
-            await page.waitForSelector(`[data-testid="error-details-text"]`, { timeout: 3000 })
+            err = await page.locator("[data-testid=error-details-text]", { timeout: 3000 }).innerText();
         }
         catch{}
         let visi = await page.isVisible('[data-testid="error-details-text"]');
-        expect(visi, `Sandbox launch failed, received following error: ` + await page.locator("[data-testid=error-details-text]").innerText()).toBeFalsy();
-        console.log("Waiting for sandbox page");
+        expect(visi, `Sandbox launch failed, received following error: ` + err).toBeFalsy();
         await page.waitForSelector('[data-test="sandbox-info-column"]');
+        console.log("Waiting for sandbox to end launch");
+        let sandboxStatus = await page.locator('[data-test="sandbox-info-column"]').innerText();
+        var startTime = Date.now();
+        while(sandboxStatus.includes("Launching") && Date.now() - startTime < 10000){
+             sandboxStatus = await page.locator('[data-test="sandbox-info-column"]').locator('.sandbox-status').innerText();
+        }
+        if(sandboxStatus.includes("Launching")){
+            throw("Sandbox still launching after long time");
+        }
         console.log("Ending sandbox");
         await page.click("[data-test=end-sandbox]");
         await page.click("[data-test=confirm-end-sandbox]");
