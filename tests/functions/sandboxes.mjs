@@ -10,7 +10,7 @@ export const startSampleSandbox = async (page, sandboxFullName) => {
 };
 
 export const validateSBisActive = async (page) => {
-  await page.waitForSelector('[data-test="sandbox-info-column"] div:has-text("Sandbox StatusActive")', { timeout: 120000 });
+  await page.waitForSelector('[data-test="sandbox-info-column"] div:has-text("Sandbox StatusActive")', { timeout: 5 * 60 * 1000 });
   expect(await page.isVisible('[data-test="sandbox-info-column"] div:has-text("Sandbox StatusActive")', 500)).toBeTruthy();
   const items = await page.locator('[data-test="grain-kind-indicator"]');
   for (let i = 0; i < await items.count(); i++) {
@@ -34,7 +34,7 @@ export const validateSBisActive = async (page) => {
 };
 
 export const validateS3BucketWasCreatedInSB = async (page, bucketName) => {
-  await page.click('text=/ApplyCompleted/', { timeout: 120 * 1000 });
+  await page.click('text=/ApplyCompleted/', { timeout: 5 * 60 * 1000 });
   const applyResultedText = await page.locator('[data-test="log-block"]');
   expect(applyResultedText).toContainText(`s3_bucket_arn = "arn:aws:s3:::${bucketName}`, { timeout: 120 * 1000 });
 };

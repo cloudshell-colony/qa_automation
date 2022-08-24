@@ -46,7 +46,7 @@ test.describe.serial('onboarding flow', () => {
 
     test('create new account', async () => {
         await createAccount(page, firstName, lastName, companyName, email, accountName, allAccountsPassword, baseURL);
-        await page.waitForURL(`${baseURL}/Sample`);
+        await page.waitForURL(`${baseURL}/Sample`, { timeout: 3 * 60 * 1000 });
         await page.waitForSelector('[data-test="launch-\[Sample\]MySql Terraform Module"]');
         // comment out screenshot validation due to docker image path issue - windows vs ubuntu
         // await expect(page).toHaveScreenshot({ maxDiffPixels: 5000 });
