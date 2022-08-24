@@ -154,12 +154,13 @@ export const fillInRepoData = async (providerKeys, signinWindow) => {
             await signinWindow.click('input:has-text("Sign in")');
             await signinWindow.waitForTimeout(1000);
             let isPage = await signinWindow.isClosed();
-            console.log(`apperntly the check if the ${provider} login page is closed ended with: ${isPage}, entering additional wait`);
+            console.log(`apperntly the check if the ${provider} login page is closed ended with: ${isPage}`);
             if (!isPage) {
-                console.log('waiting fore aditional 3 seconds');
+                console.log('waiting fore aditional 3 seconds since the page is still open');
                 await signinWindow.waitForTimeout(3 * 1000);
                 isPage = await signinWindow.isClosed();
                 if (isPage) {
+                    console.log(await signinWindow.content());
                     break;
                 } else {
                     const visi = await signinWindow.isVisible('text=Authorize QualiNext', 500);
@@ -182,7 +183,6 @@ export const fillInRepoData = async (providerKeys, signinWindow) => {
 
         default:
             console.log('invalid repo provederlid ');
-            console.log(await signinWindow.content());
             break;
     };
 };
