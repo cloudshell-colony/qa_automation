@@ -10,25 +10,38 @@ export const startSampleSandbox = async (page, sandboxFullName) => {
 };
 
 export const validateSBisActive = async (page) => {
-  await page.waitForSelector('[data-test="sandbox-info-column"] div:has-text("Sandbox StatusActive")', { timeout: 5 * 60 * 1000 });
-  expect(await page.isVisible('[data-test="sandbox-info-column"] div:has-text("Sandbox StatusActive")', 500)).toBeTruthy();
-  const items = await page.locator('[data-test="grain-kind-indicator"]');
-  for (let i = 0; i < await items.count(); i++) {
-    await items.nth(i).click();
-  }
-  const prepare = await page.locator('text=/PrepareCompleted/');
-  const install = await page.locator('text=/InstallCompleted/');
-  const apply = await page.locator('text=/ApplyCompleted/');
+
+  await page.waitForSelector('[data-test="sandbox-info-column"] div:has-text("StatusActive")', { timeout: 5 * 60 * 1000 });
+  expect(await page.isVisible('[data-test="sandbox-info-column"] div:has-text("StatusActive")', 500)).toBeTruthy();
+  await page.click('[data-test="open-logs"]');
+  // const logTable = await page.locator('tr');
+  // for (let i = 0; i < logTable.length; i++) {
+  //   console.log(`i index number is ${i} and should reach ${logTable.length}`);
+  //   await expect(logTable[i]).toContainText(/ComplMMMMMeted/);
+  //   await expect(logTable[i]).toContainText(/Started/);
+  //   let rowText = logTable[i];
+  //   console.log(`validated row ${i} is active and contains ${rowText}`);
+  // };
+  // await page.pause();
+
+
+  // const items = await page.locator('[data-test="grain-kind-indicator"]');
+  // for (let i = 0; i < await items.count(); i++) {
+  //   await items.nth(i).click();
+  // }
+  const prepare = await page.locator('td:has-text("Prepare")');
+  const install = await page.locator('td:has-text("Install")');
+  const apply = await page.locator('td:has-text("Apply")');
   for (let i = 0; i < await prepare.count(); i++) {
-    expect(prepare.nth(i)).toContainText(/Completed/);
+    await expect(prepare.nth(i)).toContainText(/Completed/);
     console.log("found Completed prepare");
   };
   for (let i = 0; i < await install.count(); i++) {
-    expect(install.nth(i)).toContainText(/Completed/)
+    await expect(install.nth(i)).toContainText(/Completed/)
     console.log("found Completed install");
   };
   for (let i = 0; i < await apply.count(); i++) {
-    expect(apply.nth(i)).toContainText(/Completed/)
+    await expect(apply.nth(i)).toContainText(/Completed/)
     console.log("found Completed apply");
   };
 };
@@ -50,32 +63,27 @@ export const goToSandbox = async (page, sandboxName) => {
 
 export const endSandbox = async (page) => {
   //end sandbox from sandbox detals page (not from sandbox list)
-  // end sandbox from the sandbox detailed view page - NOT from list.
   await page.click("[data-test=end-sandbox]");
-  page.click("[data-test=confirm-end-sandbox]");
-  await page.waitForNavigation();
+  await page.click("[data-test=confirm-end-sandbox]");
 };
 
 export const endSandboxValidation = async (page, sandboxName) => {
-  try{
+  try {
     await page.click(`[data-toggle=true]`); //Need UI to add data-test for this button
   }
-  catch{}
+  catch { }
   await page.click(`tr:has-text("${sandboxName}")`);
   await page.waitForSelector("[data-test=sandbox-page-content]");
-  await page.waitForSelector('[data-test="sandbox-info-column"] div:has-text("Sandbox StatusEnded")', { timeout: 5 * 60 * 1000 });
-  const items = await page.locator('[data-test="grain-kind-indicator"]');
-  for (let i = 0; i < await items.count(); i++) {
-    await items.nth(i).click();
-  }
-  const destroy = await page.locator('text=/DestroyCompleted/');
-  const uninstall = await page.locator('text=/UninstallCompleted/');
+  await page.waitForSelector('[data-test="sandbox-info-column"] div:has-text("Ended")', { timeout: 5 * 60 * 1000 });
+  await page.click('[data-test="open-logs"]');
+  const destroy = await page.locator('td:has-text("Destroy")');
+  const uninstall = await page.locator('td:has-text("Uninstall")');
   for (let i = 0; i < await destroy.count(); i++) {
-    expect(destroy.nth(i), "Destroy did not complete properly").toContainText(/Completed/);
+    await expect(destroy.nth(i), "Destroy did not complete properly").toContainText(/Completed/);
     console.log("found Completed destroy");
   };
   for (let i = 0; i < await uninstall.count(); i++) {
-    expect(uninstall.nth(i), "Uninstall did not complete properly").toContainText(/Completed/);
+    await expect(uninstall.nth(i), "Uninstall did not complete properly").toContainText(/Completed/);
     console.log("found Completed uninstall");
   };
 };
