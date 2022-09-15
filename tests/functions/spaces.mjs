@@ -16,7 +16,7 @@ export default function removeUserFromSpaceAPI(user_email, myURL, session, space
 
 export const createSpace = async (page, spaceName) => {
     if (!page.url().endsWith("admin/spaces")) {
-        await goToAdminConsole(page);
+        await goToAdminConsole(page, "spaces");
     }
     await page.click(`[data-test=create-new-space]`);
     await page.locator(`[data-test=create-new-space-popup]`).fill(spaceName);
@@ -25,7 +25,7 @@ export const createSpace = async (page, spaceName) => {
 
 export const editSpace = async (page, spaceName, newName) => {
     if (!page.url().endsWith("admin/spaces")) {
-        await goToAdminConsole(page);
+        await goToAdminConsole(page, "spaces");
     }
     await page.waitForSelector('[role=rowgroup]');
     await page.locator(`[data-test=space-row-${spaceName}]`).locator("[data-testid=moreMenu]").click();
@@ -39,7 +39,7 @@ export const deleteSpace = async (page, spaceName, input) => {
         input = spaceName;
     }
     if (!page.url().endsWith("admin/spaces")) {
-        await goToAdminConsole(page);
+        await goToAdminConsole(page, "spaces");
     }
     await page.locator(`[data-test=space-row-${spaceName}]`).locator("[data-testid=moreMenu]").click();
     await page.locator(`[data-test=space-row-${spaceName}]`).locator('text=Delete').click();

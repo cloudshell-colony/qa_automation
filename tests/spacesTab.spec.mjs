@@ -33,7 +33,7 @@ test.describe.serial("can create new space, validate creation and delete it", ()
         await page.click("[data-test=close-modal]");
         const currSpace = await page.locator("[data-test=currently-selected-space]").innerText();
         expect(currSpace).toBe(spaceName);
-        await goToAdminConsole(page);
+        await goToAdminConsole(page, "spaces");
         const spaceElem = await page.locator(`[data-test=space-row-${spaceName}]`);
         await expect(spaceElem).toContainText(spaceName, { useInnerText: true });
     });
