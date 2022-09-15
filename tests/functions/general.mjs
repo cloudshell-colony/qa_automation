@@ -2,6 +2,8 @@ import crypto from "crypto";
 import { expect } from "@playwright/test";
 import fs from "fs";
 import { exec } from "child_process";
+import { goToSandboxListPage, stopAndValidateAllSBsCompleted } from "./sandboxes.mjs";
+import { DeleteAcountUI } from "./accounts.mjs";
 
 
 export const generateSecret = (email, account) => {
@@ -103,3 +105,11 @@ export const selectFromDropbox = async (page, name, text = "") => {
     await page.keyboard.press("Enter");
 };
 
+export const afterTestCleanup = async (page, accountName, baseURL) => {
+    console.log(`stopping all Sbs after test complteted`);
+    await goToSandboxListPage(page);
+    await stopAndValidateAllSBsCompleted(page);
+    console.log(`delete account: ${accountName}, after test complteted`);
+    await DeleteAcountUI(accountName, page, baseURL);
+    await page.close();
+};

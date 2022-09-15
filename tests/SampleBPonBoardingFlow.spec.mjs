@@ -1,7 +1,8 @@
 import { test, expect } from "@playwright/test";
 import { createAccount, DeleteAcountUI, loginToAccount, validateSbLauncher } from "./functions/accounts.mjs";
 import { launchBlueprintFromSandboxPage, launchBlueprintFromBPList } from "./functions/blueprints.mjs";
-import { startSampleSandbox, endSandbox, validateSBisActive, endSandboxValidation, validateAllSBCompleted } from "./functions/sandboxes.mjs";
+import { afterTestCleanup } from "./functions/general.mjs";
+import { startSampleSandbox, endSandbox, validateSBisActive, endSandboxValidation } from "./functions/sandboxes.mjs";
 
 const baseURL = process.env.baseURL;
 const allAccountsPassword = process.env.allAccountsPassword;
@@ -30,8 +31,7 @@ test.describe.serial('onboarding flow', () => {
   });
 
   test.afterAll(async () => {
-    await DeleteAcountUI(accountName, page, baseURL);
-    await page.close();
+    await afterTestCleanup(page, accountName, baseURL);
   });
 
   test('create new account', async () => {
