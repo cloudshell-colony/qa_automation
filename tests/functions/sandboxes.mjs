@@ -14,21 +14,6 @@ export const validateSBisActive = async (page) => {
   await page.waitForSelector('[data-test="sandbox-info-column"] div:has-text("StatusActive")', { timeout: 5 * 60 * 1000 });
   expect(await page.isVisible('[data-test="sandbox-info-column"] div:has-text("StatusActive")', 500)).toBeTruthy();
   await page.click('[data-test="open-logs"]');
-  // const logTable = await page.locator('tr');
-  // for (let i = 0; i < logTable.length; i++) {
-  //   console.log(`i index number is ${i} and should reach ${logTable.length}`);
-  //   await expect(logTable[i]).toContainText(/ComplMMMMMeted/);
-  //   await expect(logTable[i]).toContainText(/Started/);
-  //   let rowText = logTable[i];
-  //   console.log(`validated row ${i} is active and contains ${rowText}`);
-  // };
-  // await page.pause();
-
-
-  // const items = await page.locator('[data-test="grain-kind-indicator"]');
-  // for (let i = 0; i < await items.count(); i++) {
-  //   await items.nth(i).click();
-  // }
   const prepare = await page.locator('td:has-text("Prepare")');
   const install = await page.locator('td:has-text("Install")');
   const apply = await page.locator('td:has-text("Apply")');
@@ -88,23 +73,54 @@ export const endSandboxValidation = async (page, sandboxName) => {
   };
 };
 
-export const validateAllSBCompleted = async (page) => {
-  let visi = await page.isVisible(`tr:has-text("Active")`, { has: page.locator("data-testid=moreMenu") });
-  if (await visi) {
-    console.log("active SBs");
-  }
-  for (let index = 0; index < 4; index++) {
-    visi = await page.isVisible(`tr:has-text("Terminating")`, { has: page.locator("data-testid=moreMenu") });
-    if (await visi) {
-      await page.waitForTimeout(30 * 1000);
-    } else {
-      break;
+export const stopAndValidateAllSBsCompleted = async (page) => {
+  const waitTimeInSec = 15;
+  const loopsToWait = 16;
+  let LaunchingSB = await page.isVisible(`td:has-text("Launching")`);
+  if (await LaunchingSB) {
+    console.log("Found sandboxes in Launching state");
+    for (let index = 0; index < loopsToWait; index++) {
+      console.log(`Waiting for SBs to be active, witing for the ${index + 1} time, max number of wait loops is ${loopsToWait}, each for ${waitTimeInSec} seconds`);
+      LaunchingSB = await page.isVisible(`tr:has-text("Launching")`);
+      if (await LaunchingSB) {
+        await page.waitForTimeout(waitTimeInSec * 1000);
+      } else {
+        break;
+      }
     }
   }
-  visi = await page.isVisible(`tr:has-text("Terminating")`, { has: page.locator("data-testid=moreMenu") });
-  if (await visi) {
-    expect(visi, "we have a problem, SB are not completed after two minutes").toBeFalsy();
+
+  let activeSB = await page.locator(`td:has-text("Active")`);
+  const loops = await activeSB.count();
+  console.log(`there are ${loops} active sandboxes to stop`);
+  for (let i = 0; i < loops; i++) {
+    console.log(`Stopping the ${i + 1} sandbox from ${loops}`);
+    await page.locator(`tr:has-text("Active")`, { has: page.locator("data-testid=moreMenu") }).first().click();
+    await page.click('[data-test="end-sandbox"]');
+    await page.click('[data-test="confirm-end-sandbox"]');
+  };
+  await page.waitForTimeout(1000);
+  let TerminatingSB = await page.isVisible(`td:has-text("Terminating")`);
+  if (await TerminatingSB) {
+    console.log("found sandboxes in Terminating state");
+    for (let index = 0; index < loopsToWait; index++) {
+      console.log(`Waiting for SBs to end, witing for the ${index + 1} time, max number of wait loops is ${loopsToWait}, each for ${waitTimeInSec} seconds`);
+      TerminatingSB = await page.isVisible(`tr:has-text("Terminating")`);
+      if (await TerminatingSB) {
+        await page.waitForTimeout(waitTimeInSec * 1000);
+      } else {
+        break;
+      }
+    }
   }
+  // printing error logs if end SB faild
+  let visiTerminating = await page.isVisible(`td:has-text("Terminating")`);
+  expect(await visiTerminating, "We have a problem, SB ware not completed").toBeFalsy();
+  let visiActive = await page.isVisible(`td:has-text("Active")`);
+  expect(await visiActive, "We have a problem, we still have active sandboxes").toBeFalsy();
+  let visiLaunching = await page.isVisible(`td:has-text("Launching")`);
+  expect(await visiActive, "We have a problem, we still have launching sandboxes").toBeFalsy();
+
 };
 
 export const goToSandboxListPage = async (page) => {
