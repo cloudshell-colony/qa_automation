@@ -126,7 +126,7 @@ test.describe.serial('Add and delete user', () => {
         console.log(`new user ${newUserEmail} got session ${newUserSession}`);
     });
 
-    test.skip('New user can get all published blueprints', async () => {
+    test('New user can get all published blueprints', async () => {
         const publishedBlueprints = await getPublishedBlueprints(newUserSession, space, baseURL);
         await validateAPIResponseis200(publishedBlueprints);
         const publishedBlueprintsData = await publishedBlueprints.json();
