@@ -49,7 +49,7 @@ test.describe('Blueprint validation', ()=> {
         })
     };
 
-    test.skip("Static validation - Adding & removing execution host changes blueprint errors", async () => {
+    test("Static validation - Adding & removing execution host changes blueprint errors", async () => {
         blueprintName = "bad-eks";
         let expectedErrors = ["host missing compute-service field"];
         //go to execution hosts management, needs to be a function
