@@ -10,8 +10,8 @@ const password = process.env.allAccountsPassword;
 const account = process.env.account;
 const user = process.env.adminEMail
 const space = "bp-validation";
-const bpValidationEKS = "bpValidation-eks";
-const executionHostSpaceName = process.env.execHostNameSpace;
+const bpValidationEKS = "bp-validation";
+const executionHostNameSpace = "torque-agent-bp-validation";
 let session = "empty session";
 let blueprintName;
 
@@ -45,8 +45,7 @@ test.describe('Blueprint validation', ()=> {
                 await goToSpace(page, space);
                 await page.click("[data-test=blueprints-nav-link]");
             }
-            const errList = await getBlueprintErrors(page, BPName);
-            await validateBlueprintErrors(page, BPName, errList, expectedErrors);
+            await validateBlueprintErrors(page, BPName, await getBlueprintErrors(page, BPName), expectedErrors);
         })
     };
 
@@ -57,24 +56,21 @@ test.describe('Blueprint validation', ()=> {
         await page.click("[data-test=sidebar-dropdown]");
         await page.click("[data-test=option__admin]");
         console.log("Associating execution host to space");
-        await associateExecutionHost(page, bpValidationEKS, executionHostSpaceName, space);
+        await associateExecutionHost(page, bpValidationEKS, executionHostNameSpace, space);
         await goToSpace(page, space);
         await page.click("[data-test=blueprints-nav-link]");
         //get and validate blueprint errors
         await page.waitForTimeout(10000); // wait for 10 seconds for blueprint errors to update
-        let errList = await getBlueprintErrors(page, blueprintName);
         console.log("Validating blueprint errors after associating execution host");
-        await validateBlueprintErrors(page, blueprintName, errList, expectedErrors);
-        //disassociate eks from space, tries for 5 seconds
+        await validateBlueprintErrors(page, blueprintName, await getBlueprintErrors(page, blueprintName), expectedErrors);
         console.log("Removing execution host from space");
         const response = await disassociateExecutionHostAPI(session, baseURL, space, bpValidationEKS);   
         expect(response.status, 'Execution host was not removed from space, MUST remove it manually').toBe(200)
         expectedErrors.unshift(`The compute service '${bpValidationEKS}`); //Adding error that should appear after removing EKS
         //get and validate blueprint errors
         await page.waitForTimeout(10000); // wait for 10 seconds for blueprint errors to update
-        errList = await getBlueprintErrors(page, blueprintName);
         console.log("Validating blueprint errors after removing execution host");
-        await validateBlueprintErrors(page, blueprintName, errList, expectedErrors);
+        await validateBlueprintErrors(page, blueprintName, await getBlueprintErrors(page, blueprintName), expectedErrors);
     });
 
     test("Dynamic validation - Sandobx launch fails when providing wrong store input", async() => {
@@ -107,13 +103,13 @@ test.describe('Blueprint validation', ()=> {
         expect(visi, `Sandbox launch failed, received following error: ` + err).toBeFalsy();
         await page.waitForSelector('[data-test="sandbox-info-column"]');
         console.log("Waiting for sandbox to end launch");
-        let sandboxStatus = await page.locator('[data-test="sandbox-info-column"]').innerText();
+        let sandboxInfo = await page.locator('[data-test="sandbox-info-column"]').innerText();
         var startTime = Date.now();
-        while(sandboxStatus.includes("Launching") && Date.now() - startTime < 10000){
-             sandboxStatus = await page.locator('[data-test="sandbox-info-column"]').locator('.sandbox-status').innerText();
+        while(sandboxInfo.includes("Launching") && Date.now() - startTime < 300000){
+             sandboxInfo = await page.locator('[data-test="sandbox-info-column"]').innerText();
         }
-        if(sandboxStatus.includes("Launching")){
-            throw("Sandbox still launching after long time");
+        if(sandboxInfo.includes("Launching")){
+            throw("Possible error, Sandbox still launching after long time" + sandboxInfo);
         }
         console.log("Ending sandbox");
         await page.click("[data-test=end-sandbox]");

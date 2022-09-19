@@ -1,5 +1,6 @@
 import fetch from "node-fetch";
 import { expect } from "@playwright/test";
+import { selectFromDropbox } from "./general.mjs";
 
 export const associateExecutionHost = async (page, executionHost, nameSpace, space) => {
     //await page.waitForSelector("[data-test=add-new-execution-host]");
@@ -11,11 +12,11 @@ export const associateExecutionHost = async (page, executionHost, nameSpace, spa
         throw (`Execution host "${executionHost}" not found`);
     }
     await page.locator(`[data-test=execution-hosts-${executionHost}]`).locator("[data-testid=moreMenu]").click();
-    await page.click("[data-test=add-host-to-space-more-menu-option]");
-    await page.click(`[class~="select-space__control"]`);
-    await page.type(`[class~="select-space__control"]`, space);
-    await page.keyboard.press("Enter");
-    await page.fill("[data-test=namespace]", nameSpace);
+    await page.click("[data-test=manage-more-menu-option]");
+    await page.click(`[data-test="add-space-to-compute-service"]`);
+    await selectFromDropbox(page, "space__value-container", space);
+    await selectFromDropbox(page, "default-namespace-full__value-container", nameSpace);
+    await selectFromDropbox(page, "default-service-account-full__value-container", "default");
     await page.click("[data-test=submit-button]");
 };
 
