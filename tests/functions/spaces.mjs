@@ -74,11 +74,17 @@ export const goToSpace = async (page, spaceName) => {
 export const craeteSpaceFromQuickLauncher = async (page, newSpaceName) => {
     console.log("Creating new space from the quick launcher\nThe new space name is " + newSpaceName);
     await page.click('text=Start by creating your own Space');
+    await enterNewSpaceDetails(page, newSpaceName);
+};
+
+export const enterNewSpaceDetails = async (page, newSpaceName) => {
     await page.fill('[data-test="create-new-space-popup"]', newSpaceName);
     await page.click('[data-test="color-frogGreen"]');
     await page.click('[data-test="icon-face"]');
     await page.click('[data-test="create-space"]');
 };
+
+
 export const generateRepoSpecificKeys = async (repProvider) => {
     const githubRepo = process.env.githubRepo;
     const githubUserNAme = process.env.githubUserNAme;
@@ -145,14 +151,20 @@ export const fillInRepoData = async (providerKeys, signinWindow) => {
 
     switch (provider.toLowerCase()) {
         case "bitbucket":
-            console.log('missing BitBucket repo');
+            console.log('missing BitBucket implementation');
             break;
         case "github":
             await signinWindow.waitForLoadState();
             await signinWindow.fill('input[name="login"]', repoUsername);
             await signinWindow.fill('input[name="password"]', repoPassword);
             await signinWindow.click('input:has-text("Sign in")');
+            await signinWindow.pause();
             await signinWindow.waitForTimeout(1000);
+            const visi = await signinWindow.isVisible('text=Authorize QualiNext', 500);
+            if (visi) {
+                await signinWindow.click('text=Authorize QualiNext');
+            }
+            // const authrnticateWithMail = signinWindow.isVisible()
             let isPage = await signinWindow.isClosed();
             console.log(`apperntly the check if the ${provider} login page is closed ended with: ${isPage}`);
             if (!isPage) {
@@ -164,24 +176,19 @@ export const fillInRepoData = async (providerKeys, signinWindow) => {
                     console.log(await signinWindow.content());
                     break;
                 } else {
-                    const visi = await signinWindow.isVisible('text=Authorize QualiNext', 500);
-                    if (visi) {
-                        await signinWindow.click('text=Authorize QualiNext');
-                    } else {
-                        console.log('we have a problem, the popup is still open and we dont know why');
-                        console.log(await signinWindow.content());
-                    };
+                    console.log('we have a problem, the popup is still open and we dont know why');
+                    console.log(await signinWindow.content());
+                    break;
                 };
             };
-
             break;
         case "gitlab":
-            await signinWindow.waitForLoadState();
-            await signinWindow.fill('[data-testid="username-field"]', repoUsername);
-            await signinWindow.fill('input[name="user\[password\]"]', repoPassword);
-            await signinWindow.click('[data-testid="sign-in-button"]');
+            console.log('Missing Gitlab implementation');
+            // await signinWindow.waitForLoadState();
+            // await signinWindow.fill('[data-testid="username-field"]', repoUsername);
+            // await signinWindow.fill('input[name="user\[password\]"]', repoPassword);
+            // await signinWindow.click('[data-testid="sign-in-button"]');
             break;
-
         default:
             console.log('invalid repo provederlid ');
             break;
