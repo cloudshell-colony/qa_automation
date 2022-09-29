@@ -166,12 +166,12 @@ export const fillInRepoData = async (providerKeys, signinWindow) => {
                 await signinWindow.click('text=Authorize QualiNext');
             }
             // if github wishes for mail authentication...
-            const authrnticateWithMail = signinWindow.isVisible('text=Device verification');
+            const authrnticateWithMail = await signinWindow.isVisible('text=Device verification');
             if (authrnticateWithMail) {
+                console.log("we got into mail verification");
                 const codeList = await getCodesListFromMailinator();
-                await page.click('[placeholder="XXXXXX"]');
-                await page.fill(codeList[2]);
-                await page.click('button:has-tesxt("Verifying…")')
+                await signinWindow.locator('[placeholder="XXXXXX"]').fill(await codeList[2]);
+                await signinWindow.click('button:has-tesxt("Verifying…")')
             }
             let isPage = await signinWindow.isClosed();
             console.log(`apperntly the check if the ${provider} login page is closed ended with: ${isPage}`);
