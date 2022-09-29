@@ -1,5 +1,6 @@
 import { expect } from "@playwright/test";
 import fetch from "node-fetch";
+import { getCodesListFromMailinator } from "./general.mjs";
 import goToAdminConsole from "./goToAdminConsole.mjs";
 
 export default function removeUserFromSpaceAPI(user_email, myURL, session, space_name) {
@@ -164,7 +165,14 @@ export const fillInRepoData = async (providerKeys, signinWindow) => {
             if (visi) {
                 await signinWindow.click('text=Authorize QualiNext');
             }
-            // const authrnticateWithMail = signinWindow.isVisible()
+            // if github wishes for mail authentication...
+            const authrnticateWithMail = signinWindow.isVisible('text=Device verification');
+            if (authrnticateWithMail) {
+                const codeList = await getCodesListFromMailinator();
+                await page.click('[placeholder="XXXXXX"]');
+                await page.fill(codeList[2]);
+                await page.click('button:has-tesxt("Verifying…")')
+            }
             let isPage = await signinWindow.isClosed();
             console.log(`apperntly the check if the ${provider} login page is closed ended with: ${isPage}`);
             if (!isPage) {

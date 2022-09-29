@@ -126,7 +126,7 @@ export const afterTestCleanup = async (page, accountName, baseURL) => {
 };
 
 export const getMailsFromMailinator = async () => {
-    const endpoint = "domains/private/inboxes/qualiqa?limit=3&sort=descending"
+    const endpoint = "domains/private/inboxes/qualiqa?limit=4&sort=descending"
     const mailList = await fetch(`${mailinatorURL}${endpoint}`, {
         "method": "GET",
         "headers": {
@@ -139,8 +139,6 @@ export const getMailsFromMailinator = async () => {
     // console.log(await mailListJson);
     for (let mail in await mailListJson.msgs) {
         if (mailListJson.msgs[mail].subject.includes("verify")) {
-
-            // console.log(mailListJson.msgs[mail].id);
             mailIdList.push(mailListJson.msgs[mail].id);
         }
     }
@@ -161,7 +159,7 @@ export const getEmailBodyFromMailinator = async (mailId) => {
     return body;
 };
 
-export const getCodeFromEmailBody = async (body) => {
+export const getSingleCodeFromEmailBody = async (body) => {
     let index = body.indexOf("Verification code:");
     let endIndex = body.indexOf("\n", index);
     const code = body.slice(index + ("Verification code: ").length, endIndex);
@@ -170,6 +168,16 @@ export const getCodeFromEmailBody = async (body) => {
     return code;
 };
 
+export const getCodesListFromMailinator = async () => {
+    const mailIdList = getMailsFromMailinator();
+    const idList = [];
+    for (let i = 0; i < mailIdList.length; i++) {
+        const body = await getEmailBodyFromMailinator(mailIdList[i]);
+        const code = await getCodeFromEmailBody(body);
+        idList.push(code);
+    }
+    return idList;
+};
 export const openFromChecklist = async (page, whatToOpen) => {
     const pleaseOpen = `data-test="checklist-item-${whatToOpen}"`;
     await page.click(`[${pleaseOpen}]`);
