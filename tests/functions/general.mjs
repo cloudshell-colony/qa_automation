@@ -169,3 +169,8 @@ export const getCodeFromEmailBody = async (body) => {
     // console.log(codeLine.slice(index + 2));
     return code;
 };
+
+export const openFromChecklist = async (page, whatToOpen) => {
+    const pleaseOpen = `data-test="checklist-item-${whatToOpen}"`;
+    await page.click(`[${pleaseOpen}]`);
+};
