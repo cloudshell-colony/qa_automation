@@ -136,7 +136,6 @@ export const getMailsFromMailinator = async () => {
     });
     await validateAPIResponseis200(mailList)
     const mailListJson = await mailList.json();
-    // console.log(await mailListJson);
     for (let mail in await mailListJson.msgs) {
         if (mailListJson.msgs[mail].subject.includes("verify")) {
             mailIdList.push(mailListJson.msgs[mail].id);
@@ -169,15 +168,16 @@ export const getSingleCodeFromEmailBody = async (body) => {
 };
 
 export const getCodesListFromMailinator = async () => {
-    const mailIdList = getMailsFromMailinator();
+    const mailIdList = await getMailsFromMailinator();
     const idList = [];
     for (let i = 0; i < mailIdList.length; i++) {
         const body = await getEmailBodyFromMailinator(mailIdList[i]);
-        const code = await getCodeFromEmailBody(body);
+        const code = await getSingleCodeFromEmailBody(body);
         idList.push(code);
     }
     return idList;
 };
+
 export const openFromChecklist = async (page, whatToOpen) => {
     const pleaseOpen = `data-test="checklist-item-${whatToOpen}"`;
     await page.click(`[${pleaseOpen}]`);
