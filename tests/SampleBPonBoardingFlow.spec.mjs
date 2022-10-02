@@ -37,12 +37,13 @@ test.describe.serial('onboarding flow', () => {
   test('create new account', async () => {
     await createAccount(page, firstName, lastName, companyName, email, accountName, allAccountsPassword, baseURL);
     await page.waitForURL(`${baseURL}/Sample`);
-    await page.waitForSelector('[data-test="launch-\[Sample\]MySql Terraform Module"]');
+    await closeModal(page);
     // comment out screenshot validation due to docker image path issue - windows vs ubuntu
     // await expect(page).toHaveScreenshot({ maxDiffPixels: 4000 });
   });
 
   test('sample sandbox launcher contain three samples', async () => {
+    await openFromChecklist(page, "launched_environment");
     await validateSbLauncher(page, baseURL);
   });
 
