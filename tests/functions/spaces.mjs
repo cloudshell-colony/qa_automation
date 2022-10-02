@@ -159,19 +159,22 @@ export const fillInRepoData = async (providerKeys, signinWindow) => {
             await signinWindow.fill('input[name="login"]', repoUsername);
             await signinWindow.fill('input[name="password"]', repoPassword);
             await signinWindow.click('input:has-text("Sign in")');
-            await signinWindow.pause();
             await signinWindow.waitForTimeout(1000);
             const visi = await signinWindow.isVisible('text=Authorize QualiNext', 500);
             if (visi) {
                 await signinWindow.click('text=Authorize QualiNext');
             }
             // if github wishes for mail authentication...
-            const authrnticateWithMail = await signinWindow.isVisible('text=Device verification');
-            if (authrnticateWithMail) {
+            let authrnticateWithMail = await signinWindow.isVisible('text=Device verification');
+            let i = 3;
+            while (authrnticateWithMail) {
                 console.log("we got into mail verification");
                 const codeList = await getCodesListFromMailinator();
-                await signinWindow.locator('[placeholder="XXXXXX"]').fill(await codeList[2]);
-                await signinWindow.click('button:has-tesxt("Verifying…")')
+                await signinWindow.locator('[placeholder="XXXXXX"]').fill(await codeList[i]);
+                await signinWindow.waitForTimeout(1000);
+                i--;
+                authrnticateWithMail = await signinWindow.isVisible('text=Device verification');
+                await page.pause();
             }
             let isPage = await signinWindow.isClosed();
             console.log(`apperntly the check if the ${provider} login page is closed ended with: ${isPage}`);
