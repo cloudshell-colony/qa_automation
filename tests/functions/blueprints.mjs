@@ -109,7 +109,7 @@ expectedErrors should be a list of strings representing part of the expected err
 export const validateBlueprintErrors = async (page, BPName, errList, expectedErrors) => {
     expect.soft(errList.length, `Blueprint "${BPName}" has ${errList.length} error messages instead of expected ${expectedErrors.length}`).toBe(expectedErrors.length);
     const bpRow = await page.locator(`[data-test=blueprint-row-${BPName}]`);
-    expect.soft(bpRow.locator(`button:has-Text(Launch Environment")`), `Launch Environment button is not disabled on blueprint "${BPName}"`).toBeDisabled();
+    expect.soft(bpRow.locator(`button:has-Text("Launch Environment")`), `Launch Environment button is not disabled on blueprint "${BPName}"`).toBeDisabled();
     for (let i = 0; i < expectedErrors.length; i++) {
         expect.soft(errList[i], `Wrong error returned from "${BPName}" blueprint`).toContainText(expectedErrors[i]);
     }
