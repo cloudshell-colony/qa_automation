@@ -109,14 +109,15 @@ test.describe('Blueprint validation', () => {
         expect(visi, `Sandbox launch failed, received following error: ` + err).toBeFalsy();
         await page.waitForSelector('[data-test="sandbox-info-column"]');
         console.log("Waiting for sandbox to end launch");
-        let sandboxStatus = await page.locator('[data-test="sandbox-info-column"]').innerText();
-        var startTime = Date.now();
-        while (sandboxStatus.includes("Launching") && Date.now() - startTime < 10000) {
-            sandboxStatus = await page.locator('[data-test="sandbox-info-column"]').locator('.sandbox-status').innerText();
-        }
-        if (sandboxStatus.includes("Launching")) {
-            throw ("Sandbox still launching after long time");
-        }
+        await validateSBisActive(page);
+        // let sandboxStatus = await page.locator('[data-test="sandbox-info-column"]').innerText();
+        // var startTime = Date.now();
+        // while (sandboxStatus.includes("Launching") && Date.now() - startTime < 10000) {
+        //     sandboxStatus = await page.locator('[data-test="sandbox-info-column"]').locator('.sandbox-status').innerText();
+        // }
+        // if (sandboxStatus.includes("Launching")) {
+        //     throw ("Sandbox still launching after long time");
+        // }
         console.log("Ending sandbox");
         await page.click("[data-test=end-sandbox]");
         await page.click("[data-test=confirm-end-sandbox]");
