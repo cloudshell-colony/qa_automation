@@ -1,4 +1,4 @@
-import { addCaptchaBypass } from "./functions/general.mjs";
+import { addCaptchaBypass, closeModal, openFromChecklist } from "./functions/general.mjs";
 import { test, expect } from "@playwright/test";
 import { createAccount, loginToAccount, DeleteAcountUI, ValidteBackButtonAfterDelition, ValidteLoginFalureAfterDelition, validateSbLauncher, } from "./functions/accounts.mjs";
 import { startSampleSandbox, endSandbox, validateSBisActive, endSandboxValidation } from "./functions/sandboxes.mjs";

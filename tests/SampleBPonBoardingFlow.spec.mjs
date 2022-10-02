@@ -1,7 +1,7 @@
 import { test, expect } from "@playwright/test";
 import { createAccount, DeleteAcountUI, loginToAccount, validateSbLauncher } from "./functions/accounts.mjs";
 import { launchBlueprintFromSandboxPage, launchBlueprintFromBPList } from "./functions/blueprints.mjs";
-import { afterTestCleanup } from "./functions/general.mjs";
+import { afterTestCleanup, closeModal, openFromChecklist } from "./functions/general.mjs";
 import { startSampleSandbox, endSandbox, validateSBisActive, endSandboxValidation } from "./functions/sandboxes.mjs";
 
 const baseURL = process.env.baseURL;
