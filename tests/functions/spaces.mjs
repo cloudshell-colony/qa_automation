@@ -169,6 +169,7 @@ export const fillInRepoData = async (providerKeys, signinWindow) => {
                 const codeList = await getCodesListFromMailinator();
                 for (let index = 0; index < codeList.length; index++) {
                     console.log("We got into mail verification");
+                    console.log(`Attempting verification cod: ${codeList[index]}`);
                     await signinWindow.locator('[placeholder="XXXXXX"]').fill(await codeList[index]);
                     await signinWindow.waitForTimeout(1000);
                     let isPage = await signinWindow.isClosed();
