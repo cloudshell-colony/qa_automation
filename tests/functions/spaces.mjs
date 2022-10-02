@@ -160,26 +160,30 @@ export const fillInRepoData = async (providerKeys, signinWindow) => {
             await signinWindow.fill('input[name="password"]', repoPassword);
             await signinWindow.click('input:has-text("Sign in")');
             await signinWindow.waitForTimeout(1000);
-            const visi = await signinWindow.isVisible('text=Authorize QualiNext', 500);
-            if (visi) {
-                await signinWindow.click('text=Authorize QualiNext');
-            }
+            let isPage = await signinWindow.isClosed();
+            if (isPage) break;
             // if github wishes for mail authentication...
-            let authrnticateWithMail = await signinWindow.isVisible('text=Device verification');
-            let i = 3;
+            let authrnticateWithMail = await signinWindow.isVisible('text=Device verification', 500);
+            let i = 0;
             while (authrnticateWithMail) {
-                console.log("we got into mail verification");
+                console.log("We got into mail verification");
                 const codeList = await getCodesListFromMailinator();
                 await signinWindow.locator('[placeholder="XXXXXX"]').fill(await codeList[i]);
                 await signinWindow.waitForTimeout(1000);
-                i--;
+                i++;
+                let isPage = await signinWindow.isClosed();
+                if (isPage) break;
+                // If the verification code is correct the signinWindow page is closed and the below isVisible will fail.
                 authrnticateWithMail = await signinWindow.isVisible('text=Device verification');
-                await page.pause();
             }
-            let isPage = await signinWindow.isClosed();
-            console.log(`apperntly the check if the ${provider} login page is closed ended with: ${isPage}`);
+            const AuthorizeQN = await signinWindow.isVisible('text=Authorize QualiNext', 500);
+            if (AuthorizeQN) {
+                await signinWindow.click('text=Authorize QualiNext');
+            }
+            isPage = await signinWindow.isClosed();
+            console.log(`Apperntly the check if the ${provider} login page is closed ended with: ${isPage}`);
             if (!isPage) {
-                console.log('waiting fore aditional 3 seconds since the page is still open');
+                console.log('Waiting fore aditional 3 seconds since the page is still open');
                 await signinWindow.waitForTimeout(3 * 1000);
                 isPage = await signinWindow.isClosed();
                 console.log('after 3 seconds the page isClosed validation ended with: ' + await isPage);
