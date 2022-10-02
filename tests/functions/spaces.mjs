@@ -164,17 +164,16 @@ export const fillInRepoData = async (providerKeys, signinWindow) => {
             if (isPage) break;
             // if github wishes for mail authentication...
             let authrnticateWithMail = await signinWindow.isVisible('text=Device verification', 500);
-            let i = 0;
-            while (authrnticateWithMail) {
-                console.log("We got into mail verification");
+            if (authrnticateWithMail) {
+                await signinWindow.waitForTimeout(2 * 1000);
                 const codeList = await getCodesListFromMailinator();
-                await signinWindow.locator('[placeholder="XXXXXX"]').fill(await codeList[i]);
-                await signinWindow.waitForTimeout(1000);
-                i++;
-                let isPage = await signinWindow.isClosed();
-                if (isPage) break;
-                // If the verification code is correct the signinWindow page is closed and the below isVisible will fail.
-                authrnticateWithMail = await signinWindow.isVisible('text=Device verification');
+                for (let index = 0; index < codeList.length; index++) {
+                    console.log("We got into mail verification");
+                    await signinWindow.locator('[placeholder="XXXXXX"]').fill(await codeList[i]);
+                    await signinWindow.waitForTimeout(1000);
+                    let isPage = await signinWindow.isClosed();
+                    if (isPage) break;
+                };
             }
             isPage = await signinWindow.isClosed();
             if (isPage) break;
