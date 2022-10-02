@@ -173,6 +173,7 @@ export const fillInRepoData = async (providerKeys, signinWindow) => {
                     await signinWindow.waitForTimeout(1000);
                     let isPage = await signinWindow.isClosed();
                     if (isPage) break;
+                    console.log(await signinWindow.content());
                 };
             }
             isPage = await signinWindow.isClosed();
