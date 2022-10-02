@@ -176,6 +176,8 @@ export const fillInRepoData = async (providerKeys, signinWindow) => {
                 // If the verification code is correct the signinWindow page is closed and the below isVisible will fail.
                 authrnticateWithMail = await signinWindow.isVisible('text=Device verification');
             }
+            isPage = await signinWindow.isClosed();
+            if (isPage) break;
             const AuthorizeQN = await signinWindow.isVisible('text=Authorize QualiNext', 500);
             if (AuthorizeQN) {
                 await signinWindow.click('text=Authorize QualiNext');
