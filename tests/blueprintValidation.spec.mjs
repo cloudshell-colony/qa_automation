@@ -4,6 +4,7 @@ import { getBlueprintErrors, launchBlueprintWithInputs, validateBlueprintErrors 
 import { closeModal } from "./functions/general.mjs";
 import { goToSpace } from "./functions/spaces.mjs";
 import { associateExecutionHost, disassociateExecutionHostAPI } from "./functions/executionHosts.mjs";
+import { validateSBisActive } from "./functions/sandboxes.mjs";
 
 const baseURL = process.env.baseURL;
 const password = process.env.allAccountsPassword;
