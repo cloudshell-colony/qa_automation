@@ -60,12 +60,6 @@ test.describe.serial('onboarding flow', () => {
         // space flow remains afetr asset is created for future steps
     });
 
-    test.skip('create namespace', async () => {
-        console.log("creating new namespace: " + executionHostName);
-        const createCommand = "kubectl create namespace " + executionHostName
-        const createNamespace = executeCLIcommand(createCommand);
-    });
-
     test('Enter execution host information to generate the yaml deployment file', async () => {
         await page.waitForLoadState();
         console.log(`host name: ${executionHostName}`);
