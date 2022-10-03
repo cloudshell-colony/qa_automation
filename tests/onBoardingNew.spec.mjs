@@ -60,7 +60,7 @@ test.describe.serial('onboarding flow', () => {
         // space flow remains afetr asset is created for future steps
     });
 
-    test('create namespace', async () => {
+    test.skip('create namespace', async () => {
         console.log("creating new namespace: " + executionHostName);
         const createCommand = "kubectl create namespace " + executionHostName
         const createNamespace = executeCLIcommand(createCommand);
@@ -75,13 +75,15 @@ test.describe.serial('onboarding flow', () => {
         // await page.click(".select-select-existing-cloud__value-container");
         // await page.click('[data-test="additional-option"]');
         // await page.click('[data-test="submit-button"]');
-
+        // select the EKS compute service
+        await page.click('[data-test="cloud-type-aws"]');
+        // select @#!$@! technology
+        await page.click('[data-test="technology-type-EKS"]');
+        await page.click('[data-test="submit-button"]');
         // enter compute service name
         await page.fill('[data-test="computeServiceName"]', executionHostName);
-        // select the EKS compute service
-        await page.click('[data-test="service-type-EKS"]');
-        await page.click('[data-test="submit-button"]');
         // generate and deploy the agent
+        await page.click('[data-test="submit-button"]');
         await page.click('[data-test="generate-command-button"]');
     });
 
