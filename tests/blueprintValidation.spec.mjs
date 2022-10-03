@@ -5,6 +5,7 @@ import { closeModal } from "./functions/general.mjs";
 import { goToSpace } from "./functions/spaces.mjs";
 import { associateExecutionHost, disassociateExecutionHostAPI } from "./functions/executionHosts.mjs";
 import { validateSBisActive } from "./functions/sandboxes.mjs";
+import goToAdminConsole from "./functions/goToAdminConsole.mjs";
 
 const baseURL = process.env.baseURL;
 const password = process.env.allAccountsPassword;
@@ -55,9 +56,7 @@ test.describe('Blueprint validation', () => {
     test("Static validation - Adding & removing execution host changes blueprint errors", async () => {
         blueprintName = "bad-eks";
         let expectedErrors = ["host missing compute-service field"];
-        //go to execution hosts management, needs to be a function
-        await page.click("[data-test=sidebar-dropdown]");
-        await page.click("[data-test=option__admin]");
+        await goToAdminConsole(page, "cloud accounts")
         console.log("Associating execution host to space");
         await associateExecutionHost(page, bpValidationEKS, executionHostNameSpace, space);
         await goToSpace(page, space);
