@@ -1,5 +1,6 @@
 import { expect } from "@playwright/test";
 import fetch from "node-fetch";
+import { getCodesListFromMailinator } from "./general.mjs";
 import goToAdminConsole from "./goToAdminConsole.mjs";
 
 export default function removeUserFromSpaceAPI(user_email, myURL, session, space_name) {
@@ -74,11 +75,17 @@ export const goToSpace = async (page, spaceName) => {
 export const craeteSpaceFromQuickLauncher = async (page, newSpaceName) => {
     console.log("Creating new space from the quick launcher\nThe new space name is " + newSpaceName);
     await page.click('text=Start by creating your own Space');
+    await enterNewSpaceDetails(page, newSpaceName);
+};
+
+export const enterNewSpaceDetails = async (page, newSpaceName) => {
     await page.fill('[data-test="create-new-space-popup"]', newSpaceName);
     await page.click('[data-test="color-frogGreen"]');
     await page.click('[data-test="icon-face"]');
     await page.click('[data-test="create-space"]');
 };
+
+
 export const generateRepoSpecificKeys = async (repProvider) => {
     const githubRepo = process.env.githubRepo;
     const githubUserNAme = process.env.githubUserNAme;
@@ -145,7 +152,7 @@ export const fillInRepoData = async (providerKeys, signinWindow) => {
 
     switch (provider.toLowerCase()) {
         case "bitbucket":
-            console.log('missing BitBucket repo');
+            console.log('missing BitBucket implementation');
             break;
         case "github":
             await signinWindow.waitForLoadState();
@@ -154,9 +161,32 @@ export const fillInRepoData = async (providerKeys, signinWindow) => {
             await signinWindow.click('input:has-text("Sign in")');
             await signinWindow.waitForTimeout(1000);
             let isPage = await signinWindow.isClosed();
-            console.log(`apperntly the check if the ${provider} login page is closed ended with: ${isPage}`);
+            if (isPage) break;
+            // if github wishes for mail authentication...
+            let authrnticateWithMail = await signinWindow.isVisible('text=Device verification', 500);
+            if (authrnticateWithMail) {
+                await signinWindow.waitForTimeout(2 * 1000);
+                const codeList = await getCodesListFromMailinator();
+                for (let index = 0; index < codeList.length; index++) {
+                    console.log("We got into mail verification");
+                    console.log(`Attempting verification cod: ${codeList[index]}`);
+                    await signinWindow.locator('[placeholder="XXXXXX"]').fill(await codeList[index]);
+                    await signinWindow.waitForTimeout(1000);
+                    let isPage = await signinWindow.isClosed();
+                    if (isPage) break;
+                    console.log(await signinWindow.content());
+                };
+            }
+            isPage = await signinWindow.isClosed();
+            if (isPage) break;
+            const AuthorizeQN = await signinWindow.isVisible('text=Authorize QualiNext', 500);
+            if (AuthorizeQN) {
+                await signinWindow.click('text=Authorize QualiNext');
+            }
+            isPage = await signinWindow.isClosed();
+            console.log(`Apperntly the check if the ${provider} login page is closed ended with: ${isPage}`);
             if (!isPage) {
-                console.log('waiting fore aditional 3 seconds since the page is still open');
+                console.log('Waiting fore aditional 3 seconds since the page is still open');
                 await signinWindow.waitForTimeout(3 * 1000);
                 isPage = await signinWindow.isClosed();
                 console.log('after 3 seconds the page isClosed validation ended with: ' + await isPage);
@@ -164,24 +194,19 @@ export const fillInRepoData = async (providerKeys, signinWindow) => {
                     console.log(await signinWindow.content());
                     break;
                 } else {
-                    const visi = await signinWindow.isVisible('text=Authorize QualiNext', 500);
-                    if (visi) {
-                        await signinWindow.click('text=Authorize QualiNext');
-                    } else {
-                        console.log('we have a problem, the popup is still open and we dont know why');
-                        console.log(await signinWindow.content());
-                    };
+                    console.log('we have a problem, the popup is still open and we dont know why');
+                    console.log(await signinWindow.content());
+                    break;
                 };
             };
-
             break;
         case "gitlab":
-            await signinWindow.waitForLoadState();
-            await signinWindow.fill('[data-testid="username-field"]', repoUsername);
-            await signinWindow.fill('input[name="user\[password\]"]', repoPassword);
-            await signinWindow.click('[data-testid="sign-in-button"]');
+            console.log('Missing Gitlab implementation');
+            // await signinWindow.waitForLoadState();
+            // await signinWindow.fill('[data-testid="username-field"]', repoUsername);
+            // await signinWindow.fill('input[name="user\[password\]"]', repoPassword);
+            // await signinWindow.click('[data-testid="sign-in-button"]');
             break;
-
         default:
             console.log('invalid repo provederlid ');
             break;

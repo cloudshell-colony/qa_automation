@@ -4,6 +4,13 @@ import fs from "fs";
 import { exec } from "child_process";
 import { goToSandboxListPage, stopAndValidateAllSBsCompleted } from "./sandboxes.mjs";
 import { DeleteAcountUI } from "./accounts.mjs";
+import fetch from "node-fetch";
+
+const repProvider = process.env.repProvider;
+const password = process.env.allAccountsPassword;
+const mailinatorAuthorization = process.env.mailinatorAuthorization;
+const mailinatorURL = process.env.mailinatorURL;
+const mailIdList = [];
 
 
 export const generateSecret = (email, account) => {
@@ -33,6 +40,10 @@ export const closeModal = async (page) => {
     const visi = await page.isVisible('[data-test="close-modal"]', 2000);
     if (visi) {
         await page.locator('[data-test="close-modal"]').click();
+    };
+    const visi2 = await page.isVisible('[data-test="submit"]', 2000);
+    if (visi2) {
+        await page.locator('[data-test="submit"]').click();
     };
 };
 
@@ -109,7 +120,65 @@ export const afterTestCleanup = async (page, accountName, baseURL) => {
     console.log(`stopping all Sbs after test complteted`);
     await goToSandboxListPage(page);
     await stopAndValidateAllSBsCompleted(page);
-    console.log(`delete account: ${accountName}, after test complteted`);
+    console.log(`Delete account "${accountName}", as part of test cleanup`);
     await DeleteAcountUI(accountName, page, baseURL);
     await page.close();
+};
+
+export const getMailsFromMailinator = async () => {
+    const endpoint = "domains/private/inboxes/qualiqa?limit=4&sort=descending"
+    const mailList = await fetch(`${mailinatorURL}${endpoint}`, {
+        "method": "GET",
+        "headers": {
+            'Authorization': mailinatorAuthorization,
+            'Content-Type': 'application/json'
+        }
+    });
+    await validateAPIResponseis200(mailList)
+    const mailListJson = await mailList.json();
+    for (let mail in await mailListJson.msgs) {
+        if (mailListJson.msgs[mail].subject.includes("verify")) {
+            mailIdList.push(mailListJson.msgs[mail].id);
+        }
+    }
+    return mailIdList;
+};
+
+export const getEmailBodyFromMailinator = async (mailId) => {
+    const endpoint = `domains/private/inboxes/qualiqa/messages/${mailId}`
+    const mailBody = await fetch(`${mailinatorURL}${endpoint}`, {
+        "method": "GET",
+        "headers": {
+            'Authorization': mailinatorAuthorization,
+            'Content-Type': 'application/json'
+        }
+    });
+    const mailBodyJson = await mailBody.json();
+    const body = await mailBodyJson.parts[0].body;
+    return body;
+};
+
+export const getSingleCodeFromEmailBody = async (body) => {
+    let index = body.indexOf("Verification code:");
+    let endIndex = body.indexOf("\n", index);
+    const code = body.slice(index + ("Verification code: ").length, endIndex);
+    // index = codeLine.indexOf(": ");
+    // console.log(codeLine.slice(index + 2));
+    return code;
+};
+
+export const getCodesListFromMailinator = async () => {
+    const mailIdList = await getMailsFromMailinator();
+    const idList = [];
+    for (let i = 0; i < mailIdList.length; i++) {
+        const body = await getEmailBodyFromMailinator(mailIdList[i]);
+        const code = await getSingleCodeFromEmailBody(body);
+        idList.push(code);
+    }
+    return idList;
+};
+
+export const openFromChecklist = async (page, whatToOpen) => {
+    const pleaseOpen = `data-test="checklist-item-${whatToOpen}"`;
+    await page.click(`[${pleaseOpen}]`);
 };

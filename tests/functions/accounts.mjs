@@ -119,12 +119,16 @@ export const createAccount = async (page, firstName, lastName, companyName, emai
 
 export const loginToAccount = async (page, email, accountName, allAccountsPassword, baseURL) => {
     await page.goto(`${baseURL}`, { timeout: 90000 });
-    await page.locator('[data-test="subdomain"]').fill(accountName);
-    await page.click('[data-test="submit"]');
+    // await page.locator('[data-test="subdomain"]').fill(accountName);
+    // await page.click('[data-test="submit"]');
     await page.click('[data-test="login-with-email"]');
     await page.locator('[data-test="email"]').fill(email);
     await page.locator('[data-test="password"]').fill(allAccountsPassword);
     await page.click('[data-test="submit"]');
+    // TO DO
+    // need to add validation and handeling for account selection
+    // currently - YAGNI
+    // await page.click('class="select-account__control"');
     await page.waitForURL(`${baseURL}/Sample`);
 };
 

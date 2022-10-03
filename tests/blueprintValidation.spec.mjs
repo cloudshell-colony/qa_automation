@@ -4,6 +4,7 @@ import { getBlueprintErrors, launchBlueprintWithInputs, validateBlueprintErrors 
 import { closeModal } from "./functions/general.mjs";
 import { goToSpace } from "./functions/spaces.mjs";
 import { associateExecutionHost, disassociateExecutionHostAPI } from "./functions/executionHosts.mjs";
+import { validateSBisActive } from "./functions/sandboxes.mjs";
 
 const baseURL = process.env.baseURL;
 const password = process.env.allAccountsPassword;
@@ -17,7 +18,7 @@ let blueprintName;
 
 //ideally this should be with API
 //But there's no method to get errors of specific a specific blueprint
-test.describe('Blueprint validation', ()=> {
+test.describe('Blueprint validation', () => {
     let page;
     test.beforeAll(async ({ browser }) => {
         session = await getSessionAPI(user, password, baseURL, account);
@@ -28,19 +29,21 @@ test.describe('Blueprint validation', ()=> {
     });
     test.afterAll(async () => {
         await page.close();
-        const response = await disassociateExecutionHostAPI(session, baseURL, space, bpValidationEKS);   
-        if(response.status != 200 && response.status != 404){
+        const response = await disassociateExecutionHostAPI(session, baseURL, space, bpValidationEKS);
+        if (response.status != 200 && response.status != 404) {
             console.error(`Execution host ${bpValidationEKS} possibly not removed from space ${space}, received response: ` + await response.text());
         }
     });
 
-    const blueprintErrors = {"bad-yaml-format": ["Blueprint YAML file contains syntax error(s)"], 
+    const blueprintErrors = {
+        "bad-yaml-format": ["Blueprint YAML file contains syntax error(s)"],
         "unsupported-and-empty-grain": ["The following grains in the blueprint don't contains 'kind' definition:", "Blueprint contains unsupported grains"],
-        "bad-inputs-outputs": ["field 'outputs->output' can't be resolved", "inputs->test' can't be resolved"], 
-        "store-not-found": ["Repository 'wrong-store (in grains->bucket_1->spec->source->store)' does not exist"]};
-    
-    for(const [BPName, expectedErrors] of Object.entries(blueprintErrors)){
-        test(`Static validation - blueprint "${BPName}" has relevent errors`, async() => {
+        "bad-inputs-outputs": ["field 'outputs->output' can't be resolved", "inputs->test' can't be resolved"],
+        "store-not-found": ["Repository 'wrong-store (in grains->bucket_1->spec->source->store)' does not exist"]
+    };
+
+    for (const [BPName, expectedErrors] of Object.entries(blueprintErrors)) {
+        test(`Static validation - blueprint "${BPName}" has relevent errors`, async () => {
             if (!page.url().endsWith(`/${space}/blueprints`)) {
                 await goToSpace(page, space);
                 await page.click("[data-test=blueprints-nav-link]");
@@ -64,7 +67,7 @@ test.describe('Blueprint validation', ()=> {
         console.log("Validating blueprint errors after associating execution host");
         await validateBlueprintErrors(page, blueprintName, await getBlueprintErrors(page, blueprintName), expectedErrors);
         console.log("Removing execution host from space");
-        const response = await disassociateExecutionHostAPI(session, baseURL, space, bpValidationEKS);   
+        const response = await disassociateExecutionHostAPI(session, baseURL, space, bpValidationEKS);
         expect(response.status, 'Execution host was not removed from space, MUST remove it manually').toBe(200)
         expectedErrors.unshift(`The compute service '${bpValidationEKS}`); //Adding error that should appear after removing EKS
         //get and validate blueprint errors
@@ -73,9 +76,9 @@ test.describe('Blueprint validation', ()=> {
         await validateBlueprintErrors(page, blueprintName, await getBlueprintErrors(page, blueprintName), expectedErrors);
     });
 
-    test("Dynamic validation - Sandobx launch fails when providing wrong store input", async() => {
+    test("Dynamic validation - Sandobx launch fails when providing wrong store input", async () => {
         blueprintName = "host input";
-        const inputsDict = {"inputs\.host" : "wrong value"};
+        const inputsDict = { "inputs\.host": "wrong value" };
         await goToSpace(page, space);
         await page.click("[data-test=blueprints-nav-link]");
         console.log("Launching sandbox with bad inputs for execution host name");
@@ -87,30 +90,31 @@ test.describe('Blueprint validation', ()=> {
         await page.click("[data-test=wizard-cancel-button]");
     });
 
-    test("Dynamic validation - Sandbox launches successfully when providing correct execution host input", async() => {
+    test("Dynamic validation - Sandbox launches successfully when providing correct execution host input", async () => {
         let err;
         blueprintName = "host input";
-        const inputsDict = {"inputs\.host" : "qa-eks"};
+        const inputsDict = { "inputs\.host": "qa-eks" };
         await goToSpace(page, space);
         await page.click("[data-test=blueprints-nav-link]");
         console.log("Launching sandbox with correct inputs for execution host name");
         await launchBlueprintWithInputs(page, blueprintName, inputsDict);
-        try{
+        try {
             err = await page.locator("[data-testid=error-details-text]", { timeout: 3000 }).innerText();
         }
-        catch{}
+        catch { }
         let visi = await page.isVisible('[data-testid="error-details-text"]');
         expect(visi, `Sandbox launch failed, received following error: ` + err).toBeFalsy();
         await page.waitForSelector('[data-test="sandbox-info-column"]');
         console.log("Waiting for sandbox to end launch");
-        let sandboxInfo = await page.locator('[data-test="sandbox-info-column"]').innerText();
-        var startTime = Date.now();
-        while(sandboxInfo.includes("Launching") && Date.now() - startTime < 300000){
-             sandboxInfo = await page.locator('[data-test="sandbox-info-column"]').innerText();
-        }
-        if(sandboxInfo.includes("Launching")){
-            throw("Possible error, Sandbox still launching after long time" + sandboxInfo);
-        }
+        await validateSBisActive(page);
+        // let sandboxStatus = await page.locator('[data-test="sandbox-info-column"]').innerText();
+        // var startTime = Date.now();
+        // while (sandboxStatus.includes("Launching") && Date.now() - startTime < 10000) {
+        //     sandboxStatus = await page.locator('[data-test="sandbox-info-column"]').locator('.sandbox-status').innerText();
+        // }
+        // if (sandboxStatus.includes("Launching")) {
+        //     throw ("Sandbox still launching after long time");
+        // }
         console.log("Ending sandbox");
         await page.click("[data-test=end-sandbox]");
         await page.click("[data-test=confirm-end-sandbox]");

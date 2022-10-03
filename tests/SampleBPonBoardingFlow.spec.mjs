@@ -1,7 +1,7 @@
 import { test, expect } from "@playwright/test";
 import { createAccount, DeleteAcountUI, loginToAccount, validateSbLauncher } from "./functions/accounts.mjs";
 import { launchBlueprintFromSandboxPage, launchBlueprintFromBPList } from "./functions/blueprints.mjs";
-import { afterTestCleanup } from "./functions/general.mjs";
+import { afterTestCleanup, closeModal, openFromChecklist } from "./functions/general.mjs";
 import { startSampleSandbox, endSandbox, validateSBisActive, endSandboxValidation } from "./functions/sandboxes.mjs";
 
 const baseURL = process.env.baseURL;
@@ -37,12 +37,13 @@ test.describe.serial('onboarding flow', () => {
   test('create new account', async () => {
     await createAccount(page, firstName, lastName, companyName, email, accountName, allAccountsPassword, baseURL);
     await page.waitForURL(`${baseURL}/Sample`);
-    await page.waitForSelector('[data-test="launch-\[Sample\]MySql Terraform Module"]');
+    await closeModal(page);
     // comment out screenshot validation due to docker image path issue - windows vs ubuntu
     // await expect(page).toHaveScreenshot({ maxDiffPixels: 4000 });
   });
 
   test('sample sandbox launcher contain three samples', async () => {
+    await openFromChecklist(page, "launched_environment");
     await validateSbLauncher(page, baseURL);
   });
 

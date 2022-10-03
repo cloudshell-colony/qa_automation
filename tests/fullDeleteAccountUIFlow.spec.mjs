@@ -1,4 +1,4 @@
-import { addCaptchaBypass } from "./functions/general.mjs";
+import { addCaptchaBypass, closeModal, openFromChecklist } from "./functions/general.mjs";
 import { test, expect } from "@playwright/test";
 import { createAccount, loginToAccount, DeleteAcountUI, ValidteBackButtonAfterDelition, ValidteLoginFalureAfterDelition, validateSbLauncher, } from "./functions/accounts.mjs";
 import { startSampleSandbox, endSandbox, validateSBisActive, endSandboxValidation } from "./functions/sandboxes.mjs";
@@ -37,10 +37,11 @@ test.describe('test my tests', () => {
     test('create new account', async () => {
         await createAccount(page, firstName, lastName, companyName, email, accountName, allAccountsPassword, baseURL);
         await page.waitForURL(`${baseURL}/Sample`);
-        await page.waitForSelector('[data-test="launch-\[Sample\]MySql Terraform Module"]');
+        await closeModal(page);
     });
 
     test('sample sandbox launcher contain three samples', async () => {
+        await openFromChecklist(page, "launched_environment");
         await validateSbLauncher(page, baseURL)
     });
 

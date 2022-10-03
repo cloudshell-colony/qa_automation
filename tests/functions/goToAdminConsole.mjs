@@ -1,6 +1,7 @@
 export default async (page, target) => {
-  await page.click("[data-test=sidebar-dropdown]");
-  await page.click("[data-test=option__admin]");
+  // await page.click("[data-test=sidebar-dropdown]");
+  // await page.click("[data-test=option__admin]");
+  await page.click('[data-test="administration-console"]');
   switch (target.toLowerCase()) {
     case "cloud accounts":
       await page.click('[data-test="cloudaccounts-tab"]');
