@@ -1,4 +1,4 @@
-FROM mcr.microsoft.com/playwright:v1.23.1-focal
+FROM node:18
 
 # Install Kubectl
 RUN curl -LO https://dl.k8s.io/release/v1.23.0/bin/linux/amd64/kubectl &&\
@@ -10,5 +10,5 @@ RUN apt-get update && apt-get install unzip &&\
     ./aws/install 
 # Install node modules from pacakge json
 WORKDIR /usr/
-COPY ./package.json ./package-lock.json /usr/
+COPY ./package.json /usr/
 RUN npm i
