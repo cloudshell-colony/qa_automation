@@ -42,6 +42,7 @@ export const deleteSpace = async (page, spaceName, input) => {
     if (!page.url().endsWith("admin/spaces")) {
         await goToAdminConsole(page, "spaces");
     }
+    console.log(`Attempting to delete space "${spaceName}", approving the delete by entering "${input}" as the space name`);
     await page.locator(`[data-test=space-row-${spaceName}]`).locator("[data-testid=moreMenu]").click();
     await page.locator(`[data-test=space-row-${spaceName}]`).locator('text=Delete').click();
     await page.fill(`[data-test=spaceName]`, input);
