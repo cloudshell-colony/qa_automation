@@ -1,6 +1,7 @@
 import { addCaptchaBypass } from "./general.mjs";
 import fetch from "node-fetch";
 import { expect } from "@playwright/test";
+import goToAdminConsole from "./goToAdminConsole.mjs";
 
 
 export const getSessionAPI = async (USER, PASSWORD, myURL, account) => {
@@ -153,7 +154,8 @@ export const validateSbLauncher = async (page, baseURL) => {
 };
 
 export const DeleteAcountUI = async (accountName, page, baseURL) => {
-    await page.goto(`${baseURL}/admin/account_billing`);
+    // await page.goto(`${baseURL}/admin/account_billing`);
+    await goToAdminConsole(page, "account")
     await page.click('[data-test="delete-account"]');
     await page.click('[data-test="confirm-delete-account"]');
 };
