@@ -12,8 +12,9 @@ const password = process.env.allAccountsPassword;
 const account = process.env.account;
 const user = process.env.adminEMail
 const space = "bp-validation";
-const bpValidationEKS = "bp-validation";
-const executionHostNameSpace = "torque-agent-bp-validation";
+const bpValidationEKS = "bp-validation2";
+//const executionHostNameSpace = "torque-agent-bp-validation";
+const executionHostNameSpace = "torque-agent-bp-validation2-ceahektb3";
 let session = "empty session";
 let blueprintName;
 
