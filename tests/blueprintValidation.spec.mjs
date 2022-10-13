@@ -92,7 +92,7 @@ test.describe('Blueprint validation', () => {
     test("Dynamic validation - Sandbox launches successfully when providing correct execution host input", async () => {
         let err;
         blueprintName = "host input";
-        const inputsDict = { "inputs\.host": "qa-eks" };
+        const inputsDict = { "inputs\.host": "qa-eks2" };
         await goToSpace(page, space);
         await page.click("[data-test=blueprints-nav-link]");
         console.log("Launching sandbox with correct inputs for execution host name");
