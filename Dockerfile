@@ -10,5 +10,5 @@ RUN apt-get update && apt-get install unzip &&\
     ./aws/install 
 # Install node modules from pacakge json
 WORKDIR /usr/
-COPY ./package.json /usr/
+COPY . .
 RUN npm i
