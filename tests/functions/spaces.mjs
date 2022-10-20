@@ -24,6 +24,24 @@ export const createSpace = async (page, spaceName) => {
     await page.click("[data-test=create-space]");
 };
 
+export const createSpaceAPI = async (baseURL, session, spaceName) => {
+    const data = {
+        "name": spaceName,
+        "color": "frogGreen",
+        "icon": "face"
+    }
+    const response = await fetch(`${baseURL}/api/spaces`, {
+        "method": "POST",
+        "body": JSON.stringify(data),
+        "headers": {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json',
+            'Authorization': `Bearer ${session}`
+        }
+    });
+    return response;
+};
+
 export const editSpace = async (page, spaceName, newName) => {
     if (!page.url().endsWith("admin/spaces")) {
         await goToAdminConsole(page, "spaces");
@@ -174,8 +192,8 @@ export const fillInRepoData = async (providerKeys, signinWindow) => {
                     await signinWindow.locator('[placeholder="XXXXXX"]').fill(await codeList[index]);
                     await signinWindow.waitForTimeout(1000);
                     let isPage = await signinWindow.isClosed();
-                    if (isPage) break;
-                    console.log(await signinWindow.content());
+                    if (isPage) {break;}
+                    else{console.log(await signinWindow.content());};
                 };
             }
             isPage = await signinWindow.isClosed();
