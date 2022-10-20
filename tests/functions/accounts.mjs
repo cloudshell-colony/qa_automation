@@ -71,6 +71,42 @@ export const getInvitationAPI = async (myURL, secret) => {
     return response;
 };
 
+export const createAccountAPI = async (baseURL, account_name, company_name, email, first_name, last_name, password) => {
+    // send invitation for a user, invitation must contain the user email (can be invalid if no SMTP is needed)
+    // space_role cane be: "Space Developer",,,,,
+    // reason can be: "AdminJoinAccount", "TeamMemberJoinSpace", "AdminAuthenticateCloudAccount"
+    const data = {
+        "account_name": account_name,
+        "first_name": first_name,
+        "last_name": last_name,
+        "email": email,
+        "password": password,
+        "company_name": company_name
+    }
+    const response = await fetch(`${baseURL}/api/accounts/register`, {
+        "method": "POST",
+        "body": JSON.stringify(data),
+        "headers": {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+        }
+    });
+    return response;
+};
+
+export const deleteAccountAPI = async (baseURL, account_name, session) => {
+    console.log(`Attempting to delete account: ${account_name}`);
+    const response = await fetch(`${baseURL}/api/accounts/${account_name}`, {
+        "method": "DELETE",
+        "headers": {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${session}`
+        }
+    });
+    console.log(`Delete account ${account_name} ended with status code ${response.status}. ${await response.text()}`);
+    return response;
+};
+
 export const signupUserAPI = async (myURL, secret) => {
     // signup user by approving the secret that was sewnt to his e-mail addrees, the secret is calculated from the user e-mail and the account.
     // after this call the user is a registarted user and can use APIs based hon his role in the system.
