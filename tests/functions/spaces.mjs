@@ -16,6 +16,7 @@ export default function removeUserFromSpaceAPI(user_email, myURL, session, space
 };
 
 export const createSpace = async (page, spaceName) => {
+    console.log(`creeating space with name: ${spaceName}`);
     if (!page.url().endsWith("admin/spaces")) {
         await goToAdminConsole(page, "spaces");
     }
@@ -192,8 +193,8 @@ export const fillInRepoData = async (providerKeys, signinWindow) => {
                     await signinWindow.locator('[placeholder="XXXXXX"]').fill(await codeList[index]);
                     await signinWindow.waitForTimeout(1000);
                     let isPage = await signinWindow.isClosed();
-                    if (isPage) {break;}
-                    else{console.log(await signinWindow.content());};
+                    if (isPage) { break; }
+                    else { console.log(await signinWindow.content()); };
                 };
             }
             isPage = await signinWindow.isClosed();
