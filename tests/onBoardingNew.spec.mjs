@@ -36,7 +36,7 @@ test.describe.serial('onboarding flow', () => {
     });
 
     test.afterAll(async () => {
-        afterTestCleanup(page, accountName, baseURL);
+       await afterTestCleanup(page, accountName, baseURL, spaceName);
     });
 
     test('create new account', async () => {

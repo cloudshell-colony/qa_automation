@@ -37,14 +37,19 @@ export function randomString(length) {
 export const closeModal = async (page) => {
     // check if a modal is open and closes it
     // modal screen include: sample BP launcher, create Execution Host, create Space, Repository Information,
-    const visi = await page.isVisible('[data-test="close-modal"]', 2000);
+    const visi = await page.isVisible('[data-test="close-modal"]', 1000);
     if (visi) {
         await page.locator('[data-test="close-modal"]').click();
     };
-    const visi2 = await page.isVisible('[data-test="submit"]', 2000);
+    const visi2 = await page.isVisible('[data-test="submit"]', 1000);
     if (visi2) {
         await page.locator('[data-test="submit"]').click();
     };
+    //close annoying chat button if we are in production
+    try{
+        await page.frameLocator('[title="chat widget"]').locator('[aria-label="Dismiss"]', 1000).click({timeout: 1000});
+    }
+    catch{};
 };
 
 export const waitForSpaceInListToDisappear = async (page, newName) => {
@@ -116,9 +121,10 @@ export const selectFromDropbox = async (page, name, text = "") => {
     await page.keyboard.press("Enter");
 };
 
-export const afterTestCleanup = async (page, accountName, baseURL) => {
-    console.log(`stopping all Sbs after test complteted`);
-    await goToSandboxListPage(page);
+export const afterTestCleanup = async (page, accountName, baseURL, spaceName) => {
+    console.log(`stopping all Sbs after test complteted in space ${spaceName}`);
+    await page.goto(`${baseURL}/${spaceName}`);
+    //await goToSandboxListPage(page);
     await stopAndValidateAllSBsCompleted(page);
     console.log(`Delete account "${accountName}", as part of test cleanup`);
     await DeleteAcountUI(accountName, page, baseURL);

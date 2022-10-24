@@ -182,44 +182,46 @@ export const fillInRepoData = async (providerKeys, signinWindow) => {
             await signinWindow.waitForTimeout(1000);
             let isPage = await signinWindow.isClosed();
             if (isPage) break;
-            // if github wishes for mail authentication...
-            let authrnticateWithMail = await signinWindow.isVisible('text=Device verification', 500);
-            if (authrnticateWithMail) {
-                await signinWindow.waitForTimeout(2 * 1000);
-                const codeList = await getCodesListFromMailinator();
-                for (let index = 0; index < codeList.length; index++) {
-                    console.log("We got into mail verification");
-                    console.log(`Attempting verification cod: ${codeList[index]}`);
-                    await signinWindow.locator('[placeholder="XXXXXX"]').fill(await codeList[index]);
-                    await signinWindow.waitForTimeout(1000);
-                    let isPage = await signinWindow.isClosed();
-                    if (isPage) { break; }
-                    else { console.log(await signinWindow.content()); };
-                };
-            }
-            isPage = await signinWindow.isClosed();
-            if (isPage) break;
-            const AuthorizeQN = await signinWindow.isVisible('text=Authorize QualiNext', 500);
-            if (AuthorizeQN) {
-                await signinWindow.click('text=Authorize QualiNext');
-            }
-            isPage = await signinWindow.isClosed();
-            console.log(`Apperntly the check if the ${provider} login page is closed ended with: ${isPage}`);
-            if (!isPage) {
-                console.log('Waiting fore aditional 3 seconds since the page is still open');
-                await signinWindow.waitForTimeout(3 * 1000);
+            else{
+                // if github wishes for mail authentication...
+                let authrnticateWithMail = await signinWindow.isVisible('text=Device verification', 500);
+                if (authrnticateWithMail) {
+                    await signinWindow.waitForTimeout(2 * 1000);
+                    const codeList = await getCodesListFromMailinator();
+                    for (let index = 0; index < codeList.length; index++) {
+                        console.log("We got into mail verification");
+                        console.log(`Attempting verification cod: ${codeList[index]}`);
+                        await signinWindow.locator('[placeholder="XXXXXX"]').fill(await codeList[index]);
+                        await signinWindow.waitForTimeout(1000);
+                        let isPage = await signinWindow.isClosed();
+                        if (isPage) { break; }
+                        else { console.log(await signinWindow.content()); };
+                    };
+                }
                 isPage = await signinWindow.isClosed();
-                console.log('after 3 seconds the page isClosed validation ended with: ' + await isPage);
-                if (isPage) {
-                    console.log(await signinWindow.content());
-                    break;
-                } else {
-                    console.log('we have a problem, the popup is still open and we dont know why');
-                    console.log(await signinWindow.content());
-                    break;
+                if (isPage) break;
+                const AuthorizeQN = await signinWindow.isVisible('text=Authorize QualiNext', 500);
+                if (AuthorizeQN) {
+                    await signinWindow.click('text=Authorize QualiNext');
+                }
+                isPage = await signinWindow.isClosed();
+                console.log(`Apperntly the check if the ${provider} login page is closed ended with: ${isPage}`);
+                if (!isPage) {
+                    console.log('Waiting fore aditional 3 seconds since the page is still open');
+                    await signinWindow.waitForTimeout(3 * 1000);
+                    isPage = await signinWindow.isClosed();
+                    console.log('after 3 seconds the page isClosed validation ended with: ' + await isPage);
+                    if (isPage) {
+                        console.log(await signinWindow.content());
+                        break;
+                    } else {
+                        console.log('we have a problem, the popup is still open and we dont know why');
+                        console.log(await signinWindow.content());
+                        break;
+                    };
                 };
-            };
-            break;
+                break;
+            }
         case "gitlab":
             console.log('Missing Gitlab implementation');
             // await signinWindow.waitForLoadState();
