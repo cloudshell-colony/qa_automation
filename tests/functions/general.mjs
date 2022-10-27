@@ -46,10 +46,10 @@ export const closeModal = async (page) => {
         await page.locator('[data-test="submit"]').click();
     };
     //close annoying chat button if we are in production
-    try{
-        await page.frameLocator('[title="chat widget"]').locator('[aria-label="Dismiss"]', 1000).click({timeout: 1000});
+    try {
+        await page.frameLocator('[title="chat widget"]').locator('[aria-label="Dismiss"]', 1000).click({ timeout: 1000 });
     }
-    catch{};
+    catch { };
 };
 
 export const waitForSpaceInListToDisappear = async (page, newName) => {
@@ -79,11 +79,8 @@ export const executeCLIcommand = async (command) => {
         }
         if (stderr) {
             console.log(`stderr: ${stderr}`);
-            // expect(error).toBeNull();
-            // return 0;
         }
         console.log(`stdout: ${stdout}`);
-        console.log('should have now active execution host');
         return 1;
     });
 };
@@ -121,7 +118,8 @@ export const selectFromDropbox = async (page, name, text = "") => {
     await page.keyboard.press("Enter");
 };
 
-export const afterTestCleanup = async (page, accountName, baseURL, spaceName) => {
+export const afterTestCleanup = async (page, accountName, baseURL, spaceName, executionHostName = "enter real if needed") => {
+    // execution host is not mandatory, and should be used only when execution host is created during the test
     console.log(`stopping all Sbs after test complteted in space ${spaceName}`);
     await page.goto(`${baseURL}/${spaceName}`);
     //await goToSandboxListPage(page);
@@ -129,6 +127,11 @@ export const afterTestCleanup = async (page, accountName, baseURL, spaceName) =>
     console.log(`Delete account "${accountName}", as part of test cleanup`);
     await DeleteAcountUI(accountName, page, baseURL);
     await page.close();
+    // delete execution host
+    if (executionHostName !== "enter real if needed") {
+        console.log(`deleting the trwo namespaces containing ${executionHostName}`);
+        await executeCLIcommand(`sh cleanEHosts.sh ${executionHostName}`);
+    };
 };
 
 export const getMailsFromMailinator = async () => {

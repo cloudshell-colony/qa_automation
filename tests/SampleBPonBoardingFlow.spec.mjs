@@ -57,6 +57,7 @@ test.describe.serial('onboarding flow', () => {
   });
 
   test('end the first sandbox', async () => {
+    console.log("Terminating the sample environment");
     await endSandbox(page);
   });
 
@@ -74,6 +75,7 @@ test.describe.serial('onboarding flow', () => {
   });
 
   test('end the second sandbox', async () => {
+    console.log("Terminating the sample environment");
     await endSandbox(page);
   });
 
@@ -88,6 +90,7 @@ test.describe.serial('onboarding flow', () => {
   });
 
   test('end the third sandbox', async () => {
+    console.log("Terminating the sample environment");
     await endSandbox(page);
   });
 
