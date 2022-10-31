@@ -59,4 +59,39 @@ export const disassociateExecutionHostAPI = async (session, myURL, space, execut
         }
     });
     return response;
+};
+
+export const getExecutionHostDetailsAPI = async (session, baseURL, executionHost) =>{
+    const response = await fetch(`${baseURL}/api/settings/computeservices?service_name=${executionHost}`, {
+        "method": "GET",
+        "headers": {
+            'Authorization': `Bearer ${session}`,
+            'Content-Type': 'application/json',
+        }
+    });
+    return response;
+}
+
+export const createEKSAPI = async (session, baseURL, executionHost) => {
+    const data = {
+        "details": {
+            "configure_dns": "false",
+            "generate_certificate": "false",
+            "ingress_class": "alb",
+            "ingress_controller_type": "alb",
+            "type": "EKS"
+        },
+        "service_type": "k8s",
+        "service_name": `${executionHost}`
+    }
+    const response = await fetch(`${baseURL}/api/settings/computeservices`, {
+        "method": "POST",
+        "body": JSON.stringify(data),
+        "headers": {
+            'Authorization': `Bearer ${session}`,
+            'Content-Type': 'application/json',
+            'Accept': '*/*'
+        }
+    });
+    return response;
 }
