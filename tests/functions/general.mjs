@@ -102,10 +102,25 @@ export const pressOptionFromCommonTable = async (page, rowIdentifier, optionSele
 
 export const validateAPIResponseis200 = async (response) => {
     if (response.status != 200) {
-        // console.log(`response error is: ${await response.text()}`);
-        console.log(await response.json());
-        expect(response.status).toBe(200);
-        expect(response.ok).toBeTruthy();
+        try {
+            try {
+                console.log(await response.json());
+            } catch {
+                console.log("Got response that is not a json object");
+            }
+            try {
+                console.log(`response error is: ${await response.text()}`);
+            } catch {
+                console.log("Got response that is not a text object");
+            }
+        } catch {
+
+        } finally {
+            console.log(`Attempting to log the response as is: ${response}`);
+            expect(response.status).toBe(200);
+            expect(response.ok).toBeTruthy();
+        }
+
     } else {
         expect(response.status).toBe(200);
         expect(response.ok).toBeTruthy();
@@ -120,7 +135,7 @@ export const selectFromDropbox = async (page, name, text = "") => {
 
 export const afterTestCleanup = async (page, accountName, baseURL, spaceName, executionHostName = "enter real if needed") => {
     // execution host is not mandatory, and should be used only when execution host is created during the test
-    console.log(`stopping all Sbs after test complteted in space ${spaceName}`);
+    console.log(`Stopping all Sbs after test complteted in space ${spaceName}`);
     await page.goto(`${baseURL}/${spaceName}`);
     //await goToSandboxListPage(page);
     await stopAndValidateAllSBsCompleted(page);
@@ -129,7 +144,7 @@ export const afterTestCleanup = async (page, accountName, baseURL, spaceName, ex
     await page.close();
     // delete execution host
     if (executionHostName !== "enter real if needed") {
-        console.log(`deleting the trwo namespaces containing ${executionHostName}`);
+        console.log(`Deleting the all namespaces containing ${executionHostName}`);
         await executeCLIcommand(`sh cleanEHosts.sh ${executionHostName}`);
     };
 };

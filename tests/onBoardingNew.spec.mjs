@@ -86,7 +86,7 @@ test.describe.serial('onboarding flow', () => {
     test('Create execution host deployment file', async () => {
         // get session for API call
         const session = await getSessionAPI(email, allAccountsPassword, baseURL, accountName);
-        const response = await getdeploymentFileAPI(await session, baseURL, executionHostName, executionHostName);
+        const response = await getdeploymentFileAPI(await session, baseURL, "k8s", executionHostName);
         await overwriteAndSaveToFile("deploymentFile.yaml", response);
     });
 
