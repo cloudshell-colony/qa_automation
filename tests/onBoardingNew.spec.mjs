@@ -21,6 +21,8 @@ const email = prefix.concat("@").concat(timestemp).concat(".com");
 
 const executionHost = process.env.execHostName;
 const executionHostName = executionHost.concat(timestemp);
+const namespace = process.env.nameSpace;
+const serviceAccount = process.env.serviceAccount;
 
 let sandboxName; // we will need it later on to terminate the sandbox we create
 const bucketName = ("qa-auto-bucket-").concat(timestemp);
@@ -101,9 +103,9 @@ test.describe.serial('onboarding flow', () => {
 
     test('add execution host to space', async () => {
         // selecting execution host name
-        await selectFromDropbox(page, "default-namespace-full__value-container", executionHostName);
+        await selectFromDropbox(page, "default-namespace-full__value-container", namespace);
         // selecting default K8s service account
-        await selectFromDropbox(page, "default-service-account-full__value-container", "default");
+        await selectFromDropbox(page, "default-service-account-full__value-container", serviceAccount);
         await page.click('[data-test="submit-button"]');
     });
 
