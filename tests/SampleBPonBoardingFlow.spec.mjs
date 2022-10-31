@@ -1,6 +1,6 @@
 import { test, expect } from "@playwright/test";
 import { createAccount, DeleteAcountUI, loginToAccount, validateSbLauncher } from "./functions/accounts.mjs";
-import { launchBlueprintFromSandboxPage, launchBlueprintFromBPList } from "./functions/blueprints.mjs";
+import { launchSampleBlueprintFromSandboxPage, launchBlueprintFromBPList } from "./functions/blueprints.mjs";
 import { afterTestCleanup, closeModal, openFromChecklist } from "./functions/general.mjs";
 import { startSampleSandbox, endSandbox, validateSBisActive, endSandboxValidation } from "./functions/sandboxes.mjs";
 
@@ -57,6 +57,7 @@ test.describe.serial('onboarding flow', () => {
   });
 
   test('end the first sandbox', async () => {
+    console.log("Terminating the sample environment");
     await endSandbox(page);
   });
 
@@ -74,13 +75,14 @@ test.describe.serial('onboarding flow', () => {
   });
 
   test('end the second sandbox', async () => {
+    console.log("Terminating the sample environment");
     await endSandbox(page);
   });
 
 
   test('start sample sandbox from sandbox page', async () => {
     console.log(`starting \"${sbOrder[2]}\" sample SB from sandbox list page`);
-    lastBPname = await launchBlueprintFromSandboxPage(page, sbOrder[2]);
+    lastBPname = await launchSampleBlueprintFromSandboxPage(page, sbOrder[2]);
   });
 
   test('validate sample SB started from sandbox catalog page is active', async () => {
@@ -88,6 +90,7 @@ test.describe.serial('onboarding flow', () => {
   });
 
   test('end the third sandbox', async () => {
+    console.log("Terminating the sample environment");
     await endSandbox(page);
   });
 

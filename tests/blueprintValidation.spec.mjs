@@ -1,6 +1,6 @@
 import { test, expect } from "@playwright/test";
 import { loginToAccount, getSessionAPI, validateGetSessionAPI } from "./functions/accounts.mjs";
-import { getBlueprintErrors, launchBlueprintWithInputs, validateBlueprintErrors } from "./functions/blueprints.mjs";
+import { getBlueprintErrors, launchBlueprintFromBPList, validateBlueprintErrors } from "./functions/blueprints.mjs";
 import { closeModal } from "./functions/general.mjs";
 import { goToSpace } from "./functions/spaces.mjs";
 import { associateExecutionHost, disassociateExecutionHostAPI } from "./functions/executionHosts.mjs";
@@ -63,7 +63,7 @@ test.describe('Blueprint validation', () => {
         await goToSpace(page, space);
         await page.click("[data-test=blueprints-nav-link]");
         //get and validate blueprint errors
-        await page.waitForTimeout(10000); // wait for 10 seconds for blueprint errors to update
+        await page.waitForTimeout(10*1000); // wait for 10 seconds for blueprint errors to update
         console.log("Validating blueprint errors after associating execution host");
         await validateBlueprintErrors(page, blueprintName, await getBlueprintErrors(page, blueprintName), expectedErrors);
         console.log("Removing execution host from space");
@@ -71,7 +71,7 @@ test.describe('Blueprint validation', () => {
         expect(response.status, 'Execution host was not removed from space, MUST remove it manually').toBe(200)
         expectedErrors.unshift(`The compute service '${bpValidationEKS}`); //Adding error that should appear after removing EKS
         //get and validate blueprint errors
-        await page.waitForTimeout(10000); // wait for 10 seconds for blueprint errors to update
+        await page.waitForTimeout(10*1000); // wait for 10 seconds for blueprint errors to update
         console.log("Validating blueprint errors after removing execution host");
         await validateBlueprintErrors(page, blueprintName, await getBlueprintErrors(page, blueprintName), expectedErrors);
     });
@@ -82,7 +82,7 @@ test.describe('Blueprint validation', () => {
         await goToSpace(page, space);
         await page.click("[data-test=blueprints-nav-link]");
         console.log("Launching sandbox with bad inputs for execution host name");
-        await launchBlueprintWithInputs(page, blueprintName, inputsDict);
+        await launchBlueprintFromBPList(page, blueprintName, inputsDict);
         await page.waitForSelector("[data-testid=error-details-text]");
         const errMsg = await page.locator("[data-testid=error-details-text]");
         expect(errMsg, "Did not receive expected error when providing wrong host name value").toContainText("The compute service 'wrong value (in grains->bucket_1->spec->host->name)' was not found");
@@ -97,7 +97,7 @@ test.describe('Blueprint validation', () => {
         await goToSpace(page, space);
         await page.click("[data-test=blueprints-nav-link]");
         console.log("Launching sandbox with correct inputs for execution host name");
-        await launchBlueprintWithInputs(page, blueprintName, inputsDict);
+        await launchBlueprintFromBPList(page, blueprintName, inputsDict);
         try {
             err = await page.locator("[data-testid=error-details-text]", { timeout: 3000 }).innerText();
         }
@@ -107,14 +107,6 @@ test.describe('Blueprint validation', () => {
         await page.waitForSelector('[data-test="sandbox-info-column"]');
         console.log("Waiting for sandbox to end launch");
         await validateSBisActive(page);
-        // let sandboxStatus = await page.locator('[data-test="sandbox-info-column"]').innerText();
-        // var startTime = Date.now();
-        // while (sandboxStatus.includes("Launching") && Date.now() - startTime < 10000) {
-        //     sandboxStatus = await page.locator('[data-test="sandbox-info-column"]').locator('.sandbox-status').innerText();
-        // }
-        // if (sandboxStatus.includes("Launching")) {
-        //     throw ("Sandbox still launching after long time");
-        // }
         console.log("Ending sandbox");
         await page.click("[data-test=end-sandbox]");
         await page.click("[data-test=confirm-end-sandbox]");
