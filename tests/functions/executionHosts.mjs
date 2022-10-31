@@ -47,6 +47,23 @@ export const getdeploymentFileAPI = async (session, myURL, name, nameSpace) => {
     return responseBody;
 };
 
+export const associateExecutionHostAPI = async (session, myURL, space, executionHost, nameSpace, serviceAccount) => {
+    const data = {
+        "default_namespace": `${nameSpace}`,
+        "default_service_account": `${serviceAccount}`
+      };
+    const response = await fetch(`${myURL}/api/executionhosts/k8s/${executionHost}/spaces/${space}`, {
+        "method": "POST",
+        "body": JSON.stringify(data),
+        "headers": {
+            'Authorization': `Bearer ${session}`,
+            'Content-Type': 'application/json',
+            'Accept': '*/*'
+        }
+    });
+    return response;
+};
+
 export const disassociateExecutionHostAPI = async (session, myURL, space, executionHost) => {
     const data = {};
     const response = await fetch(`${myURL}/api/spaces/${space}/computeservices/${executionHost}`, {

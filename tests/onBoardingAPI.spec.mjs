@@ -4,8 +4,7 @@ import { generateSecret, validateAPIResponseis200, overwriteAndSaveToFile, execu
 import { signupUserAPI, getSessionAPI, sendInvitationsAPI, getInvitationAPI, deleteUserAPI, validateGetSessionAPI, createAccountAPI, deleteAccountAPI } from "./functions/accounts.mjs";
 import fetch from "node-fetch";
 import { createSpaceAPI } from "./functions/spaces.mjs";
-import { createEKSAPI, getdeploymentFileAPI, getExecutionHostDetailsAPI } from "./functions/executionHosts.mjs";
-
+import { associateExecutionHostAPI, createEKSAPI, getdeploymentFileAPI, getExecutionHostDetailsAPI } from "./functions/executionHosts.mjs";
 
 const prefix = process.env.accountPrefix;
 const baseURL = process.env.baseURL;
@@ -19,6 +18,8 @@ const spaceName = prefix.concat("-space-").concat(timestemp);
 const email = prefix.concat("@").concat(timestemp).concat(".com");
 const executionHost = process.env.execHostName;
 const executionHostName = executionHost.concat(timestemp);
+const namespace = process.env.nameSpace;
+const serviceAccount = process.env.serviceAccount;
 
 let session = "empty session";
 // const secret = generateSecret(email, account);
@@ -107,7 +108,7 @@ test.describe.serial('On boarding with APIs', () => {
         await overwriteAndSaveToFile("deploymentFile.yaml", response);
     });
 
-    test('apply the execution host yaml file to K8S', async () => {
+    test('Apply the execution host yaml file to K8S', async () => {
         await executeCLIcommand("kubectl apply -f deploymentFile.yaml");
         let ESInfo;
         //wait for max 5 minutes until host status is active
@@ -123,6 +124,10 @@ test.describe.serial('On boarding with APIs', () => {
         expect(await ESInfo.text(), "Execution host is not active after 5 minutes").toContain("active");
     });
 
+    test('Associate execution host to space', async () => {
+        const response = await associateExecutionHostAPI(session, baseURL, spaceName, executionHostName, namespace, serviceAccount);
+        await validateAPIResponseis200(response);
+    });
 
 
 });
