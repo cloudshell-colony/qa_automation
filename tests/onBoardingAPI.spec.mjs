@@ -51,6 +51,17 @@ test.describe.serial('On boarding with APIs', () => {
             "branch": null,
             "repository_name": "qa_automation102"
         }
+
+        const data2 = {
+            "repository_url": "https://github.com/gilad030609/repo",
+            "access_token": "293fe960eac4f9e031ed",
+            "repository_type": "github",
+            "branch": "master",
+            "type": "sandbox",
+            "repository_name": "repo",
+            "provider_id": repository_provider_id,
+        }
+
         await fetch(`${baseURL}/api/spaces/${spaceName}/repositories/github`, {
             "method": "POST",
             "headers": {
@@ -70,7 +81,7 @@ test.describe.serial('On boarding with APIs', () => {
     });
 
     test('Add execution host to space', async () => {
-
+        await page.pause();
     });
 
 });
