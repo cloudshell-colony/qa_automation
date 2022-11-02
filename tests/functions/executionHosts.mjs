@@ -2,7 +2,7 @@ import fetch from "node-fetch";
 import { expect } from "@playwright/test";
 import { selectFromDropbox, validateAPIResponseis200 } from "./general.mjs";
 
-export const associateExecutionHost = async (page, executionHost, nameSpace, space) => {
+export const associateExecutionHost = async (page, executionHost, nameSpace, serviceAccount, space) => {
     //await page.waitForSelector("[data-test=add-new-execution-host]");
     //const visi = await page.isVisible(`[data-test=execution-hosts-${executionHost}]`);
     try {
@@ -16,7 +16,7 @@ export const associateExecutionHost = async (page, executionHost, nameSpace, spa
     await page.click(`[data-test="add-space-to-compute-service"]`);
     await selectFromDropbox(page, "space__value-container", space);
     await selectFromDropbox(page, "default-namespace-full__value-container", nameSpace);
-    await selectFromDropbox(page, "default-service-account-full__value-container", "default");
+    await selectFromDropbox(page, "default-service-account-full__value-container", serviceAccount);
     await page.click("[data-test=submit-button]");
 };
 

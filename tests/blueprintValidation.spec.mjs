@@ -13,8 +13,10 @@ const account = process.env.account;
 const user = process.env.adminEMail
 const space = "bp-validation";
 const bpValidationEKS = "bp-validation2";
-//const executionHostNameSpace = "torque-agent-bp-validation";
-const executionHostNameSpace = "torque-agent-bp-validation2-ceahektb3";
+// const executionHostNameSpace = "torque-agent-bp-validation";
+const executionHostNameSpace = process.env.nameSpace;
+const executionHostServiceAccount = process.env.serviceAccount;
+
 let session = "empty session";
 let blueprintName;
 
@@ -59,11 +61,11 @@ test.describe('Blueprint validation', () => {
         let expectedErrors = ["host missing compute-service field"];
         await goToAdminConsole(page, "cloud accounts")
         console.log("Associating execution host to space");
-        await associateExecutionHost(page, bpValidationEKS, executionHostNameSpace, space);
+        await associateExecutionHost(page, bpValidationEKS, executionHostNameSpace, executionHostServiceAccount, space);
         await goToSpace(page, space);
         await page.click("[data-test=blueprints-nav-link]");
         //get and validate blueprint errors
-        await page.waitForTimeout(10*1000); // wait for 10 seconds for blueprint errors to update
+        await page.waitForTimeout(10 * 1000); // wait for 10 seconds for blueprint errors to update
         console.log("Validating blueprint errors after associating execution host");
         await validateBlueprintErrors(page, blueprintName, await getBlueprintErrors(page, blueprintName), expectedErrors);
         console.log("Removing execution host from space");
@@ -71,7 +73,7 @@ test.describe('Blueprint validation', () => {
         expect(response.status, 'Execution host was not removed from space, MUST remove it manually').toBe(200)
         expectedErrors.unshift(`The compute service '${bpValidationEKS}`); //Adding error that should appear after removing EKS
         //get and validate blueprint errors
-        await page.waitForTimeout(10*1000); // wait for 10 seconds for blueprint errors to update
+        await page.waitForTimeout(10 * 1000); // wait for 10 seconds for blueprint errors to update
         console.log("Validating blueprint errors after removing execution host");
         await validateBlueprintErrors(page, blueprintName, await getBlueprintErrors(page, blueprintName), expectedErrors);
     });
