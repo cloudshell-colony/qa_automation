@@ -8,12 +8,10 @@ inputs:
     type: string
     display-style: normal
     description: "Kubernetes namespace for sandbox to be ran in."
+    default: "qa-auto-pods"
   host_name:
     type: execution-host
-    display-style: normal
-    default: "qa-eks2"
-    description: "execution host name"
-    
+ 
 grains:
   nginx:
     kind: kubernetes
