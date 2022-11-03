@@ -10,7 +10,10 @@ inputs:
     description: "Kubernetes namespace for sandbox to be ran in."
   host_name:
     type: execution-host
-
+    display-style: normal
+    default: "qa-eks2"
+    description: "execution host name"
+    
 grains:
   nginx:
     kind: kubernetes
