@@ -36,7 +36,7 @@ test.describe('test my tests', () => {
 
     test('create new account', async () => {
         await createAccount(page, firstName, lastName, companyName, email, accountName, allAccountsPassword, baseURL);
-        await page.waitForURL(`${baseURL}/Sample`);
+        await page.waitForURL(`${baseURL}/Sample`, { timeout: 3 * 60 * 1000 });
         await closeModal(page);
     });
 
