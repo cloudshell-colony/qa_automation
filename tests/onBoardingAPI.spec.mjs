@@ -66,10 +66,10 @@ test.describe.serial('On boarding with APIs', () => {
             "body": JSON.stringify(data),
 
         }).then(response => {
-                console.log(response);
-            }).catch(err => {
-                console.error(err);
-            });
+            console.log(response);
+        }).catch(err => {
+            console.error(err);
+        });
 
     });
 
@@ -92,10 +92,10 @@ test.describe.serial('On boarding with APIs', () => {
             },
             "body": JSON.stringify(data)
         }).then(response => {
-                console.log(response);
-            }).catch(err => {
-                console.error(err);
-            });
+            console.log(response);
+        }).catch(err => {
+            console.error(err);
+        });
     });
 
     test('Create execution host', async () => {
@@ -112,10 +112,10 @@ test.describe.serial('On boarding with APIs', () => {
         await executeCLIcommand("kubectl apply -f deploymentFile.yaml");
         let ESInfo;
         //wait for max 5 minutes until host status is active
-        for(let i=0; i<5*60; i++){
+        for (let i = 0; i < 5 * 60; i++) {
             ESInfo = await getExecutionHostDetailsAPI(session, baseURL, executionHostName);
             let ESText = await ESInfo.text();
-            if(ESText.includes("active")){
+            if (ESText.includes("active")) {
                 break;
             }
             await new Promise(r => setTimeout(r, 1000)); //wait for 1 second

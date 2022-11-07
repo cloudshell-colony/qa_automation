@@ -47,62 +47,10 @@ export const getdeploymentFileAPI = async (session, myURL, name, nameSpace) => {
     return responseBody;
 };
 
-export const associateExecutionHostAPI = async (session, myURL, space, executionHost, nameSpace, serviceAccount) => {
-    const data = {
-        "default_namespace": `${nameSpace}`,
-        "default_service_account": `${serviceAccount}`
-      };
-    const response = await fetch(`${myURL}/api/executionhosts/k8s/${executionHost}/spaces/${space}`, {
-        "method": "POST",
-        "body": JSON.stringify(data),
-        "headers": {
-            'Authorization': `Bearer ${session}`,
-            'Content-Type': 'application/json',
-            'Accept': '*/*'
-        }
-    });
-    return response;
-};
-
 export const disassociateExecutionHostAPI = async (session, myURL, space, executionHost) => {
     const data = {};
     const response = await fetch(`${myURL}/api/spaces/${space}/computeservices/${executionHost}`, {
         "method": "DELETE",
-        "body": JSON.stringify(data),
-        "headers": {
-            'Authorization': `Bearer ${session}`,
-            'Content-Type': 'application/json',
-            'Accept': '*/*'
-        }
-    });
-    return response;
-};
-
-export const getExecutionHostDetailsAPI = async (session, baseURL, executionHost) =>{
-    const response = await fetch(`${baseURL}/api/settings/computeservices?service_name=${executionHost}`, {
-        "method": "GET",
-        "headers": {
-            'Authorization': `Bearer ${session}`,
-            'Content-Type': 'application/json',
-        }
-    });
-    return response;
-}
-
-export const createEKSAPI = async (session, baseURL, executionHost) => {
-    const data = {
-        "details": {
-            "configure_dns": "false",
-            "generate_certificate": "false",
-            "ingress_class": "alb",
-            "ingress_controller_type": "alb",
-            "type": "EKS"
-        },
-        "service_type": "k8s",
-        "service_name": `${executionHost}`
-    }
-    const response = await fetch(`${baseURL}/api/settings/computeservices`, {
-        "method": "POST",
         "body": JSON.stringify(data),
         "headers": {
             'Authorization': `Bearer ${session}`,
