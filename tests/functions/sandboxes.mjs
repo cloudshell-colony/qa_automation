@@ -1,5 +1,7 @@
 import { expect } from "@playwright/test";
 import { goToSpace } from "./spaces.mjs";
+import fetch from "node-fetch";
+
 
 export const startSampleSandbox = async (page, sandboxFullName) => {
   // starts a sample sandbox from the "sample sandbox launcher"
@@ -127,3 +129,62 @@ export const stopAndValidateAllSBsCompleted = async (page) => {
 export const goToSandboxListPage = async (page) => {
   await page.click('[data-test="sandboxes-nav-link"]');
 };
+
+export const getSandboxDetailsAPI = async(session, baseURL, spaceName, sandboxId) => {
+  const response = await fetch(`${baseURL}/api/spaces/${spaceName}/environments/${sandboxId}`, {
+    "method": "GET",
+    "headers": {
+        'Authorization': `Bearer ${session}`,
+        'Content-Type': 'application/json',
+    }
+  });
+  return response;
+}
+
+const validateSBStatusWrapperAPI = async (session, baseURL, sandboxId, space, status) => {
+  let sandboxInfo, state, sandboxJson;
+  //wait for max 3 minutes until sandbox status is active
+  for(let i=0; i<3*60; i++){
+    sandboxInfo = await getSandboxDetailsAPI(session, baseURL, space, sandboxId);
+    sandboxJson = await sandboxInfo.json();
+    state = await sandboxJson.details.computed_status;
+    if(state.includes(status)){
+      break;
+    }
+    await new Promise(r => setTimeout(r, 1000)); //wait for 1 second
+  }
+  sandboxInfo = await (await getSandboxDetailsAPI(session, baseURL, space, sandboxId)).text();
+  expect(state,`"Sandbox status is not '${status}' after 3 minutes. Sandbox info: \n` +  sandboxInfo).toBe(status);
+  console.log(`Sandbox status is '${status}'`)
+  let stages = sandboxJson['details']['state']['grains'][0]['state']['stages'];
+  for (var type in stages){
+    let stage = stages[type];
+    if((stage.name == 'Apply' && status == 'Active') || (stage.name == 'Destroy' && status == 'Ended')){
+      for (var index in stage['activities']){
+        //check all activities ended with a valid status
+        let action = stage['activities'][index]
+        expect(['Done', 'Skipped']).toContain(action.status);
+        console.log(`${action.name} ended with status '${action.status}'`);
+      }
+    }
+  }
+}
+
+export const validateSBisActiveAPI = async(session, baseURL, sandboxId, space) =>{
+  await validateSBStatusWrapperAPI(session, baseURL, sandboxId, space, 'Active');
+}
+
+export const validateSBisEndedAPI = async(session, baseURL, sandboxId, space) =>{
+  await validateSBStatusWrapperAPI(session, baseURL, sandboxId, space, 'Ended');
+}
+
+export const endSandboxAPI = async(session, baseURL, spaceName, sandboxId) => {
+  const response = await fetch(`${baseURL}/api/spaces/${spaceName}/environments/${sandboxId}`, {
+    "method": "DELETE",
+    "headers": {
+        'Authorization': `Bearer ${session}`,
+        'Content-Type': 'application/json',
+    }
+  });
+  return response;
+}

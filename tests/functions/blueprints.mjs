@@ -127,4 +127,29 @@ export const validateBlueprintErrors = async (page, BPName, errList, expectedErr
     for (let i = 0; i < expectedErrors.length; i++) {
         expect.soft(errList[i], `Wrong error returned from "${BPName}" blueprint`).toContainText(expectedErrors[i]);
     }
+};
+
+export const launchBlueprintAPI = async(session, baseURL, BPName, spaceName, inputs, duration="PT2H") => {
+    const timestemp = Math.floor(Date.now() / 1000);
+    const data = {
+        "sandbox_name": `${BPName}-${timestemp}`,
+        "blueprint_name": `${BPName}`,
+        "inputs": inputs,
+        "duration": duration,
+        "automation": false,
+        "artifacts": {},
+        "activity_type": 'other',
+        "notes": '',
+        "source": {"is_editable": true}
+    }
+    const response = await fetch(`${baseURL}/api/spaces/${spaceName}/environments`, {
+        "method": "POST",
+        "body": JSON.stringify(data),
+        "headers": {
+            'Authorization': `Bearer ${session}`,
+            'Content-Type': 'application/json',
+            'Accept': '*/*'
+        }
+    });
+    return response;
 }

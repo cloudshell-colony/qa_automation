@@ -5,6 +5,8 @@ import { signupUserAPI, getSessionAPI, sendInvitationsAPI, getInvitationAPI, del
 import fetch from "node-fetch";
 import { createSpaceAPI } from "./functions/spaces.mjs";
 import { associateExecutionHostAPI, createEKSAPI, getdeploymentFileAPI, getExecutionHostDetailsAPI } from "./functions/executionHosts.mjs";
+import { validateSBisActiveAPI, validateSBisEndedAPI, endSandboxAPI} from "./functions/sandboxes.mjs";
+import { launchBlueprintAPI } from "./functions/blueprints.mjs";
 
 const prefix = process.env.accountPrefix;
 const baseURL = process.env.baseURL;
@@ -20,14 +22,18 @@ const executionHost = process.env.execHostName;
 const executionHostName = executionHost.concat(timestemp);
 const namespace = process.env.nameSpace;
 const serviceAccount = process.env.serviceAccount;
+const bucketName = ("qa-auto-bucket-").concat(timestemp);
+
 
 let session = "empty session";
+let sandboxId = '';
 // const secret = generateSecret(email, account);
 
 
 test.describe.serial('On boarding with APIs', () => {
     test.afterAll(async () => {
         await deleteAccountAPI(baseURL, accountName, session);
+        //await executeCLIcommand(`sh cleanEHosts.sh ${executionHostName}`);
     });
 
     test('Create new account', async () => {
@@ -52,9 +58,9 @@ test.describe.serial('On boarding with APIs', () => {
     test.skip('Add BPs repository to space', async () => {
         const data = {
             "code": "293fe960eac4f9e031ed",
-            "repository_url": "https://github.com/cloudshell-colony/qa_automation",
             "type": "sandbox",
-            "branch": null,
+            "repository_url": "https://github.com/gilad030609/repo",
+            "redirection_url": `${baseURL}/api/OauthRedirect`,
             "repository_name": "qa_automation102"
         }
 
@@ -62,10 +68,10 @@ test.describe.serial('On boarding with APIs', () => {
             "repository_url": "https://github.com/gilad030609/repo",
             "access_token": "293fe960eac4f9e031ed",
             "repository_type": "github",
-            "branch": "master",
             "type": "sandbox",
+            "branch": "master",
             "repository_name": "repo",
-            "provider_id": repository_provider_id,
+            "provider_id": ''
         }
 
         await fetch(`${baseURL}/api/spaces/${spaceName}/repositories/github`, {
@@ -84,61 +90,66 @@ test.describe.serial('On boarding with APIs', () => {
 
     });
 
-    test.skip('Add asset repo to space', async () => {
-        const data = {
-            "branch": null,
-            "code": "3c8972593da4f590818f",
-            "redirection_url": `${baseURL}/api/OauthRedirect`,
-            "repository_url": "https://github.com/cloudshell-colony/qa_automation",
-            "repository_name": "qa-assets",
-            "type": "asset"
-        }
-        await fetch(`${baseURL}/api/spaces/${spaceName}/repositories/github`, {
-            "method": "POST",
-            "headers": {
-                "Accept": '*/*',
-                "Content-Type": "application/json",
-                "Connection": "keep-alive",
-                "Authorization": `Bearer ${session}`
-            },
-            "body": JSON.stringify(data)
-        }).then(response => {
-                console.log(response);
-            }).catch(err => {
-                console.error(err);
-            });
-    });
-
     test('Create execution host', async () => {
         const response = await createEKSAPI(session, baseURL, executionHostName);
         await validateAPIResponseis200(response);
     });
     test('Create execution host deployment file', async () => {
         // get session for API call
-        const response = await getdeploymentFileAPI(await session, baseURL, executionHostName, executionHostName);
+        const response = await getdeploymentFileAPI(await session, baseURL, "k8s", executionHostName);
         await overwriteAndSaveToFile("deploymentFile.yaml", response);
     });
 
     test('Apply the execution host yaml file to K8S', async () => {
         await executeCLIcommand("kubectl apply -f deploymentFile.yaml");
-        let ESInfo;
+        let ESInfo, ESText;
         //wait for max 5 minutes until host status is active
         for(let i=0; i<5*60; i++){
             ESInfo = await getExecutionHostDetailsAPI(session, baseURL, executionHostName);
-            let ESText = await ESInfo.text();
+            ESText = await ESInfo.text();
             if(ESText.includes("active")){
                 break;
             }
             await new Promise(r => setTimeout(r, 1000)); //wait for 1 second
         }
-        ESInfo = await getExecutionHostDetailsAPI(session, baseURL, executionHostName);
-        expect(await ESInfo.text(), "Execution host is not active after 5 minutes").toContain("active");
+        expect(ESText, "Execution host is not active after 5 minutes. Execution host response: \n" + ESText).toContain("active");
+        console.log('Execution host should now be active');
     });
 
     test('Associate execution host to space', async () => {
+        console.log(`Associating execution host ${executionHostName} to space ${spaceName}`);
         const response = await associateExecutionHostAPI(session, baseURL, spaceName, executionHostName, namespace, serviceAccount);
         await validateAPIResponseis200(response);
     });
 
+    test.skip('Launch new sandbox', async() =>{
+        let inputs ={
+            'acl': "private",
+            'host_name': `${executionHostName}`,
+            'name': `${bucketName}`,
+            'region': "eu-west-1",
+            'user':"none" 
+        }
+        //need to update blueprint name when we get the repo to work
+        const resp = await launchBlueprintAPI(session, baseURL, 'autogen_s3', spaceName, inputs);
+        expect(resp.status).toBe(202);
+        const jsonResponse = await resp.json()
+        sandboxId = await jsonResponse.id;
+        console.log(`Created sandbox with id ${sandboxId}`);
+    })
+
+    test.skip('Validate sandbox is active', async() => {
+        await validateSBisActiveAPI(session, baseURL, sandboxId, spaceName);
+    })
+
+    test.skip('End sandbox', async() =>{
+        const response = await endSandboxAPI(session, baseURL, spaceName, sandboxId);
+        expect(response.status, await response.text()).toBe(202);
+        console.log('Ended sandbox')
+    })
+
+    test.skip('Validate sandbox is completed', async() => {
+        await validateSBisEndedAPI(session, baseURL, sandboxId, spaceName);
+    })
 
 });
