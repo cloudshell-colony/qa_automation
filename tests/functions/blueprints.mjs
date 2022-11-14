@@ -1,6 +1,6 @@
 import { expect } from "@playwright/test";
 import fetch from "node-fetch";
-import { selectFromDropbox } from "./general.mjs";
+import { selectFromDropbox, validateAPIResponseis200 } from "./general.mjs";
 
 
 export const getPublishedBlueprints = async (session, space_name, myURL) => {
@@ -151,5 +151,41 @@ export const launchBlueprintAPI = async(session, baseURL, BPName, spaceName, inp
             'Accept': '*/*'
         }
     });
+    return response;
+}
+
+export const getBlueprintCandidatesFromRepoAPI = async(session, baseURL, space, repoName) => {
+    const response = await fetch(`${baseURL}/api/spaces/${space}/blueprint_candidates?repository_name=${repoName}`, {
+        "method": "GET",
+        "headers": {
+            'Authorization': `Bearer ${session}`,
+            'Content-Type': 'application/json',
+        }
+    });
+    return response;
+};
+
+export const generateBlueprintsFromCandidatesAPI = async(session, baseURL, space, blueprintCandidates, repoName) =>{
+    const data = {
+        "blueprint_candidates": blueprintCandidates,
+        "repository_name": repoName
+    }
+    const response = await fetch(`${baseURL}/api/spaces/${space}/blueprints`, {
+        "method": "POST",
+        "body": JSON.stringify(data),
+        "headers": {
+            'Authorization': `Bearer ${session}`,
+            'Content-Type': 'application/json',
+        }
+    });
+    return response;
+};
+
+export const generateAllRepoBlueprintsAPI = async(session, baseURL, space, repoName) =>{
+    let response = await getBlueprintCandidatesFromRepoAPI(session, baseURL, space, repoName);
+    await validateAPIResponseis200(response);
+    console.log(`Got blueprint list from repo ${repoName}`);
+    let blueprints = await response.json();
+    response = await generateBlueprintsFromCandidatesAPI(session, baseURL, space, blueprints, repoName);
     return response;
 }

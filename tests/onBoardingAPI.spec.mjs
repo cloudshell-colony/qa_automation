@@ -3,10 +3,10 @@ import test, { expect } from "@playwright/test";
 import { generateSecret, validateAPIResponseis200, overwriteAndSaveToFile, executeCLIcommand } from './functions/general.mjs';
 import { signupUserAPI, getSessionAPI, sendInvitationsAPI, getInvitationAPI, deleteUserAPI, validateGetSessionAPI, createAccountAPI, deleteAccountAPI } from "./functions/accounts.mjs";
 import fetch from "node-fetch";
-import { createSpaceAPI } from "./functions/spaces.mjs";
+import { addAssetRepositoryAPI, createSpaceAPI } from "./functions/spaces.mjs";
 import { associateExecutionHostAPI, createEKSAPI, getdeploymentFileAPI, getExecutionHostDetailsAPI } from "./functions/executionHosts.mjs";
 import { validateSBisActiveAPI, validateSBisEndedAPI, endSandboxAPI} from "./functions/sandboxes.mjs";
-import { launchBlueprintAPI } from "./functions/blueprints.mjs";
+import { generateAllRepoBlueprintsAPI, launchBlueprintAPI } from "./functions/blueprints.mjs";
 
 const prefix = process.env.accountPrefix;
 const baseURL = process.env.baseURL;
@@ -23,7 +23,9 @@ const executionHostName = executionHost.concat(timestemp);
 const namespace = process.env.nameSpace;
 const serviceAccount = process.env.serviceAccount;
 const bucketName = ("qa-auto-bucket-").concat(timestemp);
-
+const repoUrl = process.env.githubRepo;
+const repoName = "repo".concat(timestemp);
+const token = process.env.githubToken;
 
 let session = "empty session";
 let sandboxId = '';
@@ -33,11 +35,11 @@ let sandboxId = '';
 test.describe.serial('On boarding with APIs', () => {
     test.afterAll(async () => {
         await deleteAccountAPI(baseURL, accountName, session);
-        //await executeCLIcommand(`sh cleanEHosts.sh ${executionHostName}`);
+        await executeCLIcommand(`sh cleanEHosts.sh ${executionHostName}`);
     });
 
     test('Create new account', async () => {
-        console.log(`Createing new account with the following paramaters:`);
+        console.log(`Creating new account with the following paramaters:`);
         console.log(`"account_name": ${accountName}, "first_name": ${firstName}, "last_name": ${lastName}, "email": ${email}, "password": ${password}, "company_name": ${companyName}`);
         const response = await createAccountAPI(baseURL, accountName, companyName, email, firstName, lastName, password);
         await validateAPIResponseis200(response);
@@ -55,39 +57,15 @@ test.describe.serial('On boarding with APIs', () => {
         await validateAPIResponseis200(response);
     });
 
-    test.skip('Add BPs repository to space', async () => {
-        const data = {
-            "code": "293fe960eac4f9e031ed",
-            "type": "sandbox",
-            "repository_url": "https://github.com/gilad030609/repo",
-            "redirection_url": `${baseURL}/api/OauthRedirect`,
-            "repository_name": "qa_automation102"
-        }
+    test('Add BPs repository to space', async () => {
+        await addAssetRepositoryAPI(session, baseURL, spaceName, repoUrl, token, repoName);
+        console.log(`Added asset repository ${repoName}`);
+    });
 
-        const data2 = {
-            "repository_url": "https://github.com/gilad030609/repo",
-            "access_token": "293fe960eac4f9e031ed",
-            "repository_type": "github",
-            "type": "sandbox",
-            "branch": "master",
-            "repository_name": "repo",
-            "provider_id": ''
-        }
-
-        await fetch(`${baseURL}/api/spaces/${spaceName}/repositories/github`, {
-            "method": "POST",
-            "headers": {
-                "Content-Type": "application/json",
-                "Authorization": `Bearer ${session}`
-            },
-            "body": JSON.stringify(data),
-
-        }).then(response => {
-                console.log(response);
-            }).catch(err => {
-                console.error(err);
-            });
-
+    test('Generate blueprints from asset repo', async() => {
+        const response = await generateAllRepoBlueprintsAPI(session, baseURL, spaceName, repoName);
+        await validateAPIResponseis200(response);
+        console.log(`Generated blueprints from repo ${repoName}`);
     });
 
     test('Create execution host', async () => {
@@ -122,7 +100,7 @@ test.describe.serial('On boarding with APIs', () => {
         await validateAPIResponseis200(response);
     });
 
-    test.skip('Launch new sandbox', async() =>{
+    test('Launch new sandbox', async() =>{
         let inputs ={
             'acl': "private",
             'host_name': `${executionHostName}`,
@@ -130,25 +108,24 @@ test.describe.serial('On boarding with APIs', () => {
             'region': "eu-west-1",
             'user':"none" 
         }
-        //need to update blueprint name when we get the repo to work
         const resp = await launchBlueprintAPI(session, baseURL, 'autogen_s3', spaceName, inputs);
-        expect(resp.status).toBe(202);
         const jsonResponse = await resp.json()
+        expect(resp.status, 'Sandbox launch failed, received following error: ' + await jsonResponse).toBe(202);
         sandboxId = await jsonResponse.id;
         console.log(`Created sandbox with id ${sandboxId}`);
     })
 
-    test.skip('Validate sandbox is active', async() => {
+    test('Validate sandbox is active', async() => {
         await validateSBisActiveAPI(session, baseURL, sandboxId, spaceName);
     })
 
-    test.skip('End sandbox', async() =>{
+    test('End sandbox', async() =>{
         const response = await endSandboxAPI(session, baseURL, spaceName, sandboxId);
         expect(response.status, await response.text()).toBe(202);
         console.log('Ended sandbox')
     })
 
-    test.skip('Validate sandbox is completed', async() => {
+    test('Validate sandbox is completed', async() => {
         await validateSBisEndedAPI(session, baseURL, sandboxId, spaceName);
     })
 

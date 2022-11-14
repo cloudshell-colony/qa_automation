@@ -143,7 +143,8 @@ export const getSandboxDetailsAPI = async(session, baseURL, spaceName, sandboxId
 
 const validateSBStatusWrapperAPI = async (session, baseURL, sandboxId, space, status) => {
   let sandboxInfo, state, sandboxJson;
-  //wait for max 3 minutes until sandbox status is active
+  console.log(`Waiting for sandbox status to be '${status}'`)
+  //wait for max 3 minutes until sandbox status is active/ended
   for(let i=0; i<3*60; i++){
     sandboxInfo = await getSandboxDetailsAPI(session, baseURL, space, sandboxId);
     sandboxJson = await sandboxInfo.json();

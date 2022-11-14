@@ -277,3 +277,24 @@ export const addRepositoryAsset = async (page, repoKeys) => {
     await page.click('[data-test="submit-button"]');
 
 };
+
+export const addAssetRepositoryAPI = async (session, baseURL, space, repoUrl, token, repoName, branch='main', repoType='github') =>{
+    const data = {
+        "repository_url": repoUrl,
+        "access_token": token,
+        "repository_type": repoType,
+        "type": "asset",
+        "branch": branch,
+        "repository_name": repoName
+    }
+
+    const resp = await fetch(`${baseURL}/api/spaces/${space}/repositories`, {
+        "method": "POST",
+        "headers": {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${session}`
+        },
+        "body": JSON.stringify(data)
+    });
+    expect((resp.status), await resp.text()).toBe(200);
+};
