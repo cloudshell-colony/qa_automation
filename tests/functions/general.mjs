@@ -104,15 +104,15 @@ export const validateAPIResponseis200 = async (response) => {
     if (response.status != 200) {
         try {
             try {
-                console.log(await response.json());
+                console.log(`Attempting to print the response as a json: ${await response.json()}`);
             } catch {
                 console.log("Got response that is not a json object");
-            }
+            };
             try {
-                console.log(`response error is: ${await response.text()}`);
+                console.log(`Attempting to print the response as text: ${await response.text()}`);
             } catch {
                 console.log("Got response that is not a text object");
-            }
+            };
         } catch {
 
         } finally {
@@ -122,6 +122,7 @@ export const validateAPIResponseis200 = async (response) => {
         }
 
     } else {
+        console.log(`Attempting to log the response as is: ${response}`);
         expect(response.status).toBe(200);
         expect(response.ok).toBeTruthy();
     }
