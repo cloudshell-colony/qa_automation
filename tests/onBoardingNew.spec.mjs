@@ -110,7 +110,7 @@ test.describe.serial('onboarding flow', () => {
     });
 
     test('Publish the blueprint', async () => {
-        // publish BP after autodiscovery        
+        // publish BP after autodiscovery, current page is BP list       
         await publishBlueprint(page, repoKeys.BPName);
     });
 
