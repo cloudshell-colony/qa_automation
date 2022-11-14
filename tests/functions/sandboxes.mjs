@@ -144,23 +144,22 @@ export const getSandboxDetailsAPI = async(session, baseURL, spaceName, sandboxId
 const validateSBStatusWrapperAPI = async (session, baseURL, sandboxId, space, status) => {
   let sandboxInfo, state, sandboxJson;
   console.log(`Waiting for sandbox status to be '${status}'`)
-  //wait for max 3 minutes until sandbox status is active/ended
-  for(let i=0; i<3*60; i++){
+  //wait for ~4 minutes until sandbox status is active/ended
+  for(let i=0; i<2*60; i++){
     sandboxInfo = await getSandboxDetailsAPI(session, baseURL, space, sandboxId);
     sandboxJson = await sandboxInfo.json();
     state = await sandboxJson.details.computed_status;
     if(state.includes(status)){
       break;
     }
-    await new Promise(r => setTimeout(r, 1000)); //wait for 1 second
+    await new Promise(r => setTimeout(r, 2000)); //wait for 2 seconds
   }
-  sandboxInfo = await (await getSandboxDetailsAPI(session, baseURL, space, sandboxId)).text();
-  expect(state,`"Sandbox status is not '${status}' after 3 minutes. Sandbox info: \n` +  sandboxInfo).toBe(status);
+  expect(state,`"Sandbox status is not '${status}' after 3 minutes. Sandbox info: \n` +  sandboxJson).toBe(status);
   console.log(`Sandbox status is '${status}'`)
   let stages = sandboxJson['details']['state']['grains'][0]['state']['stages'];
   for (var type in stages){
     let stage = stages[type];
-    if((stage.name == 'Apply' && status == 'Active') || (stage.name == 'Destroy' && status == 'Ended')){
+    if((stage.name === 'Apply' && status === 'Active') || (stage.name === 'Destroy' && status === 'Ended')){
       for (var index in stage['activities']){
         //check all activities ended with a valid status
         let action = stage['activities'][index]
