@@ -116,14 +116,12 @@ export const validateAPIResponseis200 = async (response) => {
         } catch {
 
         } finally {
-            console.log(`Attempting to log the response as is: ${response}`);
-            expect(response.status).toBe(200);
+            expect(response.status, `Attempting to log the response as is: ${response}`).toBe(200);
             expect(response.ok).toBeTruthy();
         }
 
     } else {
-        console.log(`Attempting to log the response as is: ${response}`);
-        expect(response.status).toBe(200);
+        expect(response.status, `Attempting to log the response as is: ${response}`).toBe(200);
         expect(response.ok).toBeTruthy();
     }
 };
