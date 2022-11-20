@@ -1,7 +1,7 @@
 import { test, expect } from "@playwright/test";
 import { createAccount, DeleteAcountUI, loginToAccount, validateSbLauncher } from "./functions/accounts.mjs";
 import { launchSampleBlueprintFromSandboxPage, launchBlueprintFromBPList } from "./functions/blueprints.mjs";
-import { afterTestCleanup, closeModal, openFromChecklist } from "./functions/general.mjs";
+import { afterTestCleanup, closeModal, openAndPinSideMenu, openFromChecklist } from "./functions/general.mjs";
 import { startSampleSandbox, endSandbox, validateSBisActive, endSandboxValidation } from "./functions/sandboxes.mjs";
 
 const baseURL = process.env.baseURL;
@@ -38,6 +38,7 @@ test.describe.serial('onboarding flow', () => {
     await createAccount(page, firstName, lastName, companyName, email, accountName, allAccountsPassword, baseURL);
     await page.waitForURL(`${baseURL}/Sample`);
     await closeModal(page);
+    await openAndPinSideMenu(page);
     // comment out screenshot validation due to docker image path issue - windows vs ubuntu
     // await expect(page).toHaveScreenshot({ maxDiffPixels: 4000 });
   });

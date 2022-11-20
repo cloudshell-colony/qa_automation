@@ -1,6 +1,7 @@
 import { expect } from "@playwright/test";
 import fetch from "node-fetch";
 import { selectFromDropbox } from "./general.mjs";
+import { goToSandboxListPage } from "./sandboxes.mjs";
 
 
 export const getPublishedBlueprints = async (session, space_name, myURL) => {
@@ -35,12 +36,8 @@ export const countBlueprintsInSpace = async (page, baseURL, space) => {
 export const enterBlueprintPage = async (page) => {
     page.click('[data-test="blueprints-nav-link"]');
     await page.waitForNavigation();
-    const visi = await page.isVisible('button:has-text("Add a Repository")', { timeout: 3000 });
-    if (!visi) {
-        // await page.waitForSelector('div:has-text("Launch Environment")');
-        await page.waitForSelector('[data-test="launch-environment-from-blueprint"]');
-        await page.waitForSelector('.main-table-container-scrollable');
-    }
+    const imThere = await page.isVisible('[data-test="space-blueprints-tab-test"]', { timeout: 3000 });
+    expect(await imThere, "Looks like we are not in Bluprints list page as expected").toBe(true);
 };
 
 export const publishBlueprint = async (page, BPFullName) => {

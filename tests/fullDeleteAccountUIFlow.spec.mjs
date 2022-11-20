@@ -1,4 +1,4 @@
-import { addCaptchaBypass, closeModal, openFromChecklist } from "./functions/general.mjs";
+import { addCaptchaBypass, closeModal, openAndPinSideMenu, openFromChecklist } from "./functions/general.mjs";
 import { test, expect } from "@playwright/test";
 import { createAccount, loginToAccount, DeleteAcountUI, ValidteBackButtonAfterDelition, ValidteLoginFalureAfterDelition, validateSbLauncher, } from "./functions/accounts.mjs";
 import { startSampleSandbox, endSandbox, validateSBisActive, endSandboxValidation } from "./functions/sandboxes.mjs";
@@ -38,6 +38,7 @@ test.describe('test my tests', () => {
         await createAccount(page, firstName, lastName, companyName, email, accountName, allAccountsPassword, baseURL);
         await page.waitForURL(`${baseURL}/Sample`, { timeout: 3 * 60 * 1000 });
         await closeModal(page);
+        await openAndPinSideMenu(page);
     });
 
     test('sample sandbox launcher contain three samples', async () => {
