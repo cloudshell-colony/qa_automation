@@ -1,7 +1,7 @@
 import { loginToAccount } from './functions/accounts.mjs';
 import { test, expect } from '@playwright/test';
 import { createSpace, editSpace, deleteSpace, goToSpace } from './functions/spaces.mjs';
-import { waitForSpaceInListToDisappear } from './functions/general.mjs';
+import { openAndPinSideMenu, waitForSpaceInListToDisappear } from './functions/general.mjs';
 import goToAdminConsole from './functions/goToAdminConsole.mjs';
 import { closeModal } from './functions/general.mjs';
 
@@ -22,6 +22,7 @@ test.describe.serial("can create new space, validate creation and delete it", ()
         page = await browser.newPage();
         await loginToAccount(page, adminEMail, account, password, baseURL);
         await closeModal(page);
+        await openAndPinSideMenu(page);
     });
     test.afterAll(async () => {
         await page.close();

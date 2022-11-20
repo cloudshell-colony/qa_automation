@@ -1,6 +1,7 @@
 import { expect } from "@playwright/test";
 import fetch from "node-fetch";
 import { selectFromDropbox, validateAPIResponseis200 } from "./general.mjs";
+import { goToSandboxListPage } from "./sandboxes.mjs";
 
 
 export const getPublishedBlueprints = async (session, space_name, myURL) => {
@@ -35,12 +36,8 @@ export const countBlueprintsInSpace = async (page, baseURL, space) => {
 export const enterBlueprintPage = async (page) => {
     page.click('[data-test="blueprints-nav-link"]');
     await page.waitForNavigation();
-    const visi = await page.isVisible('button:has-text("Add a Repository")', { timeout: 3000 });
-    if (!visi) {
-        // await page.waitForSelector('div:has-text("Launch Environment")');
-        await page.waitForSelector('[data-test="launch-environment-from-blueprint"]');
-        await page.waitForSelector('.main-table-container-scrollable');
-    }
+    const imThere = await page.isVisible('[data-test="space-blueprints-tab-test"]', { timeout: 3000 });
+    expect(await imThere, "Looks like we are not in Bluprints list page as expected").toBe(true);
 };
 
 export const publishBlueprint = async (page, BPFullName) => {
@@ -132,7 +129,7 @@ export const validateBlueprintErrors = async (page, BPName, errList, expectedErr
     }
 };
 
-export const launchBlueprintAPI = async(session, baseURL, BPName, spaceName, inputs, duration="PT2H") => {
+export const launchBlueprintAPI = async (session, baseURL, BPName, spaceName, inputs, duration = "PT2H") => {
     const timestemp = Math.floor(Date.now() / 1000);
     const data = {
         "sandbox_name": `${BPName}-${timestemp}`,
@@ -143,7 +140,7 @@ export const launchBlueprintAPI = async(session, baseURL, BPName, spaceName, inp
         "artifacts": {},
         "activity_type": 'other',
         "notes": '',
-        "source": {"is_editable": true}
+        "source": { "is_editable": true }
     }
     const response = await fetch(`${baseURL}/api/spaces/${spaceName}/environments`, {
         "method": "POST",
@@ -157,7 +154,7 @@ export const launchBlueprintAPI = async(session, baseURL, BPName, spaceName, inp
     return response;
 }
 
-export const getBlueprintCandidatesFromRepoAPI = async(session, baseURL, space, repoName) => {
+export const getBlueprintCandidatesFromRepoAPI = async (session, baseURL, space, repoName) => {
     const response = await fetch(`${baseURL}/api/spaces/${space}/blueprint_candidates?repository_name=${repoName}`, {
         "method": "GET",
         "headers": {
@@ -168,7 +165,7 @@ export const getBlueprintCandidatesFromRepoAPI = async(session, baseURL, space, 
     return response;
 };
 
-export const generateBlueprintsFromCandidatesAPI = async(session, baseURL, space, blueprintCandidates, repoName) =>{
+export const generateBlueprintsFromCandidatesAPI = async (session, baseURL, space, blueprintCandidates, repoName) => {
     const data = {
         "blueprint_candidates": blueprintCandidates,
         "repository_name": repoName
@@ -184,7 +181,7 @@ export const generateBlueprintsFromCandidatesAPI = async(session, baseURL, space
     return response;
 };
 
-export const generateAllRepoBlueprintsAPI = async(session, baseURL, space, repoName) =>{
+export const generateAllRepoBlueprintsAPI = async (session, baseURL, space, repoName) => {
     let response = await getBlueprintCandidatesFromRepoAPI(session, baseURL, space, repoName);
     await validateAPIResponseis200(response);
     console.log(`Got blueprint list from repo ${repoName}`);

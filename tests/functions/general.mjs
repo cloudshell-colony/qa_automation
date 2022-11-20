@@ -52,6 +52,22 @@ export const closeModal = async (page) => {
     catch { };
 };
 
+export const openAndPinSideMenu = async (page) => {
+    await page.mouse.move(1000, 1000);
+    let isVisible0 = await page.locator('text=Settings').isVisible();
+    let isVisible1 = await page.locator('text=General').isVisible();
+    console.log(`checking if side panel is open by testing if "Settings" is visible: ${isVisible0} and if "General" is visible: ${isVisible1}`);
+    if (!isVisible0 && !isVisible1) {
+        console.log('Side menu was detected as collapsed, openning it now');
+        await page.mouse.move(10, 10);
+        await page.locator('.sc-bdnxRM > div > .sc-bdnxRM >> nth=0').click({ force: true });
+    }
+    await page.mouse.move(1000, 1000);
+    isVisible0 = await page.locator('text=Settings').isVisible();
+    isVisible1 = await page.locator('text=General').isVisible();
+    console.log(`Validating side panel is open by testing that "Settings" is visible: ${isVisible0} and "General" is visible: ${isVisible1}`);
+};
+
 export const waitForSpaceInListToDisappear = async (page, newName) => {
     // to be used after space delete - maybe can be extended to other delete actions
     // attempt during 10 seconds to see that space is removed from list
@@ -202,6 +218,10 @@ export const getCodesListFromMailinator = async () => {
 };
 
 export const openFromChecklist = async (page, whatToOpen) => {
+    const isVisi = await page.isVisible('text=Complete the checklist to start automating orchestration, customizing policies, and deploying environments on demand.');
+    if (!isVisi) {
+        await page.click('text=Onboarding Checklist')
+    }
     const pleaseOpen = `data-test="checklist-item-${whatToOpen}"`;
     await page.click(`[${pleaseOpen}]`);
 };

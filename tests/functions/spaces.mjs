@@ -182,7 +182,7 @@ export const fillInRepoData = async (providerKeys, signinWindow) => {
             await signinWindow.waitForTimeout(1000);
             let isPage = await signinWindow.isClosed();
             if (isPage) break;
-            else{
+            else {
                 // if github wishes for mail authentication...
                 let authrnticateWithMail = await signinWindow.isVisible('text=Device verification', 500);
                 if (authrnticateWithMail) {

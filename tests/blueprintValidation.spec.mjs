@@ -1,7 +1,7 @@
 import { test, expect } from "@playwright/test";
 import { loginToAccount, getSessionAPI, validateGetSessionAPI } from "./functions/accounts.mjs";
 import { getBlueprintErrors, launchBlueprintFromBPList, validateBlueprintErrors } from "./functions/blueprints.mjs";
-import { closeModal } from "./functions/general.mjs";
+import { closeModal, openAndPinSideMenu } from "./functions/general.mjs";
 import { goToSpace } from "./functions/spaces.mjs";
 import { associateExecutionHost, disassociateExecutionHostAPI } from "./functions/executionHosts.mjs";
 import { validateSBisActive } from "./functions/sandboxes.mjs";
@@ -30,6 +30,7 @@ test.describe('Blueprint validation', () => {
         page = await browser.newPage();
         await loginToAccount(page, user, account, password, baseURL);
         await closeModal(page);
+        await openAndPinSideMenu(page);
     });
     test.afterAll(async () => {
         await page.close();
