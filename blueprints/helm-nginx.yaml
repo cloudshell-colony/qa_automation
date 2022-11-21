@@ -1,0 +1,23 @@
+spec_version: 2
+description: Blueprint for nginx helm chart 
+
+inputs:
+  host_name:
+    type: string
+    default: "eks"
+  namespace:
+    type: string
+    default: "qa-automation"
+
+grains:
+  nginx:
+    kind: helm
+    spec:
+      source:
+        path: https://github.com/QualiNext/test-spec2-public/tree/master/helm/nginx
+      host:
+        name: '{{ .inputs.host_name }}'
+      namespace: '{{ inputs.namespace }}'
+      commands:
+        - dep up helm/nginx
+      inputs:
