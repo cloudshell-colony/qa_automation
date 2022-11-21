@@ -14,7 +14,7 @@ grains:
     kind: helm
     spec:
       source:
-        path: github.com/QualiNext/test-spec2-public//helm/nginx
+        path: github.com/QualiNext/test-spec2-public/helm/nginx
       host:
         name: '{{ .inputs.host_name }}'
       namespace: '{{ inputs.namespace }}'
