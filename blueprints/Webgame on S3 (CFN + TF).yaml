@@ -19,8 +19,8 @@ inputs:
     default: my-bucket-test
   AWS Region:
     description: "The name of the AWS Region to use"
-    default: "us-west-1"
-    allowed-values: ["us-west-1", "us-west-2", "eu-west-1"]
+    default: "us-east-1"
+    allowed-values: ["us-west-1", "us-west-2", "eu-west-1", "us-east-1"]
 
 outputs:
   S3 Bucket ARN:
