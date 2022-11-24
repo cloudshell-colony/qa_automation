@@ -12,7 +12,7 @@ inputs:
     description: >
       Type of access to configure on Bucket objects: Private, PublicRead, PublicReadWrite, AuthenticatedRead,
       LogDeliveryWrite, BucketOwnerRead, BucketOwnerFullControl, or AwsExecRead
-    default: "PublicRead"
+    default: "Private"
     allowed-values: ["Private", "PublicRead", "PublicReadWrite"]
   Bucket Name:
     type: string
