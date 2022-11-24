@@ -7,7 +7,7 @@ inputs:
     description: "execution host name"
   service_account:
     type: string
-    description: "execution host name"
+    description: "execution host service account name"
   Application Version:
     type: string
     default: "0.4.3"
