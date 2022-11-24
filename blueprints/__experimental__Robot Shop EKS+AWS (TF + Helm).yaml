@@ -42,6 +42,7 @@ grains:
     kind: terraform
     spec:
       source:
+        store: assets
         path: assets/terraform/rds
       host:
         name: '{{.inputs.host_name}}'
@@ -64,6 +65,7 @@ grains:
     kind: terraform
     spec: 
       source:
+        store: assets
         path: assets/terraform/s3
       host:
         name: '{{.inputs.host_name}}'
@@ -80,6 +82,7 @@ grains:
     depends-on: MySQL_RDS_DB, S3_Bucket
     spec:
       source:
+        store: assets
         path: assets/helm/robotShop
       host:
         name: '{{.inputs.host_name}}'
@@ -88,6 +91,7 @@ grains:
       scripts:
         post-helm-install:
           source:
+            store: assets
             path:  assets/scripts/get-robot-web-address.sh
           outputs:
             - frontend
