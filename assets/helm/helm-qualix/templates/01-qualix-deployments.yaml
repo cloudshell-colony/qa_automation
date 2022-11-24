@@ -1,0 +1,116 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  creationTimestamp: null
+  labels:
+    io.kompose.service: files-{{ .Values.sandbox_id }}
+  name: files-{{ .Values.sandbox_id }}
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 100Mi
+status: {}
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.cmd: kompose convert
+    kompose.version: 1.26.0 (40646f47)
+  creationTimestamp: null
+  labels:
+    io.kompose.service: guacamole
+  name: guacamole-dep-{{ .Values.sandbox_id }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      io.kompose.service: guacamole-{{ .Values.sandbox_id }}
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      annotations:
+        kompose.cmd: kompose convert
+        kompose.version: 1.26.0 (40646f47)
+      creationTimestamp: null
+      labels:
+        # io.kompose.network/guacnetwork-compose: "true"
+        io.kompose.service: guacamole-{{ .Values.sandbox_id }}
+    spec:
+      containers:
+        - env:
+            - name: GUACAMOLE_HOME
+              value: /home/guacamole/.guacamole
+            - name: GUACD_HOSTNAME
+              value: guacd-{{ .Values.sandbox_id }}
+            - name: GUACD_PORT
+              value: "4822"
+          image: 'qualitesthub/qualix_guacamole:4.0.2.403'
+          securityContext:
+            runAsUser: 0
+          name: guacamole-{{ .Values.sandbox_id }}
+          ports:
+            - containerPort: 8080
+            - containerPort: 8443
+          resources: {}
+          volumeMounts:
+            - mountPath: /opt/guacamole/files-{{ .Values.sandbox_id }}
+              name: files-{{ .Values.sandbox_id }}
+      hostname: guacamole-{{ .Values.sandbox_id }}
+      restartPolicy: Always
+      volumes:
+        - name: files-{{ .Values.sandbox_id }}
+          persistentVolumeClaim:
+            claimName: files-{{ .Values.sandbox_id }}
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.cmd: kompose convert
+    kompose.version: 1.26.0 (40646f47)
+  creationTimestamp: null
+  labels:
+    io.kompose.service: guacd-{{ .Values.sandbox_id }}
+  name: guacd-{{ .Values.sandbox_id }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      io.kompose.service: guacd-{{ .Values.sandbox_id }}
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      annotations:
+        kompose.cmd: kompose convert
+        kompose.version: 1.26.0 (40646f47)
+      creationTimestamp: null
+      labels:
+        # io.kompose.network/guacnetwork-compose: "true"
+        io.kompose.service: guacd-{{ .Values.sandbox_id }}
+    spec:
+      containers:
+        - env:
+            - name: GUACD_LOG_LEVEL
+              value: debug
+          image: 'qualihub/qualix_guacd:4.0.0.400'
+          name: guacd-{{ .Values.sandbox_id }}
+          ports:
+            - containerPort: 4822
+          resources: {}
+          volumeMounts:
+            - mountPath: /opt/guacamole/files-{{ .Values.sandbox_id }}
+              name: files-{{ .Values.sandbox_id }}
+      hostname: guacd-{{ .Values.sandbox_id }}
+      restartPolicy: Always
+      volumes:
+        - name: files-{{ .Values.sandbox_id }}
+          persistentVolumeClaim:
+            claimName: files-{{ .Values.sandbox_id }}
+

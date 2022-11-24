@@ -1,0 +1,44 @@
+apiVersion: v1
+kind: Service
+metadata:
+  annotations:
+    kompose.cmd: kompose convert
+    kompose.version: 1.26.0 (40646f47)
+  creationTimestamp: null
+  labels:
+    io.kompose.service: guacamole-{{ .Values.sandbox_id }}
+  name: guacamole-{{ .Values.sandbox_id }}
+spec:
+  ports:
+    - name: "80"
+      port: 80
+      targetPort: 8080
+    - name: "443"
+      port: 443
+      targetPort: 8443
+  selector:
+    io.kompose.service: guacamole-{{ .Values.sandbox_id }}
+  type: LoadBalancer
+status:
+  loadBalancer: {}
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  annotations:
+    kompose.cmd: kompose convert
+    kompose.version: 1.26.0 (40646f47)
+  creationTimestamp: null
+  labels:
+    io.kompose.service: guacd-{{ .Values.sandbox_id }}
+  name: guacd-{{ .Values.sandbox_id }}
+spec:
+  ports:
+    - name: "4822"
+      port: 4822
+      targetPort: 4822
+  selector:
+    io.kompose.service: guacd-{{ .Values.sandbox_id }}
+status:
+  loadBalancer: {}
