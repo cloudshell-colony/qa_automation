@@ -5,9 +5,6 @@ inputs:
   host_name:
     type: execution-host
     description: "execution host name"
-  service_account:
-    type: string
-    description: "execution host service account name"
   Application Version:
     type: string
     default: "0.4.3"
@@ -45,7 +42,6 @@ grains:
         path: assets/terraform/rds
       host:
         name: "{{.inputs.host_name}}"
-        service-account: "{{.inputs.service_account}}"
       inputs:
         - sandbox_id: "{{ sandboxid | downcase }}"
         - size: '{{ .inputs.["DB Size"] }}'
@@ -68,7 +64,6 @@ grains:
         path: assets/terraform/s3
       host:
         name: "{{.inputs.host_name}}"
-        service-account: "{{.inputs.service_account}}"
       inputs:
         - region: eu-west-1
         - acl: public-read
