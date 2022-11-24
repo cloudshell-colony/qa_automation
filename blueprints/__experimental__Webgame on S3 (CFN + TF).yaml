@@ -1,0 +1,69 @@
+spec_version: 2
+description: "S3 Bucket creation with Input and Output parameters"
+
+inputs:
+   # The access_control property is case-sensitive and must be one of the following values: 
+   # Private, PublicRead, PublicReadWrite, AuthenticatedRead, LogDeliveryWrite, BucketOwnerRead, BucketOwnerFullControl, or AwsExecRead
+   Access Control:
+      type: string
+      description: >
+        Type of access to configure on Bucket objects: Private, PublicRead, PublicReadWrite, AuthenticatedRead,
+        LogDeliveryWrite, BucketOwnerRead, BucketOwnerFullControl, or AwsExecRead
+      default: "PublicRead"
+      allowed-values: ["Private", "PublicRead", "PublicReadWrite"]
+   Bucket Name:
+      type: string
+      default: my-bucket-test
+   AWS Region:
+      description: "The name of the AWS Region to use"
+      default: "us-west-1"
+      allowed-values: ["us-west-1", "us-west-2", "eu-west-1"]
+    
+
+outputs:
+   S3 Bucket ARN:
+        value: '{{ .grains.CFN-S3-Bucket.outputs.Arn }}'
+   S3 Bucket Domain Name:
+        value: '{{ .grains.CFN-S3-Bucket.outputs.DomainName }}'
+        kind: link
+   Webgame Link:
+        value: '{{ .grains.S3-Upload-Webapp-File.outputs.website_link }}'
+        kind: link
+   Documentation Page:
+        value: "https://quali.atlassian.net/wiki/spaces/QS/pages/2691399681/Webgame+on+Cloud+Storage+Service"
+        kind: link
+
+grains:
+  CFN-S3-Bucket:
+    kind: cloudformation
+    spec: 
+      source:
+        # store: autogen_repo_sandbox_3416a76b
+        path: https://torque-prod-cfn-assets.s3.amazonaws.com/public-templates/AWSS3Bucket.yaml
+      region: '{{ .inputs.["AWS Region"] }}'
+      authentication:
+        role-arn: arn:aws:iam::{{ .params.Torque_Demo_Production_AWS }}:role/{{ .params.Torque_Demo_Production_Agent_IAM_Role }}
+        external-id: '{{ .params.Torque_Demo_Production_External_ID }}'
+      inputs:
+        - AccessControl: '{{ .inputs.["Access Control"] }}'
+        - BucketName: '{{ .inputs.["Bucket Name"] }}-{{ sandboxid | downcase }}'
+      outputs:
+         - Arn
+         - DomainName
+  S3-Upload-Webapp-File:
+    kind: terraform
+    depends-on: CFN-S3-Bucket
+    spec:
+      source:
+        store: assets
+        path: assets/terraform/s3-deploy-webapp
+      host:
+        name: gmp-pro-aws
+        service-account: gmp-aws-sa
+      inputs:
+      - bucket_name: '{{ .inputs.["Bucket Name"] }}-{{ sandboxid | downcase }}'
+      - region: '{{ .inputs.["AWS Region"] }}'
+      outputs:
+      - website_link
+    # The terraform version that will be used to deploy the module
+    tf-version: 1.2.3

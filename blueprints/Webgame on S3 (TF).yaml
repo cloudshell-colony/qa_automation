@@ -1,0 +1,56 @@
+spec_version: 2
+description: Launch an S3 bucket with a webgame hosted on it as a static website
+inputs:
+  Name:
+    description: "The name of the storage bucket that will be created"
+    default: "webapp-bucket"
+  Name Prefix:
+    description: "a prefix to the storage bucket name"
+    default: "torque-demo"
+  AWS Region:
+    description: "The name of the AWS Region to use"
+    default: "us-west-1"
+    allowed-values: ["us-west-1", "us-west-2", "eu-west-1"]
+outputs:
+  Webgame Link:
+    value: '{{ .grains.S3-Webapp.outputs.endpoint }}'
+    kind: link
+  Documentation Page:
+    value: "https://quali.atlassian.net/wiki/spaces/QS/pages/2691399681/Webgame+on+Cloud+Storage+Service"
+    kind: link
+grains:
+  KMS-Key:
+    kind: terraform
+    spec:
+      source:
+        store: assets
+        path: assets/terraform/kms-key
+      host:
+        name: gmp-pro-aws
+        service-account: gmp-aws-sa
+      inputs:
+      - enable_key_rotation: "true"
+      - deletion_window_in_days: 10
+      - description: 'Encryption key for Webgame of {{ sandboxid | downcase }}'
+      - region: '{{ .inputs.["AWS Region"] }}'
+      outputs:
+      - arn
+    # The terraform version that will be used to deploy the module
+    tf-version: 1.2.3
+  S3-Webapp:
+    kind: terraform
+    depends-on: KMS-Key
+    spec:
+      source:
+        store: assets
+        path: assets/terraform/s3-webapp
+      host:
+        name: gmp-pro-aws
+        service-account: gmp-aws-sa
+      inputs:
+      - name: '{{ .inputs.Name }}-{{ sandboxid | downcase }}'
+      - prefix: '{{ .inputs.["Name Prefix"] }}'
+      - region: '{{ .inputs.["AWS Region"] }}'
+      - encryption_key_arn: '{{ .grains.KMS-Key.outputs.arn }}'
+      outputs:
+      - endpoint

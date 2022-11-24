@@ -1,0 +1,65 @@
+spec_version: 2
+description: Auto generated blueprint for terraform module vcenter-vm-from-template
+# blueprint inputs can be provided by the user, API or CI plugin when creating an environment from this blueprint.
+inputs:
+  qualix_ip:
+    type: string
+    default: 192.168.51.191
+  vc_dc_name:
+    type: string
+    default: Sales DataCenter
+  vc_ds_name:
+    type: string
+    default: Storage
+# blueprint outputs define which data that was generated during environment provisioning will be returned to the user, API or CI.
+outputs:
+  photon_vm_ip:
+    value: '{{ .grains.vcenter-vm-from-template.outputs.photon_vm_ip }}'
+  photon_vm_link:
+    value: '{{ .grains.vcenter-vm-from-template.outputs.photon_vm_link }}'
+    kind: link
+  photon_vm_name:
+    value: '{{ .grains.vcenter-vm-from-template.outputs.photon_vm_name }}'
+  win2012_vm_ip:
+    value: '{{ .grains.vcenter-vm-from-template.outputs.win2012_vm_ip }}'
+  win2012_vm_link:
+    value: '{{ .grains.vcenter-vm-from-template.outputs.win2012_vm_link }}'
+    kind: link
+  win2012_vm_name:
+    value: '{{ .grains.vcenter-vm-from-template.outputs.win2012_vm_name }}'
+grains:
+  vcenter-vm-from-template:
+    kind: terraform
+    spec:
+      source:
+        store: assets
+        path: assets/terraform/vcenter-vm-from-template
+      host:
+      # Execution Host - the platform where the asset executable will run.
+      # For example, a Kubernetes cluster can be used as an execution host.
+        name: docker-dmz
+        # A service account annotated with a role ARN with permissions to run the asset
+        # service-account: <service-account-name>
+      inputs:
+      - env_id: '{{ sandboxid | downcase }}'
+      - qualix_ip: '{{ .inputs.qualix_ip }}'
+      - vc_dc_name: '{{ .inputs.vc_dc_name }}'
+      - vc_ds_name: '{{ .inputs.vc_ds_name }}'
+      - vc_address: '{{ .params.vc_address }}'
+      - vc_username: '{{ .params.vc_username }}'
+      - vc_password: '{{ .params.vc_password }}'
+      - requested_photon_ip_address: '192.168.51.92'
+      - requested_win2012_ip_address: '192.168.51.93'
+      # The environment variables declared in this section will be available during the grain deployment as well as the grain destroy phase
+      # env-vars:
+      # - VAR_NAME: var value
+      env-vars: []
+      outputs:
+      - photon_vm_ip
+      - photon_vm_link
+      - photon_vm_name
+      - win2012_vm_ip
+      - win2012_vm_link
+      - win2012_vm_name
+    # The terraform version that will be used to deploy the module
+    tf-version: 1.3.2

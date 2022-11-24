@@ -1,0 +1,51 @@
+spec_version: 2
+description: Deploy an Azure Windows 2016 VM using TF with limited inbound access
+
+inputs:
+  VM Name:
+    type: string
+    default: "MyVM"
+  Source CIDR:
+    type: string
+    default: "0.0.0.0/0"
+    description: "Allowed traffic source to reach the VM for RDP port, in CIDR format"
+
+outputs:
+  VM Identifier:
+    value: '{{.grains.Virtual_Machine.outputs.vm_id}}'
+  Public IP:
+    value: '{{.grains.Virtual_Machine.outputs.public_ip}}'
+  Administrator Username:
+    value: '{{.grains.Virtual_Machine.outputs.admin_username}}'
+  Administrator Password:
+    value: '{{.grains.Virtual_Machine.outputs.admin_initial_password}}'
+  Documentation Page:
+    value: "https://quali.atlassian.net/wiki/spaces/QS/pages/2700148737/VM+on+Azure+with+Secure+Access"
+    kind: link
+
+grains:
+  Virtual_Machine:
+    kind: terraform
+    spec:
+      source:
+        store: assets
+        path: assets/terraform/azure-vm-secure
+      host:
+        name: azure-aks-prod
+        kubernetes:
+          pod-labels:
+            - aadpodidbinding: torque-pod-identity
+      inputs:
+        - vm_name: '{{ .inputs.["VM Name"] }}'
+        - source_cidr: '{{ .inputs.["Source CIDR"] }}'
+        - env_id: '{{ sandboxid | downcase }}'
+      env-vars: 
+        - ARM_SUBSCRIPTION_ID: '{{ .params.Azure_Production_Subscription_ID }}'
+        - ARM_TENANT_ID: '{{ .params.Azure_Tenant_ID }}'
+        - ARM_CLIENT_ID: '{{ .params.Azure_Prod_Client_ID }}'
+        - ARM_USE_MSI: true
+      outputs:
+        - vm_id
+        - public_ip
+        - admin_username
+        - admin_initial_password

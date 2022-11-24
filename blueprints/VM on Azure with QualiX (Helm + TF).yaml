@@ -1,0 +1,82 @@
+spec_version: 2
+description: Deploy an Azure Windows 2016 VM using TF with limited inbound access
+inputs:
+  VM Name:
+    type: string
+    default: MyVM
+  # Source CIDR:
+  #   type: string
+  #   default: 0.0.0.0/0
+outputs:
+  VM Identifier:
+    value: '{{.grains.Virtual_Machine.outputs.vm_id}}'
+  Public IP:
+    value: '{{.grains.Virtual_Machine.outputs.public_ip}}'
+  RDP Link:
+    value: '{{.grains.Virtual_Machine.outputs.vm_rdp_link}}'
+    kind: link
+  QualiX IP from grain:
+    value: 'https://{{.grains.helm-qualix.scripts.post-helm-install.outputs.qualix_ip}}'
+    kind: link
+grains:
+  helm-qualix:
+    kind: helm
+    spec:
+      source:
+        store: assets
+        path: assets/helm/helm-qualix
+      namespace: '{{ .params.default_aks_host_namespace }}'
+      host:
+      # Execution Host - the platform where the asset executable will run.
+      # For example, a Kubernetes cluster can be used as an execution host.
+        name: '{{ .params.default_aks_host }}'
+        # A service account annotated with a role ARN with permissions to run the asset
+        service-account: default
+      inputs:
+      - sandbox_id: '{{ sandboxid | downcase }}'
+      - namespace: '{{ .params.default_aks_host_namespace }}'
+      # The environment variables declared in this section will be available during the grain deployment as well as the grain destroy phase
+      # env-vars:
+      # - VAR_NAME: var value
+      env-vars: []
+      # Helm commands to run before installing the chart
+      commands:
+      - dep up assets/helm/helm-qualix
+      scripts:
+        post-helm-install:
+          source:
+            store: assets
+            path:  assets/scripts/get-qualix-external-ip_helm.sh
+          outputs:
+            - qualix_ip
+            - qualix_hostname
+            - qualix_outbound_ip
+  Virtual_Machine:
+    kind: terraform
+    depends-on: helm-qualix
+    spec:
+      source:
+        store: assets
+        path: assets/terraform/azure-vm-qualix
+      host:
+        name: '{{ .params.default_aks_host }}'
+        kubernetes:
+          pod-labels:
+            - aadpodidbinding: torque-pod-identity
+      inputs:
+        - vm_name: '{{ .inputs.["VM Name"] }}'
+        # - source_cidr: '{{ .inputs.["Source CIDR"] }}'
+        - source_cidr: '{{.grains.helm-qualix.scripts.post-helm-install.outputs.qualix_outbound_ip | strip_newlines}}/32'
+        - qualix_ip: '{{.grains.helm-qualix.scripts.post-helm-install.outputs.qualix_ip}}'
+      env-vars: 
+        - ARM_SUBSCRIPTION_ID: '{{ .params.Azure_Production_Subscription_ID }}'
+        - ARM_TENANT_ID: '{{ .params.Azure_Tenant_ID }}'
+        - ARM_CLIENT_ID: '{{ .params.Azure_Prod_Client_ID }}'
+        - ARM_USE_MSI: true
+      outputs:
+      - vm_rdp_link
+      - public_ip
+      - vm_id
+      - qualix_ip
+    # The terraform version that will be used to deploy the module
+    tf-version: 1.2.6
