@@ -22,17 +22,16 @@ inputs:
     default: "8.0.26"
     description: "Version of RDS MySQL DB Engine. Default is 5.7"
 
-
 # values that starts with '{' for liquid template must be encosed with quotes so YAML won't consider them as dict
 outputs:
   Robot Shop Site:
-    value: 'http://{{.grains.Robot_Shop_MicroServices.scripts.post-helm-install.outputs.frontend}}:8080'
+    value: "http://{{.grains.Robot_Shop_MicroServices.scripts.post-helm-install.outputs.frontend}}:8080"
     kind: link
-  Robot Shop Site(Friendly DNS): 
-    value: 'robotshop-{{ sandboxid | downcase }}.torque-demo.click:8080'
+  Robot Shop Site(Friendly DNS):
+    value: "robotshop-{{ sandboxid | downcase }}.torque-demo.click:8080"
     kind: link
   RDS MySQL DB Hostname:
-    value: '{{ .grains.MySQL_RDS_DB.outputs.hostname }}'
+    value: "{{ .grains.MySQL_RDS_DB.outputs.hostname }}"
   Documentation Page:
     value: "https://quali.atlassian.net/wiki/spaces/QS/pages/2710142977/Robot+Shop+Stan+s+Robot+Shop"
     kind: link
@@ -42,14 +41,14 @@ grains:
     kind: terraform
     spec:
       source:
-        store: assets
+        store: qa_automation
         path: assets/terraform/rds
       host:
-        name: '{{.inputs.host_name}}'
-        service-account: '{{.inputs.service_account}}'
+        name: "{{.inputs.host_name}}"
+        service-account: "{{.inputs.service_account}}"
       inputs:
-        - sandbox_id: '{{ sandboxid | downcase }}'
-        - size: '{{ .inputs.["DB Size"] }}' 
+        - sandbox_id: "{{ sandboxid | downcase }}"
+        - size: '{{ .inputs.["DB Size"] }}'
         - allocated_storage: 20
         - db_name: demo_db
         - engine_version: '{{ .inputs.["DB Engine Version"] }}'
@@ -63,17 +62,17 @@ grains:
 
   S3_Bucket:
     kind: terraform
-    spec: 
+    spec:
       source:
-        store: assets
+        store: qa_automation
         path: assets/terraform/s3
       host:
-        name: '{{.inputs.host_name}}'
-        service-account: '{{.inputs.service_account}}'
+        name: "{{.inputs.host_name}}"
+        service-account: "{{.inputs.service_account}}"
       inputs:
         - region: eu-west-1
         - acl: public-read
-        - name: 'robotshop-s3-{{ sandboxid | downcase }}'
+        - name: "robotshop-s3-{{ sandboxid | downcase }}"
       outputs:
         - s3_bucket_arn
 
@@ -82,24 +81,24 @@ grains:
     depends-on: MySQL_RDS_DB, S3_Bucket
     spec:
       source:
-        store: assets
+        store: qa_automation
         path: assets/helm/robotShop
       host:
-        name: '{{.inputs.host_name}}'
+        name: "{{.inputs.host_name}}"
       # commands:
       #   - "dep up xxx"
       scripts:
         post-helm-install:
           source:
-            store: assets
-            path:  assets/scripts/get-robot-web-address.sh
+            store: qa_automation
+            path: assets/scripts/get-robot-web-address.sh
           outputs:
             - frontend
       inputs:
-        - hostname: 'robotshop-{{ sandboxid | downcase }}'
-        - domain: 'torque-demo.click'
+        - hostname: "robotshop-{{ sandboxid | downcase }}"
+        - domain: "torque-demo.click"
         - version: '{{ .inputs.["Application Version"] }}'
-        - connectionString: '{{ .grains.MySQL_RDS_DB.outputs.connection_string }}'
-        - objectStore.S3_BucketArn: '{{ .grains.S3_Bucket.outputs.s3_bucket_arn }}'
+        - connectionString: "{{ .grains.MySQL_RDS_DB.outputs.connection_string }}"
+        - objectStore.S3_BucketArn: "{{ .grains.S3_Bucket.outputs.s3_bucket_arn }}"
         - redis.storageClassName: gp2
-        - sandboxID: '{{ sandboxid | downcase }}'
+        - sandboxID: "{{ sandboxid | downcase }}"
