@@ -31,17 +31,17 @@ inputs:
 # blueprint outputs define which data that was generated during environment provisioning will be returned to the user, API or CI.
 outputs:
   MySQL Instance Public IP:
-    value: '{{ .grains.aws-wordpress.outputs.mysql-ip }}'
+    value: "{{ .grains.aws-wordpress.outputs.mysql-ip }}"
   Wordpress Instance Public IP:
-    value: '{{ .grains.aws-wordpress.outputs.wordpress-ip }}'
+    value: "{{ .grains.aws-wordpress.outputs.wordpress-ip }}"
   Wordpress Link:
-    value: '{{ .grains.aws-wordpress.outputs.wordpress-address }}'
+    value: "{{ .grains.aws-wordpress.outputs.wordpress-address }}"
     kind: link
   Wordpress Server SSH:
-    value: '{{ .grains.aws-wordpress.outputs.wordpress-ssh-link }}'
+    value: "{{ .grains.aws-wordpress.outputs.wordpress-ssh-link }}"
     kind: link
-  MySQL Server SSH: 
-    value: '{{ .grains.aws-wordpress.outputs.mysql-ssh-link }}'
+  MySQL Server SSH:
+    value: "{{ .grains.aws-wordpress.outputs.mysql-ssh-link }}"
     kind: link
   Documentation Page:
     value: "https://quali.atlassian.net/wiki/spaces/QS/pages/2710143029/Wordpress+Website+on+Cloud+Compute"
@@ -51,27 +51,27 @@ grains:
     kind: terraform
     spec:
       source:
-        store: assets
+        store: qa_automation
         path: assets/terraform/aws-wordpress
       host:
         name: gmp-pro-aws
         service-account: gmp-aws-sa
       inputs:
-      - DB_NAME: '{{ .inputs.DB_NAME }}'
-      - DB_PASS: '{{ .inputs.DB_PASS }}'
-      - DB_USER: '{{ .inputs.DB_USER }}'
-      - aws_region: '{{ .inputs.aws_region }}'
-      - instance_type: '{{ .inputs.instance_type }}'
-      - keypair_name: '{{ .inputs.keypair_name }}'
+        - DB_NAME: "{{ .inputs.DB_NAME }}"
+        - DB_PASS: "{{ .inputs.DB_PASS }}"
+        - DB_USER: "{{ .inputs.DB_USER }}"
+        - aws_region: "{{ .inputs.aws_region }}"
+        - instance_type: "{{ .inputs.instance_type }}"
+        - keypair_name: "{{ .inputs.keypair_name }}"
       # The environment variables declared in this section will be available during the grain deployment as well as the grain destroy phase
       # env-vars:
       # - VAR_NAME: var value
       env-vars: []
       outputs:
-      - mysql-ip
-      - wordpress-ip
-      - wordpress-address
-      - wordpress-ssh-link
-      - mysql-ssh-link
+        - mysql-ip
+        - wordpress-ip
+        - wordpress-address
+        - wordpress-ssh-link
+        - mysql-ssh-link
     # The terraform version that will be used to deploy the module
     tf-version: 1.2.6

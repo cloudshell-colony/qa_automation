@@ -12,13 +12,13 @@ inputs:
 
 outputs:
   VM Identifier:
-    value: '{{.grains.Virtual_Machine.outputs.vm_id}}'
+    value: "{{.grains.Virtual_Machine.outputs.vm_id}}"
   Public IP:
-    value: '{{.grains.Virtual_Machine.outputs.public_ip}}'
+    value: "{{.grains.Virtual_Machine.outputs.public_ip}}"
   Administrator Username:
-    value: '{{.grains.Virtual_Machine.outputs.admin_username}}'
+    value: "{{.grains.Virtual_Machine.outputs.admin_username}}"
   Administrator Password:
-    value: '{{.grains.Virtual_Machine.outputs.admin_initial_password}}'
+    value: "{{.grains.Virtual_Machine.outputs.admin_initial_password}}"
   Documentation Page:
     value: "https://quali.atlassian.net/wiki/spaces/QS/pages/2700148737/VM+on+Azure+with+Secure+Access"
     kind: link
@@ -28,7 +28,7 @@ grains:
     kind: terraform
     spec:
       source:
-        store: assets
+        store: qa_automation
         path: assets/terraform/azure-vm-secure
       host:
         name: azure-aks-prod
@@ -38,11 +38,11 @@ grains:
       inputs:
         - vm_name: '{{ .inputs.["VM Name"] }}'
         - source_cidr: '{{ .inputs.["Source CIDR"] }}'
-        - env_id: '{{ sandboxid | downcase }}'
-      env-vars: 
-        - ARM_SUBSCRIPTION_ID: '{{ .params.Azure_Production_Subscription_ID }}'
-        - ARM_TENANT_ID: '{{ .params.Azure_Tenant_ID }}'
-        - ARM_CLIENT_ID: '{{ .params.Azure_Prod_Client_ID }}'
+        - env_id: "{{ sandboxid | downcase }}"
+      env-vars:
+        - ARM_SUBSCRIPTION_ID: "{{ .params.Azure_Production_Subscription_ID }}"
+        - ARM_TENANT_ID: "{{ .params.Azure_Tenant_ID }}"
+        - ARM_CLIENT_ID: "{{ .params.Azure_Prod_Client_ID }}"
         - ARM_USE_MSI: true
       outputs:
         - vm_id

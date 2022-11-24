@@ -13,7 +13,7 @@ inputs:
     allowed-values: ["us-west-1", "us-west-2", "eu-west-1"]
 outputs:
   Webgame Link:
-    value: '{{ .grains.S3-Webapp.outputs.endpoint }}'
+    value: "{{ .grains.S3-Webapp.outputs.endpoint }}"
     kind: link
   Documentation Page:
     value: "https://quali.atlassian.net/wiki/spaces/QS/pages/2691399681/Webgame+on+Cloud+Storage+Service"
@@ -23,18 +23,18 @@ grains:
     kind: terraform
     spec:
       source:
-        store: assets
+        store: qa_automation
         path: assets/terraform/kms-key
       host:
         name: gmp-pro-aws
         service-account: gmp-aws-sa
       inputs:
-      - enable_key_rotation: "true"
-      - deletion_window_in_days: 10
-      - description: 'Encryption key for Webgame of {{ sandboxid | downcase }}'
-      - region: '{{ .inputs.["AWS Region"] }}'
+        - enable_key_rotation: "true"
+        - deletion_window_in_days: 10
+        - description: "Encryption key for Webgame of {{ sandboxid | downcase }}"
+        - region: '{{ .inputs.["AWS Region"] }}'
       outputs:
-      - arn
+        - arn
     # The terraform version that will be used to deploy the module
     tf-version: 1.2.3
   S3-Webapp:
@@ -42,15 +42,15 @@ grains:
     depends-on: KMS-Key
     spec:
       source:
-        store: assets
+        store: qa_automation
         path: assets/terraform/s3-webapp
       host:
         name: gmp-pro-aws
         service-account: gmp-aws-sa
       inputs:
-      - name: '{{ .inputs.Name }}-{{ sandboxid | downcase }}'
-      - prefix: '{{ .inputs.["Name Prefix"] }}'
-      - region: '{{ .inputs.["AWS Region"] }}'
-      - encryption_key_arn: '{{ .grains.KMS-Key.outputs.arn }}'
+        - name: "{{ .inputs.Name }}-{{ sandboxid | downcase }}"
+        - prefix: '{{ .inputs.["Name Prefix"] }}'
+        - region: '{{ .inputs.["AWS Region"] }}'
+        - encryption_key_arn: "{{ .grains.KMS-Key.outputs.arn }}"
       outputs:
-      - endpoint
+        - endpoint
