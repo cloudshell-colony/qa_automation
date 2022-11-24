@@ -2,6 +2,12 @@ spec_version: 2-preview
 description: Robotshot microservices application deployed on K8S with Helm and RDS deployed with TF
 
 inputs:
+  host_name:
+    type: execution-host
+    description: "execution host name"
+  service_account:
+    type: string
+    description: "execution host name"
   Application Version:
     type: string
     default: "0.4.3"
@@ -39,8 +45,8 @@ grains:
         store: assets
         path: assets/terraform/rds
       host:
-        name: gmp-pro-aws
-        service-account: gmp-aws-sa
+        name: '{{.inputs.host_name}}'
+        service-account: '{{.inputs.service_account}}'
       inputs:
         - sandbox_id: '{{ sandboxid | downcase }}'
         - size: '{{ .inputs.["DB Size"] }}' 
@@ -62,8 +68,8 @@ grains:
         store: assets
         path: assets/terraform/s3
       host:
-        name: gmp-pro-aws
-        service-account: gmp-aws-sa
+        name: '{{.inputs.host_name}}'
+        service-account: '{{.inputs.service_account}}'
       inputs:
         - region: eu-west-1
         - acl: public-read
@@ -79,7 +85,7 @@ grains:
         store: assets
         path: assets/helm/robotShop
       host:
-        name: gmp-pro-aws
+        name: '{{.inputs.host_name}}'
       # commands:
       #   - "dep up xxx"
       scripts:
