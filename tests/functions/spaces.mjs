@@ -242,7 +242,7 @@ export const repositoryAssetInfo = async (page, repoKeys) => {
     await page.waitForSelector('[data-test="connect-repo-title"]');
     await page.click(`[data-test="setup-modal-container"] svg >> nth=${repoKeys.nth}`);
     await page.fill('[data-test="repositoryUrl"]', repoKeys.repo);
-    await page.fill('[data-test="repositoryName"]', "auto-repo");
+    await page.click('[data-test="repositoryName"]', { force: true });
     //manage repo provider credentilas
     const [signinWindow] = await Promise.all([
         page.waitForEvent("popup"),
