@@ -4,6 +4,9 @@ description: "S3 Bucket creation with Input and Output parameters"
 inputs:
   # The access_control property is case-sensitive and must be one of the following values:
   # Private, PublicRead, PublicReadWrite, AuthenticatedRead, LogDeliveryWrite, BucketOwnerRead, BucketOwnerFullControl, or AwsExecRead
+  host_name:
+    type: execution-host
+    description: "execution host name"
   Access Control:
     type: string
     description: >
@@ -57,8 +60,7 @@ grains:
         store: qa_automation
         path: assets/terraform/s3-deploy-webapp
       host:
-        name: gmp-pro-aws
-        service-account: gmp-aws-sa
+        name: "{{.inputs.host_name}}"
       inputs:
         - bucket_name: '{{ .inputs.["Bucket Name"] }}-{{ sandboxid | downcase }}'
         - region: '{{ .inputs.["AWS Region"] }}'
