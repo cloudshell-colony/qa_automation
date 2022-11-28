@@ -32,7 +32,7 @@ outputs:
   Documentation Page:
     value: "https://quali.atlassian.net/wiki/spaces/QS/pages/2710142977/Robot+Shop+Stan+s+Robot+Shop"
     kind: link
-
+    
 grains:
   MySQL_RDS_DB:
     kind: terraform
