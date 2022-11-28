@@ -54,8 +54,8 @@ grains:
         store: qa_automation
         path: assets/terraform/aws-wordpress
       host:
-        name: gmp-pro-aws
-        service-account: gmp-aws-sa
+        name: "{{ .params.default_eks_host }}"
+        service-account: "{{ .params.default_eks_host_service_account }}"
       inputs:
         - DB_NAME: "{{ .inputs.DB_NAME }}"
         - DB_PASS: "{{ .inputs.DB_PASS }}"
