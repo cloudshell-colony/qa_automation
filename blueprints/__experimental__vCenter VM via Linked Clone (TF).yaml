@@ -2,6 +2,9 @@ spec_version: 2
 description: Auto generated blueprint for terraform module vcenter-vm-from-template
 # blueprint inputs can be provided by the user, API or CI plugin when creating an environment from this blueprint.
 inputs:
+  host_name:
+    type: execution-host
+    description: "execution host name"
   qualix_ip:
     type: string
     default: 192.168.51.191
@@ -37,7 +40,7 @@ grains:
       host:
         # Execution Host - the platform where the asset executable will run.
         # For example, a Kubernetes cluster can be used as an execution host.
-        name: docker-dmz
+        name: "{{.inputs.host_name}}"
         # A service account annotated with a role ARN with permissions to run the asset
         # service-account: <service-account-name>
       inputs:
