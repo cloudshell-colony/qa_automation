@@ -9,16 +9,19 @@ inputs:
   virtual_machine_template_name:
     display-style: normal
     type: string
+    default: gilad.m/gmpWithSnapshot
     description: vm template name
 
   virtual_machine_name:
     display-style: normal
     type: string
+    default: snapshot
     description: deployed vm name
 
   network_name:
     display-style: normal
     type: string
+    default: Anetwork
     description: target network name
 
 outputs:
