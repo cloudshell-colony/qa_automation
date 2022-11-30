@@ -69,7 +69,7 @@ grains:
       host:
         # Execution Host - the platform where the asset executable will run.
         name: "{{ .params.default_eks_host }}"
-        service-account: default
+        service-account: "{{ .params.default_eks_host_service_account }}"
       inputs:
         - sandbox_id: "{{ sandboxid | downcase }}"
         - namespace: "{{ .params.default_eks_host_namespace }}"
