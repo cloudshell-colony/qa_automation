@@ -1,17 +1,8 @@
-variable "username" {
-  type = string
-  sensitive = true
-}
+variable "vc_username" {}
 
-variable "password" {
-  type = string
-  sensitive = true
-}
+variable "vc_password" {}
 
-variable "hostname" {
-  type = string
-  sensitive = true
-}
+variable "vc_address" {}
 
 variable "datacenter_name" {
   type = string
@@ -44,6 +35,6 @@ variable "virtual_machine_name" {
 
 variable "virtual_machine_folder" {
   type = string
-  default = "alexander.g"
+  default = "gilad.m"
 }
 

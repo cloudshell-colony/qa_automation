@@ -1,7 +1,7 @@
 provider "vsphere" {
-  user           = var.username
-  password       = var.password
-  vsphere_server = var.hostname
+  user           = var.vc_username
+  password       = var.vc_password
+  vsphere_server = var.vc_address
   allow_unverified_ssl = true
 }
 

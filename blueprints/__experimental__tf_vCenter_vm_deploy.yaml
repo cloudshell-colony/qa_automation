@@ -5,6 +5,7 @@ inputs:
   host_name:
     type: execution-host
     description: "execution host name"
+
   virtual_machine_template_name:
     display-style: normal
     type: string
@@ -35,6 +36,9 @@ grains:
         - virtual_machine_template_name: "{{ .inputs.virtual_machine_template_name }}"
         - virtual_machine_name: "{{ .inputs.virtual_machine_name }}"
         - network_name: "{{ .inputs.network_name }}"
+        - vc_address: "{{ .params.vc_address }}"
+        - vc_username: "{{ .params.vc_username }}"
+        - vc_password: "{{ .params.vc_password }}"
       outputs:
         - vsphere_virtual_machine_name
         - vsphere_virtual_machine_default_ip_address
