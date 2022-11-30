@@ -17,8 +17,7 @@ grains:
     kind: kubernetes
     spec:
       source:
-        store: qa_automation
-        path: assets/terraform/manifests/nginx/nginxmanifest.yaml
+        path: github.com/cloudshell-colony/qa_automation//manifests/nginx/nginxmanifest.yaml
       namespace: "{{ .inputs.namespace }}"
       host:
         name: "{{ .inputs.host_name }}"
