@@ -1,8 +1,10 @@
 spec_version: 2
 description: Deployes a vm from a template on a vcenter
 
-
 inputs:
+  host_name:
+    type: execution-host
+    description: "execution host name"
   virtual_machine_template_name:
     display-style: normal
     type: string
@@ -18,31 +20,25 @@ inputs:
     type: string
     description: target network name
 
-  compute_service_name:
-    type: string
-    default: "docker-agent"
-
-
 outputs:
   virtual_machine_name:
-    value: '{{ .grains.virtual_machine.outputs.vsphere_virtual_machine_name }}'
+    value: "{{ .grains.virtual_machine.outputs.vsphere_virtual_machine_name }}"
 
   virtual_machine_ip:
-    value: '{{ .grains.virtual_machine.outputs.vsphere_virtual_machine_default_ip_address }}'
-
+    value: "{{ .grains.virtual_machine.outputs.vsphere_virtual_machine_default_ip_address }}"
 
 grains:
   virtual_machine:
     kind: terraform
     spec:
       inputs:
-        - virtual_machine_template_name: '{{ .inputs.virtual_machine_template_name }}'
-        - virtual_machine_name: '{{ .inputs.virtual_machine_name }}'
-        - network_name: '{{ .inputs.network_name }}'
+        - virtual_machine_template_name: "{{ .inputs.virtual_machine_template_name }}"
+        - virtual_machine_name: "{{ .inputs.virtual_machine_name }}"
+        - network_name: "{{ .inputs.network_name }}"
       outputs:
         - vsphere_virtual_machine_name
         - vsphere_virtual_machine_default_ip_address
       source:
         path: github.com/QualiNext/test-spec2-public//terraform/vm-from-template-wait-for-ip
       host:
-        name: '{{.inputs.compute_service_name}}'
+        name: "{{.inputs.host_name}}"
