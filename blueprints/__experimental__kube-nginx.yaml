@@ -8,7 +8,7 @@ inputs:
     type: string
     display-style: normal
     description: "Kubernetes namespace for sandbox to be ran in."
-    default: "qa-auto-pods"
+    default: "gmp-aws"
   host_name:
     type: execution-host
 
