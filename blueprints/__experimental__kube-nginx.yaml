@@ -18,7 +18,7 @@ grains:
     spec:
       source:
         store: qa_automation
-        path: assets/manifests/nginx/nginxmanifest.yaml
+        path: manifests/nginx/nginxmanifest.yaml
       namespace: "{{ .inputs.namespace }}"
       host:
         name: "{{ .inputs.host_name }}"
