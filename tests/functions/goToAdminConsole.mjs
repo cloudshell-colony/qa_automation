@@ -22,9 +22,9 @@ export default async (page, target) => {
     case "account":
       await page.click('[data-test="settings-tab"]');
       break;
-    // case "parameters":
-    //   await page.click('[data-test=""]');
-    //   break;
+    case "parameters":
+      await page.click('[href="/admin/parameters"]');
+      break;
     case "policies":
       await page.click('[data-test="policies-tab"]');
       break;
