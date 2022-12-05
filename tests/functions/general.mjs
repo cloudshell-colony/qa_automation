@@ -119,27 +119,13 @@ export const pressOptionFromCommonTable = async (page, rowIdentifier, optionSele
 export const validateAPIResponseis200 = async (response) => {
     if (response.status != 200) {
         try {
-            try {
-                console.log(`Attempting to print the response as a json: ${await response.json()}`);
-            } catch {
-                console.log("Got response that is not a json object");
-            };
-            try {
-                console.log(`Attempting to print the response as text: ${await response.text()}`);
-            } catch {
-                console.log("Got response that is not a text object");
-            };
+            console.log(`Attempting to print the response as text: ${await response.text()}`);
         } catch {
-
-        } finally {
-            expect(response.status, `Attempting to log the response as is: ${response}`).toBe(200);
-            expect(response.ok).toBeTruthy();
-        }
-
-    } else {
-        expect(response.status, `Attempting to log the response as is: ${response}`).toBe(200);
-        expect(response.ok).toBeTruthy();
-    }
+            console.log("Got response that is not a text object");
+        };
+    };
+    expect(response.status, `Attempting to log the response as is: ${response}`).toBe(200);
+    expect(response.ok).toBeTruthy();
 };
 
 export const selectFromDropbox = async (page, name, text = "") => {

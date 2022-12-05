@@ -109,7 +109,7 @@ test.describe.serial('On boarding with APIs', () => {
             'user':"none" 
         }
         const resp = await launchBlueprintAPI(session, baseURL, 'autogen_s3', spaceName, inputs);
-        const jsonResponse = await resp.json()
+        const jsonResponse = await resp.text()
         expect(resp.status, 'Sandbox launch failed, received following error: ' + await jsonResponse).toBe(202);
         sandboxId = await jsonResponse.id;
         console.log(`Created sandbox with id ${sandboxId}`);
