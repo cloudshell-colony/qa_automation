@@ -7,6 +7,15 @@ import { associateExecutionHost, disassociateExecutionHostAPI } from "./function
 import { validateSBisActive } from "./functions/sandboxes.mjs";
 import goToAdminConsole from "./functions/goToAdminConsole.mjs";
 
+/**
+ * preconditions
+ * space name is bp-validation
+ * BP repo: https://github.com/QualiNext/qa-bp-validation
+ * agent name "qa-eks2" need to associated with the space
+ * 
+ * agent name "bp-validation2" need to be defined and acive (not associated to the space)
+ */
+
 const baseURL = process.env.baseURL;
 const password = process.env.allAccountsPassword;
 const account = process.env.account;
