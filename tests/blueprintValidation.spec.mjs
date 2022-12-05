@@ -81,7 +81,7 @@ test.describe('Blueprint validation', () => {
         console.log("Removing execution host from space");
         const response = await disassociateExecutionHostAPI(session, baseURL, space, bpValidationEKS);
         expect(response.status, 'Execution host was not removed from space, MUST remove it manually').toBe(200)
-        expectedErrors.unshift(`The compute service '${bpValidationEKS}`); //Adding error that should appear after removing EKS
+        expectedErrors.unshift(`The agent '${bpValidationEKS}`); //Adding error that should appear after removing EKS
         //get and validate blueprint errors
         await page.waitForTimeout(10 * 1000); // wait for 10 seconds for blueprint errors to update
         console.log("Validating blueprint errors after removing execution host");

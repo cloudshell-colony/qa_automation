@@ -16,6 +16,10 @@ export const getPublishedBlueprints = async (session, space_name, myURL) => {
     return (PBPList);
 };
 
+export const goToBlueprintPage = async (page) => {
+    await page.click('[data-test="blueprints-nav-link"]');
+  };
+
 export const countBlueprintsInSpace = async (page, baseURL, space) => {
     //Assumes you are already in blueprints page
     await page.waitForResponse(`${baseURL}/api/spaces/${space}/blueprints`);
@@ -71,6 +75,13 @@ export const launchBlueprintFromBPList = async (page, BPFullName, inputsDict = {
 export const launchSampleBlueprintFromSandboxPage = async (page, sampleFullName, inputsDict = {}) => {
     await page.click('[data-test="create-sandbox-btn"]');
     await page.click(`[data-test="blueprint-tile-[Sample]${sampleFullName}"]`);
+    const sandboxName = await blueprintLauncher(page, sampleFullName, inputsDict);
+    return sandboxName;
+};
+
+export const launchSampleBlueprintFromCatalogPage = async (page, sampleFullName, inputsDict = {}) => {
+    await page.click('[data-test="catalog-nav-link"]');
+    await page.click(`[data-test="catalog-bp-[Sample]${sampleFullName}"] [data-test="launch-environment-from-blueprint"]`);
     const sandboxName = await blueprintLauncher(page, sampleFullName, inputsDict);
     return sandboxName;
 };

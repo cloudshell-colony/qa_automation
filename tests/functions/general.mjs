@@ -60,7 +60,7 @@ export const openAndPinSideMenu = async (page) => {
     if (!isVisible0 && !isVisible1) {
         console.log('Side menu was detected as collapsed, openning it now');
         await page.mouse.move(10, 10);
-        await page.locator('.sc-bdnxRM > div > .sc-bdnxRM >> nth=0').click({ force: true });
+        await page.locator('[data-test="expend-sidebar-icon"]').click();
     }
     await page.mouse.move(1000, 1000);
     isVisible0 = await page.locator('text=Settings').isVisible();

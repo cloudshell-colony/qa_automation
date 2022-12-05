@@ -1,6 +1,6 @@
 import { test, expect } from "@playwright/test";
 import { createAccount, DeleteAcountUI, loginToAccount, validateSbLauncher } from "./functions/accounts.mjs";
-import { launchSampleBlueprintFromSandboxPage, launchBlueprintFromBPList } from "./functions/blueprints.mjs";
+import { launchSampleBlueprintFromSandboxPage, launchBlueprintFromBPList, launchSampleBlueprintFromCatalogPage } from "./functions/blueprints.mjs";
 import { afterTestCleanup, closeModal, openAndPinSideMenu, openFromChecklist } from "./functions/general.mjs";
 import { startSampleSandbox, endSandbox, validateSBisActive, endSandboxValidation } from "./functions/sandboxes.mjs";
 
@@ -81,9 +81,14 @@ test.describe.serial('onboarding flow', () => {
   });
 
 
-  test('start sample sandbox from sandbox page', async () => {
+  // test('start sample sandbox from sandbox page', async () => {
+  //   console.log(`starting \"${sbOrder[2]}\" sample SB from sandbox list page`);
+  //   lastBPname = await launchSampleBlueprintFromSandboxPage(page, sbOrder[2]);
+  // });
+
+  test('start sample sandbox from blueprint catalogue', async () => {
     console.log(`starting \"${sbOrder[2]}\" sample SB from sandbox list page`);
-    lastBPname = await launchSampleBlueprintFromSandboxPage(page, sbOrder[2]);
+    lastBPname = await launchSampleBlueprintFromCatalogPage(page, sbOrder[2]);
   });
 
   test('validate sample SB started from sandbox catalog page is active', async () => {

@@ -31,3 +31,5 @@ AlexEnv/.env
 tests/cloudshel.spec.mjs
 tests/basicDeliteAccountUIFlow.spec.mjs
 node_modules/*
+tests/amirTest.spec.mjs
+

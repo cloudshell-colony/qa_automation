@@ -46,18 +46,6 @@ test.describe.serial('Add and delete user', () => {
         initialNumberOfUsersInDomain = Object.keys(await usersListJson).length;
         console.log(`the total number of users in the first users request is: ${initialNumberOfUsersInDomain}`);
 
-
-
-        // if (usersList.status === 200) {
-        //     console.log(await usersListJson);
-        //     initialNumberOfUsersInDomain = Object.keys(await usersListJson).length;
-        //     console.log(`the total number of users in the first users request is: ${initialNumberOfUsersInDomain}`);
-        // } else {
-        //     console.log(usersListJson);
-        //     expect(usersList.status).toBe(200);
-        //     expect(usersList.ok).toBeTruthy();
-        // }
-
     });
 
     test('Invite new user', async () => {
