@@ -59,7 +59,7 @@ test.describe.serial('onboarding flow', () => {
 
     test('add repositorry asset to the new space', async () => {
         // add repository asset
-        await addRepositoryAsset(page, repoKeys);
+        await addRepositoryAsset(page, repoKeys, true);
         // space flow remains afetr asset is created for future steps
     });
 
