@@ -1,6 +1,6 @@
 import { expect } from "@playwright/test";
 import fetch from "node-fetch";
-import { getCodesListFromMailinator } from "./general.mjs";
+import { getCodesListFromMailinator, handlePopUpWithCondition } from "./general.mjs";
 import goToAdminConsole from "./goToAdminConsole.mjs";
 
 export default function removeUserFromSpaceAPI(user_email, myURL, session, space_name) {
@@ -266,24 +266,7 @@ export const addRepositoryAsset = async (page, repoKeys, override=false) => {
     expect(await page.isEnabled('[data-test="submit-button"]')).toBeTruthy();
     await page.click('[data-test="submit-button"]');
     // Handle possibility of pop-up to override existing blueprints according to override boolean parameter
-    try{
-        await page.waitForSelector('[data-test=confirm-button]', {timeout:2000});
-    }
-    catch {};
-    let visi = await page.isVisible('[data-test=confirm-button]');
-    if (await visi){
-        if (override){
-            await page.click('[data-test=confirm-button]');
-        }
-        else{
-            expect(visi, 'Got unexpected message to override existing blueprints while auto-generating assets').toBeFalsy();
-        }
-    }
-    else{
-        if (override){
-            expect(visi, 'Did not receive message to override existing blueprints while auto-generating assets as was expected').toBeTruthy();
-        }
-    }
+    await handlePopUpWithCondition(page, override, 'confirm-button');
     // Auto-Generated Blueprints page approval
     await page.isVisible('text=Auto-Generated Blueprints');
     // validate that after auto discovery the number of BPs is as expected 
