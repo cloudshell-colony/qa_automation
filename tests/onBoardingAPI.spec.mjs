@@ -5,7 +5,7 @@ import { signupUserAPI, getSessionAPI, sendInvitationsAPI, getInvitationAPI, del
 import fetch from "node-fetch";
 import { addAssetRepositoryAPI, createSpaceAPI } from "./functions/spaces.mjs";
 import { associateExecutionHostAPI, createEKSAPI, getdeploymentFileAPI, getExecutionHostDetailsAPI } from "./functions/executionHosts.mjs";
-import { validateSBisActiveAPI, validateSBisEndedAPI, endSandboxAPI} from "./functions/sandboxes.mjs";
+import { validateSBisActiveAPI, validateSBisEndedAPI, endSandboxAPI } from "./functions/sandboxes.mjs";
 import { generateAllRepoBlueprintsAPI, launchBlueprintAPI } from "./functions/blueprints.mjs";
 
 const prefix = process.env.accountPrefix;
@@ -62,7 +62,7 @@ test.describe.serial('On boarding with APIs', () => {
         console.log(`Added asset repository ${repoName}`);
     });
 
-    test('Generate blueprints from asset repo', async() => {
+    test('Generate blueprints from asset repo', async () => {
         const response = await generateAllRepoBlueprintsAPI(session, baseURL, spaceName, repoName);
         await validateAPIResponseis200(response);
         console.log(`Generated blueprints from repo ${repoName}`);
@@ -82,10 +82,10 @@ test.describe.serial('On boarding with APIs', () => {
         await executeCLIcommand("kubectl apply -f deploymentFile.yaml");
         let ESInfo, ESText;
         //wait for max 5 minutes until host status is active
-        for(let i=0; i<5*60; i++){
+        for (let i = 0; i < 5 * 60; i++) {
             ESInfo = await getExecutionHostDetailsAPI(session, baseURL, executionHostName);
             ESText = await ESInfo.text();
-            if(ESText.includes("active")){
+            if (ESText.includes("active")) {
                 break;
             }
             await new Promise(r => setTimeout(r, 1000)); //wait for 1 second
@@ -100,13 +100,13 @@ test.describe.serial('On boarding with APIs', () => {
         await validateAPIResponseis200(response);
     });
 
-    test('Launch new sandbox', async() =>{
-        let inputs ={
+    test('Launch new sandbox', async () => {
+        let inputs = {
             'acl': "private",
             'host_name': `${executionHostName}`,
             'name': `${bucketName}`,
             'region': "eu-west-1",
-            'user':"none" 
+            'user': "none"
         }
         const resp = await launchBlueprintAPI(session, baseURL, 'autogen_s3', spaceName, inputs);
         const jsonResponse = await resp.text()
@@ -115,17 +115,17 @@ test.describe.serial('On boarding with APIs', () => {
         console.log(`Created sandbox with id ${sandboxId}`);
     })
 
-    test('Validate sandbox is active', async() => {
+    test('Validate sandbox is active', async () => {
         await validateSBisActiveAPI(session, baseURL, sandboxId, spaceName);
     })
 
-    test('End sandbox', async() =>{
+    test('End sandbox', async () => {
         const response = await endSandboxAPI(session, baseURL, spaceName, sandboxId);
         expect(response.status, await response.text()).toBe(202);
         console.log('Ended sandbox')
     })
 
-    test('Validate sandbox is completed', async() => {
+    test('Validate sandbox is completed', async () => {
         await validateSBisEndedAPI(session, baseURL, sandboxId, spaceName);
     })
 

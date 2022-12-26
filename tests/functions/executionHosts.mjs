@@ -98,7 +98,7 @@ export const associateExecutionHostAPI = async (session, myURL, space, execution
     const data = {
         "default_namespace": `${nameSpace}`,
         "default_service_account": `${serviceAccount}`
-      };
+    };
     const response = await fetch(`${myURL}/api/executionhosts/k8s/${executionHost}/spaces/${space}`, {
         "method": "POST",
         "body": JSON.stringify(data),
@@ -125,7 +125,7 @@ export const disassociateExecutionHostAPI = async (session, myURL, space, execut
     return response;
 };
 
-export const getExecutionHostDetailsAPI = async (session, baseURL, executionHost) =>{
+export const getExecutionHostDetailsAPI = async (session, baseURL, executionHost) => {
     const response = await fetch(`${baseURL}/api/settings/computeservices?service_name=${executionHost}`, {
         "method": "GET",
         "headers": {
@@ -134,6 +134,32 @@ export const getExecutionHostDetailsAPI = async (session, baseURL, executionHost
         }
     });
     return response;
+}
+
+export const getExecutionHostList = async (myURL, session) => {
+
+    const response = await fetch(`${myURL}/api/settings/computeservices`, {
+        "method": "GET",
+        "headers": {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${session}`
+
+        }
+    });
+    return response
+}
+
+export const getExecutionHostListInSpace = async (myURL, space, session) => {
+
+    const response = await fetch(`${myURL}/api/spaces/${space}/computeservices`, {
+        "method": "GET",
+        "headers": {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${session}`
+
+        }
+    });
+    return response
 }
 
 export const createEKSAPI = async (session, baseURL, executionHost) => {

@@ -18,7 +18,7 @@ export const getPublishedBlueprints = async (session, space_name, myURL) => {
 
 export const goToBlueprintPage = async (page) => {
     await page.click('[data-test="blueprints-nav-link"]');
-  };
+};
 
 export const countBlueprintsInSpace = async (page, baseURL, space) => {
     //Assumes you are already in blueprints page
@@ -140,7 +140,7 @@ export const validateBlueprintErrors = async (page, BPName, errList, expectedErr
     }
 };
 
-export const launchBlueprintAPI = async (session, baseURL, BPName, spaceName, inputs, duration = "PT2H") => {
+export const launchBlueprintAPI = async (session, baseURL, BPName, spaceName, inputs, repoName, duration = "PT2H") => {
     const timestemp = Math.floor(Date.now() / 1000);
     const data = {
         "sandbox_name": `${BPName}-${timestemp}`,
@@ -151,7 +151,7 @@ export const launchBlueprintAPI = async (session, baseURL, BPName, spaceName, in
         "artifacts": {},
         "activity_type": 'other',
         "notes": '',
-        "source": { "is_editable": true }
+        "source": { "is_editable": true, repository_name: repoName }
     }
     const response = await fetch(`${baseURL}/api/spaces/${spaceName}/environments`, {
         "method": "POST",

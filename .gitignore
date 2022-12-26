@@ -33,3 +33,4 @@ tests/basicDeliteAccountUIFlow.spec.mjs
 node_modules/*
 tests/amirTest.spec.mjs
 
+tests/amirDotenv/.env

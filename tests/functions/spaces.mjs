@@ -69,7 +69,7 @@ export const deleteSpace = async (page, spaceName, input) => {
 };
 
 
-export const deleteSpaceAPI = async (space_name, myURL, session) => {
+export const deleteSpaceAPI = async (myURL, session, space_name) => {
 
     const response = fetch(`${myURL}/api/spaces/${space_name}`, {
         "method": "DELETE",

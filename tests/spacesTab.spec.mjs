@@ -1,6 +1,6 @@
 import { loginToAccount } from './functions/accounts.mjs';
 import { test, expect } from '@playwright/test';
-import { createSpace, editSpace, deleteSpace, goToSpace } from './functions/spaces.mjs';
+import { createSpace, editSpace, deleteSpace, goToSpace, createSpaceAPI, deleteSpaceAPI } from './functions/spaces.mjs';
 import { openAndPinSideMenu, waitForSpaceInListToDisappear } from './functions/general.mjs';
 import goToAdminConsole from './functions/goToAdminConsole.mjs';
 import { closeModal } from './functions/general.mjs';
@@ -14,10 +14,13 @@ const account = process.env.account;
 const timestamp = Math.floor(Date.now() / 1000);
 const spaceName = "qa-" + timestamp;
 const newName = "qa-new-" + timestamp;
+const newSpaceName = "api-" + timestamp;
+let session;
 
 test.describe.serial("can create new space, validate creation and delete it", () => {
     let page;
     test.beforeAll(async ({ browser }) => {
+        session = await getSessionAPI(adminEMail, password, baseURL, account);
         console.log(`Space names are ${spaceName} && ${newName}`);
         page = await browser.newPage();
         await loginToAccount(page, adminEMail, account, password, baseURL);
@@ -27,6 +30,24 @@ test.describe.serial("can create new space, validate creation and delete it", ()
     test.afterAll(async () => {
         await page.close();
     });
+
+
+    test('Create new space with API', async () => {
+        console.log(`Creating new space with the name: "${newSpaceName}"`);
+        const response = await createSpaceAPI(baseURL, session, newSpaceName)
+        console.log(response)
+        expect(response.status).toBe(200)
+
+    });
+
+    test('delete new space with API', async () => {
+        console.log(`Deleting new space with the name: "${newSpaceName}"`);
+        const response = await deleteSpaceAPI(baseURL, session, newSpaceName)
+        console.log(response)
+        expect(response.status).toBe(200)
+
+    });
+
 
     test("can create and go to space", async () => {
         await createSpace(page, spaceName);
