@@ -97,7 +97,7 @@ test.describe('Blueprint validation', () => {
         await launchBlueprintFromBPList(page, blueprintName, inputsDict);
         await page.waitForSelector("[data-testid=error-details-text]");
         const errMsg = await page.locator("[data-testid=error-details-text]");
-        expect(errMsg, "Did not receive expected error when providing wrong host name value").toContainText("The compute service 'wrong value (in grains->bucket_1->spec->host->name)' was not found");
+        expect(errMsg, "Did not receive expected error when providing wrong host name value").toContainText("The agent 'wrong value (in grains->bucket_1->spec->host->name)' was not found");
         await page.click("[data-test=close-popup]");
         await page.click("[data-test=wizard-cancel-button]");
     });

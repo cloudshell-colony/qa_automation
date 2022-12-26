@@ -211,3 +211,24 @@ export const openFromChecklist = async (page, whatToOpen) => {
     const pleaseOpen = `data-test="checklist-item-${whatToOpen}"`;
     await page.click(`[${pleaseOpen}]`);
 };
+
+export const handlePopUpWithCondition = async(page, shouldPop, datatest, time=2000) =>{
+    try{
+        await page.waitForSelector(`[data-test=${datatest}]`, {timeout:time});
+    }
+    catch {};
+    let visi = await page.isVisible(`[data-test=${datatest}]`);
+    if (await visi){
+        if (shouldPop){
+            await page.click(`[data-test=${datatest}]`);
+        }
+        else{
+            expect(visi, 'Got unexpected pop-up message during function').toBeFalsy();
+        }
+    }
+    else{
+        if (shouldPop){
+            expect(visi, 'Did not receive pop-up message during function as was expected').toBeTruthy();
+        }
+    }
+};

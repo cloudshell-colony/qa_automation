@@ -1,6 +1,6 @@
 import { expect } from "@playwright/test";
 import fetch from "node-fetch";
-import { getCodesListFromMailinator } from "./general.mjs";
+import { getCodesListFromMailinator, handlePopUpWithCondition } from "./general.mjs";
 import goToAdminConsole from "./goToAdminConsole.mjs";
 
 export default function removeUserFromSpaceAPI(user_email, myURL, session, space_name) {
@@ -254,7 +254,7 @@ export const repositoryAssetInfo = async (page, repoKeys) => {
 
 };
 
-export const addRepositoryAsset = async (page, repoKeys) => {
+export const addRepositoryAsset = async (page, repoKeys, override=false) => {
     await repositoryAssetInfo(page, repoKeys)
     // back to torque - start BP auto discavery
     await page.waitForLoadState();
@@ -265,6 +265,8 @@ export const addRepositoryAsset = async (page, repoKeys) => {
     await page.check('th input[type="checkbox"]');
     expect(await page.isEnabled('[data-test="submit-button"]')).toBeTruthy();
     await page.click('[data-test="submit-button"]');
+    // Handle possibility of pop-up to override existing blueprints according to override boolean parameter
+    await handlePopUpWithCondition(page, override, 'confirm-button');
     // Auto-Generated Blueprints page approval
     await page.isVisible('text=Auto-Generated Blueprints');
     // validate that after auto discovery the number of BPs is as expected 

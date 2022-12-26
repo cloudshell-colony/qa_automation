@@ -156,6 +156,7 @@ const validateSBStatusWrapperAPI = async (session, baseURL, sandboxId, space, st
   }
   expect(state,`"Sandbox status is not '${status}' after 3 minutes. Sandbox info: \n` +  sandboxJson).toBe(status);
   console.log(`Sandbox status is '${status}'`)
+   // access relevant part of stages executed using the JSON structure
   let stages = sandboxJson['details']['state']['grains'][0]['state']['stages'];
   for (var type in stages){
     let stage = stages[type];
