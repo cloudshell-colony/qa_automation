@@ -107,7 +107,7 @@ export const stopAndValidateAllSBsCompleted = async (page) => {
   if (await TerminatingSB) {
     console.log("found sandboxes in Terminating state");
     for (let index = 0; index < loopsToWait; index++) {
-      console.log(`Waiting for SBs to end, witing for the ${index + 1} time, max number of wait loops is ${loopsToWait}, each for ${waitTimeInSec} seconds`);
+      console.log(`Waiting for SBs to end, waiting for the ${index + 1} time, max number of wait loops is ${loopsToWait}, each for ${waitTimeInSec} seconds`);
       TerminatingSB = await page.isVisible(`tr:has-text("Terminating")`);
       if (await TerminatingSB) {
         await page.waitForTimeout(waitTimeInSec * 1000);
@@ -122,9 +122,38 @@ export const stopAndValidateAllSBsCompleted = async (page) => {
   let visiActive = await page.isVisible(`td:has-text("Active")`);
   expect(await visiActive, "We have a problem, we still have active sandboxes").toBeFalsy();
   let visiLaunching = await page.isVisible(`td:has-text("Launching")`);
-  expect(await visiActive, "We have a problem, we still have launching sandboxes").toBeFalsy();
+  expect(await visiLaunching, "We have a problem, we still have launching sandboxes").toBeFalsy();
 
 };
+
+export const stopAndValidateAllSBsCompletedAPI = async(session, baseURL, spaceName, minutesToWait=4) =>{
+  const waitTimeInSec = 15;
+  const loopsToWait = 4*minutesToWait;
+  const sandboxesJson = await (await getAllSandboxesAPI(session, baseURL, spaceName)).json();
+  for (const sandbox of sandboxesJson) {
+    console.log('Ending sandbox ' + sandbox.details.definition.metadata.name);
+    await endSandboxAPI(session, baseURL, spaceName, sandbox.id);
+  }
+  for(let index = 0; index < loopsToWait; index++) {
+    let cont = false
+    let sandboxes = await (await getAllSandboxesAPI(session, baseURL, spaceName)).json();
+    console.log(`Waiting for SBs to end, waiting for the ${index + 1} time, max number of wait loops is ${loopsToWait}, each for ${waitTimeInSec} seconds`);
+    for(const sandboxData of sandboxes){
+        if(sandboxData.details.computed_status === 'Terminating'){
+            cont = true;
+            console.log('Sandbox ' + sandboxData.details.definition.metadata.name + ' is still terminating');
+            break;
+        }
+    }
+    if (!cont){
+        break
+    }
+    await new Promise(r => setTimeout(r, waitTimeInSec * 1000)); //wait for 15 seconds
+  }
+  let sandboxes = await (await getAllSandboxesAPI(session, baseURL, spaceName)).json();
+  expect.soft(Object.keys(sandboxes).length, 'We have a problem, some sandboxes have not ended: \n' + JSON.stringify(sandboxes)).toBe(0)
+
+}
 
 export const goToSandboxListPage = async (page) => {
   await page.click('[data-test="sandboxes-nav-link"]');
@@ -188,4 +217,64 @@ export const endSandboxAPI = async(session, baseURL, spaceName, sandboxId) => {
     }
   });
   return response;
+}
+
+export const getAllSandboxesAPI = async(session, baseURL, spaceName, activeOnly=true) =>{
+  let apiUrl = `${baseURL}/api/spaces/${spaceName}/environments`;
+  if(activeOnly){
+    apiUrl = apiUrl.concat('?active_only=true')
+  }
+  const response = await fetch(apiUrl, {
+    "method": "GET",
+    "headers": {
+        'Authorization': `Bearer ${session}`,
+        'Content-Type': 'application/json',
+    }
+  });
+  return response;
+}
+
+/**
+ * Finds all sandboxes in a given space which haven't ended yet
+ * but have a status that is different than 'Active'
+ * @returns A list of strings containing the relevant info for all alive sandboxes which are not active
+ */
+export const getNonActiveAliveSandboxesAPI = async(session, baseURL, spaceName) => {
+  let badSandboxesList = [];
+  const aliveSandboxes = await (await getAllSandboxesAPI(session, baseURL, spaceName)).json();
+  for(const sandboxData of aliveSandboxes){
+      if(sandboxData.details.computed_status !== 'Active'){
+          const sandboxDetails = await (await getSandboxDetailsAPI(session, baseURL, spaceName, sandboxData.id)).json()
+          console.log('Found sandbox that is not active: ' + sandboxData.details.definition.metadata.name);
+          const badSandboxInfo = {'Name':sandboxData.details.definition.metadata.name, 'Status': sandboxData.details.computed_status, 'Errors': sandboxDetails.details.state.errors};
+          badSandboxesList.push(JSON.stringify(badSandboxInfo));
+      }
+  }
+  return badSandboxesList
+}
+
+/**
+ * Waits a given amount of minutes (defaults to 6) until all sandboxes in a given space are active.
+ * Will fail test if after waiting some sandboxes are still deploying
+ */
+export const waitForSandboxesToBeActiveAPI = async(session, baseURL, spaceName, minutesToWait=6) => {
+  console.log('Waiting for launched sandboxes to finish deploying');
+  let sandboxes, cont;
+  for(let index = 0; index < 12*minutesToWait; index++) {
+      cont = false
+      sandboxes = await (await getAllSandboxesAPI(session, baseURL, spaceName)).json();
+      for(const sandboxData of sandboxes){
+          if(sandboxData.details.state.current_state === 'deploying'){
+              cont = true;
+              console.log('Sandbox ' + sandboxData.details.definition.metadata.name + ' is still deploying');
+              break;
+          }
+      }
+      if (!cont){
+          break
+      }
+      await new Promise(r => setTimeout(r, 5000)); //wait for 5 seconds
+  }
+  expect(cont, 'We have a problem, some sandboxes are still launching: \n' + JSON.stringify(sandboxes)).toBeFalsy();
+  console.log('All sandboxes finished launching');
 }

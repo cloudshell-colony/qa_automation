@@ -2,8 +2,8 @@ import crypto from "crypto";
 import { expect } from "@playwright/test";
 import fs from "fs";
 import { exec } from "child_process";
-import { goToSandboxListPage, stopAndValidateAllSBsCompleted } from "./sandboxes.mjs";
-import { DeleteAcountUI } from "./accounts.mjs";
+import { goToSandboxListPage, stopAndValidateAllSBsCompleted, stopAndValidateAllSBsCompletedAPI } from "./sandboxes.mjs";
+import { deleteAccountAPI, DeleteAcountUI } from "./accounts.mjs";
 import fetch from "node-fetch";
 
 const repProvider = process.env.repProvider;
@@ -143,12 +143,25 @@ export const afterTestCleanup = async (page, accountName, baseURL, spaceName, ex
     console.log(`Delete account "${accountName}", as part of test cleanup`);
     await DeleteAcountUI(accountName, page, baseURL);
     await page.close();
-    // delete execution host
+    // delete execution host in k8s
     if (executionHostName !== "enter real if needed") {
         console.log(`Deleting the all namespaces containing ${executionHostName}`);
         await executeCLIcommand(`sh cleanEHosts.sh ${executionHostName}`);
     };
 };
+
+export const afterTestCleanupAPI = async(session, baseURL, spaceName, executionHostName = "enter real if needed") =>{
+    // execution host is not mandatory, and should be used only when execution host is created during the test
+    console.log(`Stopping all Sbs after test complteted in space ${spaceName}`);
+    await stopAndValidateAllSBsCompletedAPI(session, baseURL, spaceName);
+    console.log(`Delete account "${accountName}", as part of test cleanup`);
+    await deleteAccountAPI(baseURL, accountName, session);
+    // delete execution host in k8s
+    if (executionHostName !== "enter real if needed") {
+        console.log(`Deleting the all namespaces containing ${executionHostName}`);
+        await executeCLIcommand(`sh cleanEHosts.sh ${executionHostName}`);
+    };
+}
 
 export const getMailsFromMailinator = async () => {
     const endpoint = "domains/private/inboxes/qualiqa?limit=4&sort=descending"

@@ -1,4 +1,4 @@
-import { loginToAccount } from './functions/accounts.mjs';
+import { getSessionAPI, loginToAccount } from './functions/accounts.mjs';
 import { test, expect } from '@playwright/test';
 import { createSpace, editSpace, deleteSpace, goToSpace, createSpaceAPI, deleteSpaceAPI } from './functions/spaces.mjs';
 import { openAndPinSideMenu, waitForSpaceInListToDisappear } from './functions/general.mjs';

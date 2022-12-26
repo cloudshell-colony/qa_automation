@@ -283,12 +283,12 @@ export const addRepositoryAsset = async (page, repoKeys, override=false) => {
 
 };
 
-export const addAssetRepositoryAPI = async (session, baseURL, space, repoUrl, token, repoName, branch = 'main', repoType = 'github') => {
+export const addRepositoryAPI = async (session, baseURL, space, repoUrl, token, repoName, branch = 'main', repoType = 'github') => {
     const data = {
         "repository_url": repoUrl,
         "access_token": token,
         "repository_type": repoType,
-        "type": "asset",
+        // "type": "asset",
         "branch": branch,
         "repository_name": repoName
     }
