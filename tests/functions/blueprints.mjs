@@ -18,7 +18,7 @@ export const getPublishedBlueprints = async (session, space_name, myURL) => {
 
 export const goToBlueprintPage = async (page) => {
     await page.click('[data-test="blueprints-nav-link"]');
-  };
+};
 
 export const countBlueprintsInSpace = async (page, baseURL, space) => {
     //Assumes you are already in blueprints page
