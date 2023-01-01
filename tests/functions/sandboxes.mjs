@@ -278,3 +278,14 @@ export const waitForSandboxesToBeActiveAPI = async(session, baseURL, spaceName, 
   expect(cont, 'We have a problem, some sandboxes are still launching: \n' + JSON.stringify(sandboxes)).toBeFalsy();
   console.log('All sandboxes finished launching');
 }
+
+export const ExtendSendbox = async (baseURL, space, ID, TIME, session) => {
+  const response = await fetch(`${baseURL}/api/spaces/${space}/environments/${ID}/scheduled_end_time?value=${TIME}`, {
+      "method": "PUT",
+      "headers": {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${session}`
+      },
+  });
+  return response;
+};
