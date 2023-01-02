@@ -298,3 +298,19 @@ export const getBlueprintsAPI = async(session, baseURL,space) =>{
     });
     return response;
 }
+
+export const validateBlueprintAPI = async(session, baseURL, space, blueprintName,blueprintRaw) =>{
+    const data = {
+        "blueprint_name": blueprintName,
+        "blueprint_raw_64": blueprintRaw
+    }
+    const response = await fetch(`${baseURL}/api/spaces/${space}/validations/blueprints`, {
+        "method": "POST",
+        "body": JSON.stringify(data),
+        "headers": {
+            'Authorization': `Bearer ${session}`,
+            'Content-Type': 'application/json',
+        }
+    });
+    return response;
+}
