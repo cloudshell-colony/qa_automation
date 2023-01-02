@@ -314,3 +314,36 @@ export const validateBlueprintAPI = async(session, baseURL, space, blueprintName
     });
     return response;
 }
+
+export const getBlueprintsInCatalogAPI = async(session, baseURL, space ) =>{
+    const response = await fetch(`${baseURL}/api/spaces/${space}/catalog`, {
+        "method": "GET",
+        "headers": {
+            'Authorization': `Bearer ${session}`,
+            'Content-Type': 'application/json',
+        }
+    });
+    return response;
+}
+
+export const getBlueprintsDetailsInCatalogAPI = async(session, baseURL, space, blueprintName, repoName ) =>{
+    const response = await fetch(`${baseURL}/api/spaces/${space}/catalog/${blueprintName}?repository_name=${repoName}`, {
+        "method": "GET",
+        "headers": {
+            'Authorization': `Bearer ${session}`,
+            'Content-Type': 'application/json',
+        }
+    });
+    return response;
+}
+
+export const unpublishBlueprintInCatalogAPI = async(session, baseURL, space, blueprintName, repoName) =>{
+    const response = await fetch(`${baseURL}/api/spaces/${space}/catalog/${blueprintName}?repository_name=${repoName}`, {
+        "method": "DELETE",
+        "headers": {
+            'Authorization': `Bearer ${session}`,
+            'Content-Type': 'application/json',
+        }
+    });
+    return response;
+}
