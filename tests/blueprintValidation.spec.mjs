@@ -12,7 +12,6 @@ import goToAdminConsole from "./functions/goToAdminConsole.mjs";
  * space name is bp-validation
  * BP repo: https://github.com/QualiNext/qa-bp-validation
  * agent name "qa-eks2" need to associated with the space
- * 
  * agent name "bp-validation2" need to be defined and acive (not associated to the space)
  */
 
@@ -22,7 +21,6 @@ const account = process.env.account;
 const user = process.env.adminEMail
 const space = "bp-validation";
 const bpValidationEKS = "bp-validation2";
-// const executionHostNameSpace = "torque-agent-bp-validation";
 const executionHostNameSpace = process.env.nameSpace;
 const executionHostServiceAccount = process.env.serviceAccount;
 
@@ -99,7 +97,8 @@ test.describe('Blueprint validation', () => {
         const errMsg = await page.locator("[data-testid=error-details-text]");
         expect(errMsg, "Did not receive expected error when providing wrong host name value").toContainText("The agent 'wrong value (in grains->bucket_1->spec->host->name)' was not found");
         await page.click("[data-test=close-popup]");
-        await page.click("[data-test=wizard-cancel-button]");
+        await page.click("[data-test=close-modal]"); // go back in launch flow
+        await page.click("[data-test=close-modal]");  // close sandbox launch
     });
 
     test("Dynamic validation - Sandbox launches successfully when providing correct execution host input", async () => {

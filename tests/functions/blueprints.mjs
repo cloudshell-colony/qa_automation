@@ -128,6 +128,7 @@ const blueprintLauncher = async (page, BPFullName, inputsDict) => {
     console.log(`the new sandbox name is: ${sandboxName}`);
     const result = sandboxName.includes(BPFullName, 0);
     expect(result, `the sandbox name: \"${sandboxName}\" should have started with the BP name: \"${BPFullName}\"`).toBeTruthy();
+    await page.click("[data-test=go-to-next-step]");
     for (const [key, val] of Object.entries(inputsDict)) {
         console.log(`Entering value "${val}" for sandbox input with selector "${key}"`)
         try {
@@ -138,8 +139,7 @@ const blueprintLauncher = async (page, BPFullName, inputsDict) => {
         }
     }
     await page.keyboard.press("Tab"); // Needed for the page to realise last input was filled
-    await page.click('[data-test="wizard-next-button"]');
-    //await page.waitForSelector('[data-test="sandbox-info-column"]');
+    await page.click('[data-test="launch-environment"]');
     return sandboxName;
 }
 /**
