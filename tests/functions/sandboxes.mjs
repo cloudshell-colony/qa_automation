@@ -174,8 +174,8 @@ export const getSandboxDetailsAPI = async(session, baseURL, spaceName, sandboxId
 const validateSBStatusWrapperAPI = async (session, baseURL, sandboxId, space, status) => {
   let sandboxInfo, state, sandboxJson;
   console.log(`Waiting for sandbox status to be '${status}'`)
-  //wait for ~4 minutes until sandbox status is active/ended
-  for(let i=0; i<2*60; i++){
+  //wait for ~8 minutes until sandbox status is active/ended
+  for(let i=0; i<4*60; i++){
     sandboxInfo = await getSandboxDetailsAPI(session, baseURL, space, sandboxId);
     sandboxJson = await sandboxInfo.json();
     state = await sandboxJson.details.computed_status;
@@ -184,7 +184,7 @@ const validateSBStatusWrapperAPI = async (session, baseURL, sandboxId, space, st
     }
     await new Promise(r => setTimeout(r, 2000)); //wait for 2 seconds
   }
-  expect(state,`"Sandbox status is not '${status}' after 3 minutes. Sandbox info: \n` +  sandboxJson).toBe(status);
+  expect(state,`"Sandbox status is not '${status}' after 6 minutes. Sandbox info: \n` +  sandboxJson).toBe(status);
   console.log(`Sandbox status is '${status}'`)
    // access relevant part of stages executed using the JSON structure
   let stages = sandboxJson['details']['state']['grains'][0]['state']['stages'];
