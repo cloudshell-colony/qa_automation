@@ -35,7 +35,7 @@ grains:
       host:
         name: "{{ .inputs.host_name }}"
       inputs:
-        - region: us-east-1
+        - region: us-west-1
         - acl: private
         - name: 'test-bucket-2-s3-{{ sandboxid | downcase }}'
       outputs:
