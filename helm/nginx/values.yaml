@@ -15,7 +15,7 @@ global:
   imagePullSecrets: []
 
 ## @section Common parameters
-
+## added by asaf, should be used in torque blueprint to have unique service account name
 serviceName: "my-service-account"
 
 ## @param nameOverride String to partially override nginx.fullname template (will maintain the release name)
