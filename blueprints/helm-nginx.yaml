@@ -22,4 +22,4 @@ grains:
       commands:
         - dep up helm/nginx
       inputs:
-        serviceAccount: "my-service-account-{{ sandboxid | downcase }}"
+        serviceName: "my-service-account-{{ sandboxid | downcase }}"
