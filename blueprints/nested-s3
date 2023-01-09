@@ -1,0 +1,29 @@
+spec_version: 2
+description: deploy s3 bucket nested
+
+inputs:
+  compute_service_name:
+    type: execution-host
+
+grains:
+  s3-buckets:
+    kind: blueprint
+    spec:
+      source:
+        path: blueprints\provision-s3-buckets.yaml
+      host:
+        name: '{{.inputs.compute_service_name}}'
+
+  bucket_outer:
+    kind: terraform
+    spec: 
+      source:
+        path: github.com/QualiNext/test-spec2-public/terraform/s3
+      host:
+        name: '{{.inputs.compute_service_name}}'
+      inputs:
+        - region: us-west-1
+        - acl: private
+        - name: 'amazing-outer-bucket-s3-{{ sandboxid | downcase }}'
+      outputs:
+        - s3_bucket_arn
