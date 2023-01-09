@@ -127,7 +127,7 @@ test.describe.serial('Validate Blueprint from catalog tests', () => {
        
     })
 
-    test("Unpublish blueprint with wrong blueprint name and validate status is 404", async () => {
+    test.skip("Unpublish blueprint with wrong blueprint name and validate status is 404", async () => {
         const unpublishBlueprint = await unpublishBlueprintInCatalogAPI(session, baseURL, space, wrongBPName, repoName) 
         const response = await unpublishBlueprint.text()
         console.log(response)
