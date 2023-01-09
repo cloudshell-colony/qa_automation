@@ -1,18 +1,19 @@
 import { test, expect } from "@playwright/test";
 import { createAccount, DeleteAcountUI, loginToAccount, validateSbLauncher } from "./functions/accounts.mjs";
 import { launchSampleBlueprintFromSandboxPage, launchBlueprintFromBPList, launchSampleBlueprintFromCatalogPage } from "./functions/blueprints.mjs";
-import { afterTestCleanup, closeModal, openAndPinSideMenu, openFromChecklist } from "./functions/general.mjs";
+import { afterTestCleanup, closeModal, generateUniqueId, openAndPinSideMenu, openFromChecklist } from "./functions/general.mjs";
 import { startSampleSandbox, endSandbox, validateSBisActive, endSandboxValidation } from "./functions/sandboxes.mjs";
 
 const baseURL = process.env.baseURL;
 const allAccountsPassword = process.env.allAccountsPassword;
 const prefix = process.env.accountPrefix;
 const timestemp = Math.floor(Date.now() / 1000);
+const id = timestemp.toString().concat('-' + generateUniqueId());
 const firstName = "FN.".concat(prefix).concat(timestemp);
 const lastName = "LN.".concat(prefix).concat(timestemp);
 const companyName = "Company.".concat(prefix).concat(timestemp);
-const accountName = prefix.concat(timestemp);
-const email = prefix.concat("@").concat(timestemp).concat(".com");
+const accountName = prefix.concat(id);
+const email = prefix.concat("@").concat(id).concat(".com");
 let lastBPname = "";
 // generating new order of samples every day
 const day = (new Date()).getDay();

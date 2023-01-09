@@ -1,6 +1,6 @@
 
 import test, { expect } from "@playwright/test";
-import { validateAPIResponseis200, overwriteAndSaveToFile, executeCLIcommand } from './functions/general.mjs';
+import { validateAPIResponseis200, overwriteAndSaveToFile, executeCLIcommand, generateUniqueId } from './functions/general.mjs';
 import { getSessionAPI, validateGetSessionAPI, createAccountAPI, deleteAccountAPI } from "./functions/accounts.mjs";
 import { addRepositoryAPI, createSpaceAPI } from "./functions/spaces.mjs";
 import { associateExecutionHostAPI, createEKSAPI, getdeploymentFileAPI, getExecutionHostDetailsAPI } from "./functions/executionHosts.mjs";
@@ -12,12 +12,13 @@ const prefix = process.env.accountPrefix;
 const baseURL = process.env.baseURL;
 const password = process.env.allAccountsPassword;
 const timestemp = Math.floor(Date.now() / 1000);
+const id = timestemp.toString().concat('-' + generateUniqueId());
 const firstName = "FN.".concat(prefix).concat(timestemp);
 const lastName = "LN.".concat(prefix).concat(timestemp);
 const companyName = "Company.".concat(prefix).concat(timestemp);
-const accountName = prefix.concat(timestemp);
+const accountName = prefix.concat(id);
 const spaceName = prefix.concat("-space-").concat(timestemp);
-const email = prefix.concat("@").concat(timestemp).concat(".com");
+const email = prefix.concat("@").concat(id).concat(".com");
 const executionHost = process.env.execHostName;
 const executionHostName = executionHost.concat(timestemp);
 const namespace = process.env.nameSpace;

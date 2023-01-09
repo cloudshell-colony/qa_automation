@@ -1,19 +1,22 @@
-import { addCaptchaBypass, closeModal, openAndPinSideMenu, openFromChecklist } from "./functions/general.mjs";
+import { addCaptchaBypass, closeModal, generateUniqueId, openAndPinSideMenu, openFromChecklist } from "./functions/general.mjs";
 import { test, expect } from "@playwright/test";
 import { createAccount, loginToAccount, DeleteAcountUI, ValidteBackButtonAfterDelition, ValidteLoginFalureAfterDelition, validateSbLauncher, getSessionAPI, validateGetSessionAPI, deleteAccountAPI, } from "./functions/accounts.mjs";
 import { startSampleSandbox, endSandbox, validateSBisActive, endSandboxValidation } from "./functions/sandboxes.mjs";
 import * as fs from 'fs';
 import { resolve } from "path";
+
+
 const baseURL = process.env.baseURL;
 const allAccountsPassword = process.env.allAccountsPassword;
 const prefix = process.env.accountPrefix;
 const timestemp = Math.floor(Date.now() / 1000);
+const id = timestemp.toString().concat('-' + generateUniqueId());
 const sampleBP = process.env.sampleBPToStart;
 const firstName = "FN.".concat(prefix).concat(timestemp);
 const lastName = "LN.".concat(prefix).concat(timestemp);
 const companyName = "Company.".concat(prefix).concat(timestemp);
-let accountName = prefix.concat(timestemp);
-let email = prefix.concat("@").concat(timestemp).concat(".com");
+let accountName = prefix.concat(id);
+let email = prefix.concat("@").concat(id).concat(".com");
 let SBUrl = '';
 let page;
 let context;
