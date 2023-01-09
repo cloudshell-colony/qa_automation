@@ -16,6 +16,8 @@ global:
 
 ## @section Common parameters
 
+serviceName: "my-service-account"
+
 ## @param nameOverride String to partially override nginx.fullname template (will maintain the release name)
 ##
 nameOverride: ""
