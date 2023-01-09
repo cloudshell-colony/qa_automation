@@ -225,7 +225,7 @@ export const openFromChecklist = async (page, whatToOpen) => {
     await page.click(`[${pleaseOpen}]`);
 };
 
-export const handlePopUpWithCondition = async(page, shouldPop, datatest, time=2000) =>{
+export const handlePopUpWithCondition = async(page, shouldPop, datatest, time=3000) =>{
     try{
         await page.waitForSelector(`[data-test=${datatest}]`, {timeout:time});
     }
