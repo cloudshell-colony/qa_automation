@@ -44,8 +44,8 @@ grains:
         path: https://torque-prod-cfn-assets.s3.amazonaws.com/public-templates/AWSS3Bucket.yaml
       region: '{{ .inputs.["AWS Region"] }}'
       authentication:
-        role-arn: 'arn:aws:iam::{{ .params.Torque_Demo_Production_AWS }}:role/{{ .params.Torque_Demo_Production_Agent_IAM_Role }}'
-        external-id: "{{ .params.Torque_Demo_Production_External_ID }}"
+        - role-arn: 'arn:aws:iam::{{ .params.Torque_Demo_Production_AWS }}:role/{{ .params.Torque_Demo_Production_Agent_IAM_Role }}'
+        - external-id: "{{ .params.Torque_Demo_Production_External_ID }}"
       inputs:
         - AccessControl: '{{ .inputs.["Access Control"] }}'
         - BucketName: '{{ .inputs.["Bucket Name"] }}-{{ sandboxid | downcase }}'
