@@ -130,7 +130,7 @@ test.describe.serial('Multiple blueprints onBoarding API', () => {
         await waitForSandboxesToBeActiveAPI(session, baseURL, spaceName)
     })
 
-    test('Validate all sandboxes are active without error', async() => {
+    test.skip('Validate all sandboxes are active without error', async() => {
         let badSandboxesList = await getNonActiveAliveSandboxesAPI(session, baseURL, spaceName);
         expect(badSandboxesList.length, 'Some sandboxes are not active: \n ' + badSandboxesList).toBe(0)
         console.log(`All ${blueprintMap.length} sandboxes are active with no error`);

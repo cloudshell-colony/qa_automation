@@ -9,7 +9,7 @@ const account = process.env.account
 const user = process.env.adminEMail
 const space = "Amir"
 const BPName = "autogen_create-ec2-instance"
-const inputs = { ami: "ami-0cd01c7fb16a9b497", instance_type: "t3.micro", host_name: "qa-eks2" }
+const inputs = { ami: "ami-0cd01c7fb16a9b497", instance_type: "t3.micro", host_name: "qa-eks3" }
 const repoName = 'qtorque'
 let duration
 let session
