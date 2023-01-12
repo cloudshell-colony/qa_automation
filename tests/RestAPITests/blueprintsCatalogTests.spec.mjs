@@ -126,7 +126,7 @@ test.describe.serial('Validate Blueprint from catalog tests', () => {
         expect(response).toContain('"Space not found"')
        
     })
-
+     //bug no 10794
     test.skip("Unpublish blueprint with wrong blueprint name and validate status is 404", async () => {
         const unpublishBlueprint = await unpublishBlueprintInCatalogAPI(session, baseURL, space, wrongBPName, repoName) 
         const response = await unpublishBlueprint.text()
