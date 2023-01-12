@@ -290,3 +290,16 @@ export const ExtendSendbox = async (baseURL, space, ID, TIME, session) => {
   });
   return response;
 };
+
+export const getFirstSandboxesAPI = async(session, baseURL, spaceName, count) =>{
+  let apiUrl = `${baseURL}/api/spaces/${spaceName}/environments?filter=my&count=${count}`;
+  
+  const response = await fetch(apiUrl, {
+    "method": "GET",
+    "headers": {
+        'Authorization': `Bearer ${session}`,
+        'Content-Type': 'application/json',
+    }
+  });
+  return response;
+}
