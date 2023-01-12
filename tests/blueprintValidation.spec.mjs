@@ -1,6 +1,6 @@
 import { test, expect } from "@playwright/test";
 import { loginToAccount, getSessionAPI, validateGetSessionAPI } from "./functions/accounts.mjs";
-import { getBlueprintErrors, launchBlueprintFromBPList, validateBlueprintErrors } from "./functions/blueprints.mjs";
+import { getBlueprintErrors, getBlueprintsAPI, launchBlueprintFromBPList, validateBlueprintErrors } from "./functions/blueprints.mjs";
 import { closeModal, openAndPinSideMenu } from "./functions/general.mjs";
 import { goToSpace } from "./functions/spaces.mjs";
 import { associateExecutionHost, disassociateExecutionHostAPI } from "./functions/executionHosts.mjs";
@@ -122,6 +122,16 @@ test.describe('Blueprint validation', () => {
         console.log("Ending sandbox");
         await page.click("[data-test=end-sandbox]");
         await page.click("[data-test=confirm-end-sandbox]");
+    });
+
+     //bug no 10904
+    test.skip("Validate proper yaml link in blueprint", async () => {
+      const blueprintDetails = await getBlueprintsAPI(session, baseURL,space)
+      const response = await blueprintDetails.json()
+      console.log(response[0].url)
+      const bpName = await response[0].name
+      const bpUrl = await response[0].url
+      expect(bpUrl).toEqual('https://github.com/QualiNext/qa-bp-validation/blob/master/blueprints/' + bpName + '.yaml')
     });
 
 });
