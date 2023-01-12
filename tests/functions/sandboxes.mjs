@@ -303,3 +303,25 @@ export const getFirstSandboxesAPI = async(session, baseURL, spaceName, count) =>
   });
   return response;
 }
+
+export const launchSendboxWithCollaborator = async (page, CollaboratorName, spaceName) => {
+  await page.locator('[data-test="administration-console"]').click()
+  await page.locator('[data-test="space-tab"]').click()
+  const spaceArea =  await page.locator('[data-test="space-row-'+ spaceName +'"]')
+  await (spaceArea.locator('.btn-content')).click()
+  await page.locator('[data-test="catalog-nav-link"]').click()
+  await page.locator('[data-test="launch-environment-from-blueprint"]').click()
+  const collaborator = await page.locator('.hFDyZZ')
+  await(collaborator.locator('.btn-content')).click()
+  await page.locator('.select-set_collab__control').click()
+  await page.locator('.select-set_collab__control').type(CollaboratorName)
+  await page.keyboard.press("Enter");
+  await page.locator('[data-test="go-to-next-step"]').click()
+  await page.locator('[data-test="inputs.ami"]').type('ami-0cd01c7fb16a9b497')
+  await page.locator('.sc-cOifOu >> nth=0').click()
+  await page.keyboard.press("Enter");
+  await page.locator('[ data-test="launch-environment"]').click()
+  await page.locator('[data-test="sandboxes-nav-link"]').click()
+  await expect(page.locator('[data-test="sandbox-row-0"]')).toContainText('Launching', { timeout: 2000 });
+  await expect(page.locator('[data-test="sandbox-row-0"]')).toContainText('Active', { timeout: 5 * 60 * 1000 });
+};
