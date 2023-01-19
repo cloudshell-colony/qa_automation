@@ -64,7 +64,7 @@ export const endSandboxValidation = async (page, sandboxName) => {
   await page.click(`tr:has-text("${sandboxName}")`);
   await page.waitForSelector("[data-test=sandbox-page-content]");
   await page.waitForSelector('[data-test="sandbox-info-column"] div:has-text("Ended")', { timeout: 5 * 60 * 1000 });
-  await page.click('[data-test="open-logs"]');
+  await page.click('[data-test="logs-card"]');
   const destroy = await page.locator('td:has-text("Destroy")');
   const uninstall = await page.locator('td:has-text("Uninstall")');
   for (let i = 0; i < await destroy.count(); i++) {
