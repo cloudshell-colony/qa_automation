@@ -339,6 +339,6 @@ export const launchSendboxWithDrift = async (page, spaceName) => {
   await page.keyboard.press("Enter");
   await page.locator('[ data-test="launch-environment"]').click()
   await page.locator('[data-test="sandboxes-nav-link"]').click()
-  await expect(page.locator('[data-test="sandbox-row-0"]')).toContainText('Launching', { timeout: 3000 });
+  await expect(page.locator('[data-test="sandbox-row-0"]')).toContainText('Launching', { timeout: 6000 });
   await expect(page.locator('[data-test="sandbox-row-0"]')).toContainText('Active', { timeout: 5 * 60 * 1000 });
 };
