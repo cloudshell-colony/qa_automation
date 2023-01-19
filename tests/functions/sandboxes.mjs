@@ -17,7 +17,7 @@ export const validateSBisActive = async (page) => {
   await page.waitForSelector('[data-test="sandbox-info-column"] div:has-text("StatusActive")', { timeout: 5 * 60 * 1000 });
   expect(await page.isVisible('[data-test="sandbox-info-column"] div:has-text("StatusActive")', 500)).toBeTruthy();
   expect(await page.isVisible('[data-test="sandbox-info-column"] div:has-text("StatusActive With Error")', 500), "Sandbox is Active with error!").toBeFalsy();
-  await page.click('[data-test="open-logs"]');
+  await page.click('[data-test="logs-card"]');
   const prepare = await page.locator('td:has-text("Prepare")');
   const install = await page.locator('td:has-text("Install")');
   const apply = await page.locator('td:has-text("Apply")');
@@ -64,7 +64,7 @@ export const endSandboxValidation = async (page, sandboxName) => {
   await page.click(`tr:has-text("${sandboxName}")`);
   await page.waitForSelector("[data-test=sandbox-page-content]");
   await page.waitForSelector('[data-test="sandbox-info-column"] div:has-text("Ended")', { timeout: 5 * 60 * 1000 });
-  await page.click('[data-test="open-logs"]');
+  await page.click('[data-test="logs-card"]');
   const destroy = await page.locator('td:has-text("Destroy")');
   const uninstall = await page.locator('td:has-text("Uninstall")');
   for (let i = 0; i < await destroy.count(); i++) {
@@ -323,5 +323,22 @@ export const launchSendboxWithCollaborator = async (page, CollaboratorName, spac
   await page.locator('[ data-test="launch-environment"]').click()
   await page.locator('[data-test="sandboxes-nav-link"]').click()
   await expect(page.locator('[data-test="sandbox-row-0"]')).toContainText('Launching', { timeout: 2000 });
+  await expect(page.locator('[data-test="sandbox-row-0"]')).toContainText('Active', { timeout: 5 * 60 * 1000 });
+};
+
+export const launchSendboxWithDrift = async (page, spaceName) => {
+  await page.locator('[data-test="administration-console"]').click()
+  await page.locator('[data-test="space-tab"]').click()
+  const spaceArea =  await page.locator('[data-test="space-row-'+ spaceName +'"]')
+  await (spaceArea.locator('.btn-content')).click()
+  await page.locator('[data-test="catalog-nav-link"]').click()
+  const blueprint = await page.locator('[data-test="catalog-bp-drift-test"]')
+  await blueprint.locator('[data-test="launch-environment-from-blueprint"]').click()
+  await page.locator('[data-test="go-to-next-step"]').click()
+  await page.locator('.sc-cOifOu >> nth=0').click()
+  await page.keyboard.press("Enter");
+  await page.locator('[ data-test="launch-environment"]').click()
+  await page.locator('[data-test="sandboxes-nav-link"]').click()
+  await expect(page.locator('[data-test="sandbox-row-0"]')).toContainText('Launching', { timeout: 6000 });
   await expect(page.locator('[data-test="sandbox-row-0"]')).toContainText('Active', { timeout: 5 * 60 * 1000 });
 };

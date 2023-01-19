@@ -30,7 +30,7 @@ test.describe.serial('Validate Blueprint tests', () => {
         console.log(response)
         expect(validateBlueprint.status).toBe(200)
         console.log("response status is " + validateBlueprint.status)
-        expect(response).toContain('"Blueprint input \'ami\' contains an illegal input type: \'number\', Valid types are \'string\', \'execution-host\'"')
+        expect(response).toContain('"Blueprint input \'ami\' contains an illegal input type: \'number\', Valid types are \'string\', \'execution-host\', \'agent\'"')
         
     })
 

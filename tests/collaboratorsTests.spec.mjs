@@ -14,7 +14,7 @@ const collaboratorName = 'johnathan.v@quali.com';
 const count = 1
 let session;
 
-test.describe('Blueprint validation', () => {
+test.describe('sendbox launch with collab', () => {
     let page;
     test.beforeAll(async ({ browser }) => {
         session = await getSessionAPI(user, password, baseURL, account);
