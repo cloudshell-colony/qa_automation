@@ -17,7 +17,7 @@ export const validateSBisActive = async (page) => {
   await page.waitForSelector('[data-test="sandbox-info-column"] div:has-text("StatusActive")', { timeout: 5 * 60 * 1000 });
   expect(await page.isVisible('[data-test="sandbox-info-column"] div:has-text("StatusActive")', 500)).toBeTruthy();
   expect(await page.isVisible('[data-test="sandbox-info-column"] div:has-text("StatusActive With Error")', 500), "Sandbox is Active with error!").toBeFalsy();
-  await page.click('[data-test="open-logs"]');
+  await page.click('[data-test="logs-card"]');
   const prepare = await page.locator('td:has-text("Prepare")');
   const install = await page.locator('td:has-text("Install")');
   const apply = await page.locator('td:has-text("Apply")');
