@@ -326,6 +326,78 @@ export const launchSendboxWithCollaborator = async (page, CollaboratorName, spac
   await expect(page.locator('[data-test="sandbox-row-0"]')).toContainText('Active', { timeout: 5 * 60 * 1000 });
 };
 
+export const driftCheckAPI = async(session, baseURL, spaceName, sandboxId, grainId) =>{
+  const response = fetch(`${baseURL}/api/spaces/${spaceName}/environments/${sandboxId}/driftcheck/${grainId}`, {
+    "method": "POST",
+    "headers": {
+        'Authorization': `Bearer ${session}`,
+        'Content-Type': 'application/json'
+    }
+  });
+  return response;
+}
+
+export const reconcileDriftAPI = async(session, baseURL, spaceName, sandboxId, grainsIdList) => {
+  const data = {
+      "grain_ids": grainsIdList
+  }
+  const response = await fetch(`${baseURL}/api/spaces/${spaceName}/environments/${sandboxId}/reconcile`, {
+      "method": "POST",
+      "body": JSON.stringify(data),
+      "headers": {
+          'Authorization': `Bearer ${session}`,
+          'Content-Type': 'application/json',
+      }
+  });
+  return response;
+}
+
+/**
+ * Waits up to 1 minute for a specific drift detection status in a given grain
+ * @param {*} grainId ID of the grain you want to check drift status
+ * @param {*} desiredStatus Boolean parameter to indicate if drift should be detected or not
+ */
+export const waitForDriftStatusAPI = async(session, baseURL, spaceName, sandboxId, grainId, desiredStatus=true) => {
+  console.log('Waiting for drift detected status in grain to be ' + desiredStatus);
+  let detectedDrift = !desiredStatus;
+  let sandboxDetails;
+  for(let i=0; i<12; i++){
+    sandboxDetails = await (await getSandboxDetailsAPI(session, baseURL, spaceName, sandboxId)).json();
+    let grains = sandboxDetails.details.state.grains; // list of all sandbox grains
+    for(var grain of grains){
+      if(grain.id === grainId){ // update detection status for relevant grain
+        detectedDrift = grain.state.drift.deployment.detected;
+        break;
+      }
+    }
+    if(detectedDrift === desiredStatus){ // end loop if desired status was reached
+      console.log(`Drift detection status in grain '${grainId}' is now ${detectedDrift}`);
+      break
+    }
+    await new Promise(r => setTimeout(r, 5000)); //wait for 5 seconds
+  }
+  expect(detectedDrift, `Drift status is not ${desiredStatus} after 1 minute, sandbox details: \n` + JSON.stringify(sandboxDetails)).toBe(desiredStatus);
+}
+
+/**
+ * Returns the last activity that was performed on a specific grain
+ * @param {*} grainId ID of the grain you want to get activity of
+ * @returns JSON Object containing the last grain activity as returned from Sandbox Details 
+ */
+export const getLastSandboxActivityFromGrainAPI = async(session, baseURL, spaceName, sandboxId, grainId)=>{
+  let sandboxDetails = await (await getSandboxDetailsAPI(session, baseURL, spaceName, sandboxId)).json();
+  let lastActivity
+  let grains = sandboxDetails.details.state.grains; // list of all sandbox grains
+  for(var grain of grains){
+    if(grain.id === grainId){ // update detection status for relevant grain
+      let stages = grain.state.stages;
+      let activities = stages[stages.length-1].activities;
+      lastActivity = activities[activities.length-1];
+      return lastActivity;
+    }
+  }     
+}
+
 export const launchSendboxWithDrift = async (page, spaceName) => {
   await page.locator('[data-test="administration-console"]').click()
   await page.locator('[data-test="space-tab"]').click()
