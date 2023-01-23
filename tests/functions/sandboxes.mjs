@@ -414,3 +414,18 @@ export const launchSendboxWithDrift = async (page, spaceName) => {
   await expect(page.locator('[data-test="sandbox-row-0"]')).toContainText('Launching', { timeout: 6000 });
   await expect(page.locator('[data-test="sandbox-row-0"]')).toContainText('Active', { timeout: 5 * 60 * 1000 });
 };
+
+/**
+ * Checks current sandbox is 'Active With Error' and failed due to policy
+ * @param {*} page assumes page is viewing a certain sandbox already
+ * @param {*} expectedText part of text that the error includes. Should have policy specific text
+ */
+export const validateSandboxFailedDueToPolicy = async(page, expectedText) =>{
+  const regExpected = new RegExp(`${expectedText}`);
+  await page.waitForSelector('[data-test="sandbox-info-column"] div:has-text("StatusActive")', { timeout: 5 * 60 * 1000 });
+  expect(await page.isVisible('[data-test="sandbox-info-column"] div:has-text("StatusActive With Error")', 500), "Sandbox is Active with error!").toBeTruthy();
+  await page.click('[data-test=logs-card]');
+  await page.click('[data-test=event-name]:has-text("Plan Validation")');
+  const logLocator = await page.locator('[data-test=log-block]');
+  await expect(logLocator).toHaveText(regExpected);
+}
