@@ -132,7 +132,7 @@ const blueprintLauncher = async (page, BPFullName, inputsDict) => {
     for (const [key, val] of Object.entries(inputsDict)) {
         console.log(`Entering value "${val}" for sandbox input with selector "${key}"`)
         try {
-            await page.fill(`[data-test="${key}"]`, val, { timeout: 1000 });
+            await page.fill(`[data-test="${key}"]`, val, { timeout: 2000 });
         }
         catch {
             await selectFromDropbox(page, key, val);

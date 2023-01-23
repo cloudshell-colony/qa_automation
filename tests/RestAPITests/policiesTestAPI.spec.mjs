@@ -1,4 +1,3 @@
-
 import test, { expect } from "@playwright/test";
 import { createSpaceAPI, deleteSpaceAPI } from "../functions/spaces.mjs";
 import { getSessionAPI, validateGetSessionAPI } from "../functions/accounts.mjs";
@@ -29,6 +28,7 @@ test.describe('Check AWS policies', () => {
     test(`Can't add duplicate policies`, async () =>{
         let policyType = 'AWS Only Private S3 Buckets'
         let policyName = 'duplicate-' + timestemp;
+        console.log(`Adding duplicate policy called ${policyName}`);
         let response = await addPolicyAPI(session, baseURL, policyType, policyName);
         await validateAPIResponseis200(response);
         response = await addPolicyAPI(session, baseURL, policyType, policyName);
@@ -39,6 +39,7 @@ test.describe('Check AWS policies', () => {
     test('Invalid space', async () => {
         let policyType = 'AWS Only Private S3 Buckets'
         let policyName = 'wrong-space-' + timestemp;
+        console.log('Adding policy with invalid space');
         let response = await addPolicyAPI(session, baseURL, policyType, policyName, ['wrongwrong']);
         expect(response.status).toBe(404);
     });
@@ -46,12 +47,8 @@ test.describe('Check AWS policies', () => {
     test('Invalid policy name', async () => {
         let policyType = 'wubba lubba dub dub'
         let policyName = 'wrong-space-' + timestemp;
+        console.log('Adding policy with invalid policy ane (type)');
         let response = await addPolicyAPI(session, baseURL, policyType, policyName, ['wrongwrong']);
         expect(response.status).toBe(404);
     });
 });
-
-
-
-
-
