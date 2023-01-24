@@ -1,7 +1,8 @@
 import { test, expect } from "@playwright/test";
 import { loginToAccount, getSessionAPI, validateGetSessionAPI } from "./functions/accounts.mjs";
 import { closeModal } from "./functions/general.mjs";
-import { endSandboxAPI, getFirstSandboxesAPI, launchSendboxWithCollaborator } from "./functions/sandboxes.mjs";
+import { endSandboxAPI, getFirstSandboxesAPI } from "./functions/sandboxes.mjs";
+import { goToSpace } from "./functions/spaces.mjs";
 
 
 
@@ -26,7 +27,21 @@ test.describe('sendbox launch with collab', () => {
     });
 
     test("launch blueprint with collaborator and validate collaborator name in Sendbox details", async () => {
-        await launchSendboxWithCollaborator(page, collaboratorName, space)
+        await goToSpace(page, space)
+        await page.locator('[data-test="launch-environment-from-blueprint"]').click()
+        const collaborator = await page.locator('.hFDyZZ')
+        await(collaborator.locator('.btn-content')).click()
+        await page.locator('.select-set_collab__control').click()
+        await page.locator('.select-set_collab__control').type(collaboratorName)
+        await page.keyboard.press("Enter");
+        await page.locator('[data-test="go-to-next-step"]').click()
+        await page.locator('[data-test="inputs.ami"]').type('ami-0cd01c7fb16a9b497')
+        await page.locator('.sc-cOifOu >> nth=0').click()
+        await page.keyboard.press("Enter");
+        await page.locator('[ data-test="launch-environment"]').click()
+        await page.locator('[data-test="sandboxes-nav-link"]').click()
+        await expect(page.locator('[data-test="sandbox-row-0"]')).toContainText('Launching', { timeout: 2000 });
+        await expect(page.locator('[data-test="sandbox-row-0"]')).toContainText('Active', { timeout: 5 * 60 * 1000 });
         const response = await getFirstSandboxesAPI(session, baseURL, space, count)
         const responseJson = await response.json()
         console.log(responseJson)
