@@ -1,7 +1,7 @@
 import { test, expect } from "@playwright/test";
 import { loginToAccount, getSessionAPI, validateGetSessionAPI } from "./functions/accounts.mjs";
 import { closeModal } from "./functions/general.mjs";
-import { launchSendboxWithDrift } from "./functions/sandboxes.mjs";
+import { goToSpace } from "./functions/spaces.mjs";
 
 const baseURL = process.env.baseURL;
 const password = process.env.allAccountsPassword;
@@ -22,7 +22,16 @@ test.describe('drift test on UI', () => {
     });
 
     test("launch blueprint with tag adding for drift and validate drifting and reconcile", async () => {
-        await launchSendboxWithDrift(page, space)
+        await goToSpace(page, space)
+        const blueprint = await page.locator('[data-test="catalog-bp-drift-test"]')
+        await blueprint.locator('[data-test="launch-environment-from-blueprint"]').click()
+        await page.locator('[data-test="go-to-next-step"]').click()
+        await page.locator('.sc-cOifOu >> nth=0').click()
+        await page.keyboard.press("Enter");
+        await page.locator('[ data-test="launch-environment"]').click()
+        await page.locator('[data-test="sandboxes-nav-link"]').click()
+        await expect(page.locator('[data-test="sandbox-row-0"]')).toContainText('Launching', { timeout: 6000 });
+        await expect(page.locator('[data-test="sandbox-row-0"]')).toContainText('Active', { timeout: 5 * 60 * 1000 });
         await page.locator('[data-test="sandbox-row-0"]').click()
         const detectDrift = await page.locator('[data-test="deployment-drift-card"]')
         await detectDrift.click()
