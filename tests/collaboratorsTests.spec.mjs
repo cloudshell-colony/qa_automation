@@ -11,7 +11,7 @@ const password = process.env.allAccountsPassword;
 const account = process.env.account;
 const user = process.env.adminEMail
 const space = "Amir";
-const collaboratorName = 'johnathan.v@quali.com';
+const collaboratorName = 'amiromazgin@gmail.com';
 const count = 1
 let session;
 
@@ -32,8 +32,8 @@ test.describe('sendbox launch with collab', () => {
         const collaborator = await page.locator('.hFDyZZ')
         await(collaborator.locator('.btn-content')).click()
         await page.locator('.select-set_collab__control').click()
-        await page.locator('.select-set_collab__control').type(collaboratorName)
         await page.keyboard.press("Enter");
+        await expect (page.locator('.irLJAw')).toContainText(collaboratorName)
         await page.locator('[data-test="go-to-next-step"]').click()
         await page.locator('[data-test="inputs.ami"]').type('ami-0cd01c7fb16a9b497')
         await page.locator('.sc-cOifOu >> nth=0').click()
