@@ -1,0 +1,57 @@
+<testsuites id="" name="" tests="1" failures="1" skipped="0" errors="0" time="103.75660500001908">
+<testsuite name="collaboratorsTests.spec.mjs" timestamp="1674977254334" hostname="" tests="1" failures="1" skipped="0" time="61.545" errors="0">
+<testcase name="sendbox launch with collab launch blueprint with collaborator and validate collaborator name in Sendbox details" classname="[chromium] › collaboratorsTests.spec.mjs › sendbox launch with collab › launch blueprint with collaborator and validate collaborator name in Sendbox details" time="61.545">
+<failure message="collaboratorsTests.spec.mjs:29:5 launch blueprint with collaborator and validate collaborator name in Sendbox details" type="FAILURE">
+<![CDATA[  [chromium] › collaboratorsTests.spec.mjs:29:5 › sendbox launch with collab › launch blueprint with collaborator and validate collaborator name in Sendbox details 
+
+    TypeError: Cannot read properties of undefined (reading 'email')
+
+      48 |         const firstSB = await responseJson[0]
+      49 |         const collabInfo = await firstSB.collaborators_info.collaborators
+    > 50 |         console.log(collabInfo[0].email)
+         |                                   ^
+      51 |         expect(await collabInfo[0].email).toContain(collaboratorName)
+      52 |         const ID = await firstSB.id
+      53 |         console.log("the id is " + ID)
+
+        at file:///C:/Users/amir.o/Documents/work/qa-automation/tests/collaboratorsTests.spec.mjs:50:35
+
+    attachment #1: trace (application/zip) ---------------------------------------------------------
+    test-results\collaboratorsTests-sendbox-launch-with-collab--c2f00-d-validate-collaborator-name-in-Sendbox-details-chromium\trace.zip
+    Usage:
+
+        npx playwright show-trace test-results\collaboratorsTests-sendbox-launch-with-collab--c2f00-d-validate-collaborator-name-in-Sendbox-details-chromium\trace.zip
+
+    ------------------------------------------------------------------------------------------------
+]]>
+</failure>
+<system-out>
+<![CDATA[[
+  {
+    id: [32m'G76HTzKyXIrV'[39m,
+    owner: {
+      first_name: [32m'Amir'[39m,
+      last_name: [32m'Omazgin'[39m,
+      timezone: [32m'Asia/Jerusalem'[39m,
+      email: [32m'qa01@automation.com'[39m,
+      join_date: [32m'2023-01-26T08:18:06.718753'[39m,
+      display_first_name: [32m'Amir'[39m,
+      display_last_name: [32m'Omazgin'[39m
+    },
+    details: {
+      definition: [36m[Object][39m,
+      state: [36m[Object][39m,
+      computed_status: [32m'Active'[39m
+    },
+    collaborators_info: { collaborators: [], all_space_members: [33mfalse[39m },
+    cost: [1mnull[22m,
+    read_only: [33mfalse[39m
+  }
+]
+
+[[ATTACHMENT|..\test-results\collaboratorsTests-sendbox-launch-with-collab--c2f00-d-validate-collaborator-name-in-Sendbox-details-chromium\trace.zip]]
+]]>
+</system-out>
+</testcase>
+</testsuite>
+</testsuites>
