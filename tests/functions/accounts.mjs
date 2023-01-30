@@ -193,7 +193,7 @@ export const DeleteAcountUI = async (accountName, page, baseURL) => {
     // await page.goto(`${baseURL}/admin/account_billing`);
     await goToAdminConsole(page, "account")
     await page.click('[data-test="delete-account"]');
-    await page.click('[data-test="confirm-delete-account"]');
+    await page.locator('[data-test="confirm-delete-account"]').click();
 };
 
 export const ValidteBackButtonAfterDelition = async (accountName, page, baseURL) => {
