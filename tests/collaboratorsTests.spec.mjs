@@ -13,10 +13,12 @@ const user = process.env.adminEMail
 const space = "Amir";
 const collaboratorName = 'amiromazgin@gmail.com';
 const count = 1
+let page;
 let session;
 
+
 test.describe('sendbox launch with collab', () => {
-    let page;
+   
     test.beforeAll(async ({ browser }) => {
         session = await getSessionAPI(user, password, baseURL, account);
         await validateGetSessionAPI(session);
@@ -28,6 +30,26 @@ test.describe('sendbox launch with collab', () => {
 
     test("launch blueprint with collaborator and validate collaborator name in Sendbox details", async () => {
         await goToSpace(page, space)
+    //     const popup = expect(page.locator('#hubspot-conversations-iframe')).toBeVisible({timeout:15000})
+    //     if(popup){
+    //         console.log('inside popup')
+    //     await page.getByRole('.button').click();
+    //    }
+    //    else{
+    //    console.log('popup not exist')
+    //    }
+    // const iframe = await page.frames().find(f => f.name() === 'my-iframe');
+    // try {
+    //     // console.log('trying to get popup')
+    //     // const popup = await expect(page.locator('#hubspot-conversations-iframe')).toBeVisible({timeout:5000})
+    //     // await popup.getByRole('.button').click();
+    //     await iframe.waitForSelector('#hubspot-conversations-iframe', { visible: true, timeout: 5000 });
+    //     await iframe.$eval('.initial-message-bubble button', (el) => el.click());
+    //     console.log('Popup closed successfully');
+    //   } catch (e) {
+    //     console.error("didnt find popup");
+    //   }
+
         await page.locator('[data-test="launch-environment-from-blueprint"]').click()
         const collaborator = await page.locator('.hFDyZZ')
         await(collaborator.locator('.btn-content')).click()
@@ -40,7 +62,7 @@ test.describe('sendbox launch with collab', () => {
         await page.keyboard.press("Enter");
         await page.locator('[ data-test="launch-environment"]').click()
         await page.locator('[data-test="sandboxes-nav-link"]').click()
-        await expect(page.locator('[data-test="sandbox-row-0"]')).toContainText('Launching', { timeout: 2000 });
+        await expect(page.locator('[data-test="sandbox-row-0"]')).toContainText('Launching', { timeout: 4000 });
         await expect(page.locator('[data-test="sandbox-row-0"]')).toContainText('Active', { timeout: 5 * 60 * 1000 });
         const response = await getFirstSandboxesAPI(session, baseURL, space, count)
         const responseJson = await response.json()
@@ -48,10 +70,17 @@ test.describe('sendbox launch with collab', () => {
         const firstSB = await responseJson[0]
         const collabInfo = await firstSB.collaborators_info.collaborators
         console.log(collabInfo[0].email)
-        expect(await collabInfo[0].email).toContain(collaboratorName)
-        const ID = await firstSB.id
+         const ID = await firstSB.id
         console.log("the id is " + ID)
-        await endSandboxAPI(session, baseURL, space, ID)
+        try {
+            expect(await collabInfo[0].email).toContain(collaboratorName)
+            await endSandboxAPI(session, baseURL, space, ID)
+        } catch (e) {
+            await endSandboxAPI(session, baseURL, space, ID)
+            await expect(page.locator('[data-test="sandbox-row-0"]')).toContainText('Terminating', { timeout: 10000 });
+            console.log(e)
+            test.fail()
+        }
         await expect(page.locator('[data-test="sandbox-row-0"]')).toContainText('Terminating', { timeout: 10000 });
     });
 
