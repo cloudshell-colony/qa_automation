@@ -30,26 +30,6 @@ test.describe('sendbox launch with collab', () => {
 
     test("launch blueprint with collaborator and validate collaborator name in Sendbox details", async () => {
         await goToSpace(page, space)
-    //     const popup = expect(page.locator('#hubspot-conversations-iframe')).toBeVisible({timeout:15000})
-    //     if(popup){
-    //         console.log('inside popup')
-    //     await page.getByRole('.button').click();
-    //    }
-    //    else{
-    //    console.log('popup not exist')
-    //    }
-    // const iframe = await page.frames().find(f => f.name() === 'my-iframe');
-    // try {
-    //     // console.log('trying to get popup')
-    //     // const popup = await expect(page.locator('#hubspot-conversations-iframe')).toBeVisible({timeout:5000})
-    //     // await popup.getByRole('.button').click();
-    //     await iframe.waitForSelector('#hubspot-conversations-iframe', { visible: true, timeout: 5000 });
-    //     await iframe.$eval('.initial-message-bubble button', (el) => el.click());
-    //     console.log('Popup closed successfully');
-    //   } catch (e) {
-    //     console.error("didnt find popup");
-    //   }
-
         await page.locator('[data-test="launch-environment-from-blueprint"]').click()
         const collaborator = await page.locator('.hFDyZZ')
         await(collaborator.locator('.btn-content')).click()
