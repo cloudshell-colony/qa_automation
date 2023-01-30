@@ -34,3 +34,4 @@ node_modules/*
 tests/amirTest.spec.mjs
 
 tests/amirDotenv/.env
+results.xml
