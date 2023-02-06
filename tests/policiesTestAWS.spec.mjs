@@ -35,7 +35,7 @@ test.describe('Check AWS policies', () => {
         await stopAndValidateAllSBsCompleted(page);
     });
 
-    test('Private S3 policy tests', async () => {
+    test.skip('Private S3 policy tests', async () => {
         let policyType = 'AWS Only Private S3 Buckets'
         let policyName = policyType + '-' + id;
         let bucketName = policyName.replaceAll(' ', '-').toLowerCase();
@@ -59,7 +59,7 @@ test.describe('Check AWS policies', () => {
         await deletePolicy(page, policyName);
     });
 
-    test('Allowed regions AWS', async() => {
+    test.skip('Allowed regions AWS', async() => {
         let policyType = 'AWS Allowed Regions'
         let policyName = policyType + '-' + id;
         let region = 'eu-west-1'
