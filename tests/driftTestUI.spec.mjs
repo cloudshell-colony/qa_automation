@@ -26,7 +26,7 @@ test.describe('drift test on UI', () => {
         const blueprint = await page.locator('[data-test="catalog-bp-drift-test"]')
         await blueprint.locator('[data-test="launch-environment-from-blueprint"]').click()
         await page.locator('[data-test="go-to-next-step"]').click()
-        await page.locator('.sc-cOifOu >> nth=0').click()
+        await page.locator('.sc-lfRxJW >> nth=0').click()
         await page.keyboard.press("Enter");
         await page.locator('[ data-test="launch-environment"]').click()
         await page.locator('[data-test="sandboxes-nav-link"]').click()
