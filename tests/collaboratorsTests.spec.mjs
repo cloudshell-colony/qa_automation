@@ -38,7 +38,7 @@ test.describe('sendbox launch with collab', () => {
         await expect (page.locator('.sc-cApVyb')).toContainText(collaboratorName)
         await page.locator('[data-test="go-to-next-step"]').click()
         await page.locator('[data-test="inputs.ami"]').type('ami-0cd01c7fb16a9b497')
-        await page.locator('.sc-cOifOu >> nth=0').click()
+        await page.locator('.dcGtvK >> nth=0').click()
         await page.keyboard.press("Enter");
         await page.locator('[ data-test="launch-environment"]').click()
         await page.locator('[data-test="sandboxes-nav-link"]').click()
