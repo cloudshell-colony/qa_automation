@@ -26,9 +26,7 @@ blob:https://quali.atlassian.net/e8bcfa5b-05aa-4d7c-aa37-e1762a7a2771#media-blob
 
 Currently, automatic run from _TeamCity_ will run all the tests.
 
-:::tip note
-Some of the tests require a precondition account and therefor expected to pass only in production and staging.
-:::
+> Some of the tests require a precondition account and therefor expected to pass only in production and staging.
 
 ### Manual execution
 
