@@ -27,6 +27,7 @@ test.describe('drift test on UI', () => {
         await blueprint.locator('[data-test="launch-environment-from-blueprint"]').click()
         await page.locator('[data-test="go-to-next-step"]').click()
         await page.locator('.sc-lfRxJW >> nth=0').click()
+        await page.getByText('qa-eks3').click()
         await page.keyboard.press("Enter");
         await page.locator('[ data-test="launch-environment"]').click()
         await page.locator('[data-test="sandboxes-nav-link"]').click()
@@ -46,7 +47,7 @@ test.describe('drift test on UI', () => {
         await page.locator('[data-test="confirm-end-sandbox"]').click()
         await page.locator('[data-test="sandboxes-nav-link"]').click()
         await expect(page.locator('[data-test="sandbox-row-0"]')).toContainText('Terminating', { timeout: 6000 });
-        await expect(page.locator('[data-test="sandbox-row-0"]')).toBeHidden({timeout: 10 * 60 * 1000})
+        await expect(page.locator('[data-test="sandbox-row-0"]')).toBeHidden({timeout: 20 * 60 * 1000})
 
     });
 });

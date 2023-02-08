@@ -30,7 +30,8 @@ test.describe('sendbox launch with collab', () => {
 
     test("launch blueprint with collaborator and validate collaborator name in Sendbox details", async () => {
         await goToSpace(page, space)
-        await page.locator('[data-test="launch-environment-from-blueprint"]').click()
+        const blueprint = await page.locator('[data-test="catalog-bp-autogen_create-ec2-instance"]')
+        await blueprint.locator('[data-test="launch-environment-from-blueprint"]').click()
         const collaborator = await page.locator('.hFDyZZ')
         await(collaborator.locator('.btn-content')).click()
         await page.locator('.select-set_collab__control').click()
@@ -58,7 +59,7 @@ test.describe('sendbox launch with collab', () => {
         } catch (e) {
             await endSandboxAPI(session, baseURL, space, ID)
             await expect(page.locator('[data-test="sandbox-row-0"]')).toContainText('Terminating', { timeout: 10000 });
-            await expect(page.locator('[data-test="sandbox-row-0"]')).toBeHidden({timeout: 5 * 60 * 1000})
+            await expect(page.locator('[data-test="sandbox-row-0"]')).toBeHidden({timeout: 10 * 60 * 1000})
             console.log(e)
             test.fail()
         }
