@@ -44,6 +44,8 @@ The tests can easily be used by pulling the tests repo and installing the depend
 
 **Running the tests:**
 
+> To configure the target the tests will run on (review/preview/prod..), account and more, use the `[.env](https://github.com/QualiNext/qa-automation/blob/bf48ff25fdd7105ab0e74e31e3ee216e388075f4/.env)` file.
+
 ```
 1. Login to AWS CLI (needed for agent deployment)
 2. “npx playwright test< folder tests name>” - to run all the tests
