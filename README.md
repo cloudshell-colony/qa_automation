@@ -52,6 +52,23 @@ The tests can easily be used by pulling the tests repo and installing the depend
 6. “npx playwright test <test name> --debug” - to run a specific UI test in debug mode, not relevant for API tests
 ```
 
+## Reports
+Tests report is currently only in xml and available in TeamCity or in the playwright console (printed to std-out when run from console).
+
+**UI tests:**
+Playwright UI reports consist of the Playwright error, therefor in many cases they must be reviewed with the code to learn the actual error.
+
+In most cases the error indicates that a button was not visible or cannot be used, this error usually results from UI changers or actual bugs.
+
+In order to learn the actual root-cause, the tests and flow must be investigated.
+
+**API tests:**
+In the case of API tests, the API response error is printed to the console.
+
+## References 
+
+Blueprints repository:  [GitHub - cloudshell-colony/qa_automation]([url](https://github.com/cloudshell-colony/qa_automation)) 
+
 ## Contributing
 
 If you would like to contribute to the repository, please feel free to submit a pull request. Please make sure to include a detailed description of your changes and any resources needed to test the changes.
