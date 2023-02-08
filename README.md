@@ -17,17 +17,6 @@ The automation tests are written in JavaScript using Playwright.
 
 ## Usage
 
-### TeamCity
-
-The tests are running daily at `19:30` and with each update of the staging Torque environment.
-
-The tests can also be triggered from _TeamCity_ on production, staging and every other environment like the teams review environments by setting the environment name in the TeamCity job:
-<img width="805" alt="image" src="https://user-images.githubusercontent.com/96681520/217475318-0d3d93e8-9105-490a-9518-7ce8cfd05b28.png">
-
-Currently, automatic run from _TeamCity_ will run all the tests.
-
-> Some of the tests require a precondition account and therefor expected to pass only in production and staging.
-
 ### Manual execution
 
 The tests can easily be used by pulling the tests repo and installing the dependencies.
@@ -44,7 +33,7 @@ The tests can easily be used by pulling the tests repo and installing the depend
 
 **Running the tests:**
 
-> To configure the target the tests will run on (review/preview/prod..), account and more, use the `[.env](https://github.com/QualiNext/qa-automation/blob/bf48ff25fdd7105ab0e74e31e3ee216e388075f4/.env)` file.
+> To configure the target the tests will run on (review/preview/prod..), account and more, use the [.env](https://github.com/QualiNext/qa-automation/blob/bf48ff25fdd7105ab0e74e31e3ee216e388075f4/.env) file.
 
 ```
 1. Login to AWS CLI (needed for agent deployment)
@@ -53,6 +42,17 @@ The tests can easily be used by pulling the tests repo and installing the depend
 4. “npx playwright test <test name> --headed” - to run a specific UI test in headed 5. mode (see the actual UI test), not relevant for API tests
 6. “npx playwright test <test name> --debug” - to run a specific UI test in debug mode, not relevant for API tests
 ```
+
+### TeamCity
+
+The tests are running daily at `19:30` and with each update of the staging Torque environment.
+
+The tests can also be triggered from _TeamCity_ on production, staging and every other environment like the teams review environments by setting the environment name in the TeamCity job:
+<img width="805" alt="image" src="https://user-images.githubusercontent.com/96681520/217475318-0d3d93e8-9105-490a-9518-7ce8cfd05b28.png">
+
+Currently, automatic run from _TeamCity_ will run all the tests.
+
+> Some of the tests require a precondition account and therefor expected to pass only in production and staging.
 
 ## Reports
 Tests report is currently only in xml and available in TeamCity or in the playwright console (printed to std-out when run from console).
