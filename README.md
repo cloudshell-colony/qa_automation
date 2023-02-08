@@ -67,7 +67,11 @@ In the case of API tests, the API response error is printed to the console.
 
 ## References 
 
-Blueprints repository:  [GitHub - cloudshell-colony/qa_automation]([url](https://github.com/cloudshell-colony/qa_automation)) 
+Blueprints repositories:
+* [GitHub - cloudshell-colony/qa_automation](https://github.com/cloudshell-colony/qa_automation)
+* [GitHub - QualiNext/test-spec2-public](https://github.com/QualiNext/test-spec2-public)
+* [GitHub - QualiNext/torque-demo](https://github.com/QualiNext/torque-demo)
+* [GitHub - QualiNext/qa-bp-validation](https://github.com/QualiNext/qa-bp-validation)
 
 ## Contributing
 
