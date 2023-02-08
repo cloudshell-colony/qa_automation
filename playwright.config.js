@@ -52,7 +52,6 @@ const config = {
     // /*
     {
       name: 'chromium',
-      testMatch: /.driftTestUI.spec.mjs/,
       use: {
         ...devices['Desktop Chrome'],
       },
