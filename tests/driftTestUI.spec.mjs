@@ -47,7 +47,7 @@ test.describe('drift test on UI', () => {
         await page.locator('[data-test="confirm-end-sandbox"]').click()
         await page.locator('[data-test="sandboxes-nav-link"]').click()
         await expect(page.locator('[data-test="sandbox-row-0"]')).toContainText('Terminating', { timeout: 6000 });
-        // await expect(page.locator('[data-test="sandbox-row-0"]')).toBeHidden({timeout: 10 * 60 * 1000})
+        await expect(page.locator('[data-test="sandbox-row-0"]')).toBeHidden({timeout: 10 * 60 * 1000})
 
     });
 });
