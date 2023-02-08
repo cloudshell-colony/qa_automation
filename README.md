@@ -22,7 +22,7 @@ The automation tests are written in JavaScript using Playwright.
 The tests are running daily at `19:30` and with each update of the staging Torque environment.
 
 The tests can also be triggered from _TeamCity_ on production, staging and every other environment like the teams review environments by setting the environment name in the TeamCity job:
-blob:https://quali.atlassian.net/e8bcfa5b-05aa-4d7c-aa37-e1762a7a2771#media-blob-url=true&id=2e65b392-0fc3-4172-8db8-373deec43d0a&contextId=2779185197&collection=contentId-2779185197
+<img width="805" alt="image" src="https://user-images.githubusercontent.com/96681520/217475318-0d3d93e8-9105-490a-9518-7ce8cfd05b28.png">
 
 Currently, automatic run from _TeamCity_ will run all the tests.
 
