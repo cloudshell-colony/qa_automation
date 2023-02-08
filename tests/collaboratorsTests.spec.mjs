@@ -30,7 +30,6 @@ test.describe('sendbox launch with collab', () => {
 
     test("launch blueprint with collaborator and validate collaborator name in Sendbox details", async () => {
         await goToSpace(page, space)
-        // await page.locator('[data-test="launch-environment-from-blueprint"]').click()
         const blueprint = await page.locator('[data-test="catalog-bp-autogen_create-ec2-instance"]')
         await blueprint.locator('[data-test="launch-environment-from-blueprint"]').click()
         const collaborator = await page.locator('.hFDyZZ')
@@ -41,7 +40,6 @@ test.describe('sendbox launch with collab', () => {
         await page.locator('[data-test="go-to-next-step"]').click()
         await page.locator('[data-test="inputs.ami"]').type('ami-0cd01c7fb16a9b497')
         await page.locator('.dcGtvK >> nth=0').click()
-        // await page.getByText('qa-eks3').click()
         await page.keyboard.press("Enter");
         await page.locator('[ data-test="launch-environment"]').click()
         await page.locator('[data-test="sandboxes-nav-link"]').click()
