@@ -35,7 +35,7 @@ The tests can easily be used by pulling the tests repo and installing the depend
 
 > To configure the target the tests will run on (review/preview/prod..), account and more, use the [.env](https://github.com/QualiNext/qa-automation/blob/bf48ff25fdd7105ab0e74e31e3ee216e388075f4/.env) file.
 
-For 1st time usage:
+For 1st time usage (for ad-hoc/new accounts)
 > These setup steps will bootstrap all tests pre-reqs (e.g. create new account, space, agent and more.)
 
 ```
