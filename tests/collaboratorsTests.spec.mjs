@@ -10,7 +10,7 @@ const baseURL = process.env.baseURL;
 const password = process.env.allAccountsPassword;
 const account = process.env.account;
 const user = process.env.adminEMail
-const space = "AmirO";
+const space = "Amir";
 const collaboratorName = 'amiromazgin@gmail.com';
 const count = 1
 let page;
@@ -41,8 +41,8 @@ test.describe('sendbox launch with collab', () => {
         await page.locator('[data-test="go-to-next-step"]').click()
         await page.locator('[data-test="inputs.ami"]').type('ami-0cd01c7fb16a9b497')
         await page.locator('.dcGtvK >> nth=0').click()
-        await page.getByText('qa-eks3').click()
-        // await page.keyboard.press("Enter");
+        // await page.getByText('qa-eks3').click()
+        await page.keyboard.press("Enter");
         await page.locator('[ data-test="launch-environment"]').click()
         await page.locator('[data-test="sandboxes-nav-link"]').click()
         await expect(page.locator('[data-test="sandbox-row-0"]')).toContainText('Launching', { timeout: 4000 });
