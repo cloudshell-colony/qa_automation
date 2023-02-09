@@ -43,13 +43,32 @@ TBD
 ```
 
 Running tests:
-> Note: Login to AWS CLI is requiered (needed for agent deployment)
 
+Note that login to `AWS CLI` is requiered (needed for agent deployment)
+
+> To run a test using custom env file using `dotenv-extended --path=<path to your custom .env>`
+```sh
+npx dotenv-extended --path=envs/.local.env playwright test ExecutionHost
 ```
-* “npx playwright test< folder tests name>” - to run all the tests
-* “npx playwright test <test name>” - to run a specific test
-* “npx playwright test <test name> --headed” - to run a specific UI test in headed 5. mode (see the actual UI test), not relevant for API tests
-* “npx playwright test <test name> --debug” - to run a specific UI test in debug mode, not relevant for API tests
+
+> To run all the tests
+```sh
+npx playwright test <folder tests name>
+```
+
+> To run a specific test
+```sh
+npx playwright test <test name>
+```
+
+> To run a specific UI test in headed 5. mode (see the actual UI test), not relevant for API tests
+```sh
+npx playwright test <test name> --headed
+```
+
+> To run a specific UI test in debug mode, not relevant for API tests
+```sh
+npx playwright test <test name> --debug
 ```
 
 ### TeamCity
