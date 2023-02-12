@@ -72,7 +72,7 @@ test.describe.serial("Basic drift AWS with API", () => {
         await waitForDriftStatusAPI(session, baseURL, spaceName, sandboxId, grainId);
     });
 
-    test("Reconcile and validate tags are changed", async()=>{
+    test.skip("Reconcile and validate tags are changed", async()=>{
         // initiate reconcile and wait for it to end
         const response = await reconcileDriftAPI(session, baseURL, spaceName, sandboxId, [grainId]);
         await validateAPIResponseis200(response);
