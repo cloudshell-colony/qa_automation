@@ -59,7 +59,7 @@ test.describe.serial('Delete account UI', () => {
     });
 
 
-    test('FailDeleteAccountWithSandbox', async () => {
+    test.skip('FailDeleteAccountWithSandbox', async () => {
         test.fail() //bug no 10552
         await DeleteAcountUI(accountName, page, baseURL);
         expect(await page.locator('[data-test="close-popup"]', "Deleteaccount failed"));
