@@ -124,8 +124,8 @@ test.describe('Blueprint validation', () => {
         await page.click("[data-test=confirm-end-sandbox]");
     });
 
-     //bug no 10904
-    test.skip("Validate proper yaml link in blueprint", async () => {
+     
+    test("Validate proper yaml link in blueprint", async () => {
       const blueprintDetails = await getBlueprintsAPI(session, baseURL,space)
       const response = await blueprintDetails.json()
       console.log(response[0].url)
