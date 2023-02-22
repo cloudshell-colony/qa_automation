@@ -58,12 +58,11 @@ test.describe('sendbox launch with collab', () => {
         } catch (e) {
             await endSandboxAPI(session, baseURL, space, ID)
             await expect(page.locator('[data-test="sandbox-row-0"]')).toContainText('Terminating', { timeout: 10000 });
-            // await expect(page.locator('[data-test="sandbox-row-0"]')).toBeHidden({timeout: 10 * 60 * 1000})
             console.log(e)
             test.fail()
         }
         await expect(page.locator('[data-test="sandbox-row-0"]')).toContainText('Terminating', { timeout: 10000 });
-        // await expect(page.locator('[data-test="sandbox-row-0"]')).toBeHidden({timeout: 10 * 60 * 1000})
+      
     });
 
 });
