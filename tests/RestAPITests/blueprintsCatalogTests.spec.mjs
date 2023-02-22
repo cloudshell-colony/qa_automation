@@ -8,7 +8,7 @@ const account = process.env.account
 const user = process.env.adminEMail
 const space = "AmirO"
 const wrongSpace = "asd"
-const BPName = "autogen_eks-rds"
+const BPName = "autogen_create-ec2-instance"
 const wrongBPName = "autogen_eks"
 const repoName = 'qtorque'
 let session
