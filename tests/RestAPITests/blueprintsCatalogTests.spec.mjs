@@ -28,7 +28,7 @@ test.describe.serial('Validate Blueprint from catalog tests', () => {
         console.log(response)
         expect(getBlueprint.status).toBe(200)
         console.log("response status is " + getBlueprint.status)
-        expect(response).toContain('"autogen_create-ec2-instance"')
+        expect(response).toContain('"drift-test"')
         
     })
 
