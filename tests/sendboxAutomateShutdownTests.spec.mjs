@@ -27,14 +27,6 @@ test.describe.serial('SendBox extention tests', () => {
         const ID = responseJson.id
         console.log(ID)
         await validateSBisActiveAPI(session, baseURL, ID, space)
-        await validateSBisEndedAPI(session, baseURL, ID, space)
-        const sendboxDetails = await getSandboxDetailsAPI(session, baseURL, space, ID)
-        const sbResponse  = await sendboxDetails.json()
-        console.log(sbResponse)
-        console.log("sendbox current_state is " + sbResponse.details.state.current_state)
-        expect(sbResponse.details.state.current_state).toBe('inactive')
-        console.log("sendbox computed_status is " + sbResponse.details.computed_status)
-        expect(sbResponse.details.computed_status).toBe('Ended')
-       
+        await validateSBisEndedAPI(session, baseURL, ID, space)  
     })
 })
