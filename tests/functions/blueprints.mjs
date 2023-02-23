@@ -106,6 +106,13 @@ export const launchSampleBlueprintFromCatalogPage = async (page, sampleFullName,
     return sandboxName;
 };
 
+export const launchBlueprintFromCatalogPage = async (page, sampleFullName, inputsDict = {}) => {
+    await page.click('[data-test="catalog-nav-link"]');
+    await page.click(`[data-test="catalog-bp-autogen_${sampleFullName}"] [data-test="launch-environment-from-blueprint"]`);
+    const sandboxName = await blueprintLauncher(page, sampleFullName, inputsDict);
+    return sandboxName;
+};
+
 /**
  * Launches a blueprint from the UI, assuming page is in the environments page 
  * @param {*} inputsDict a map from the input name to its desired value
