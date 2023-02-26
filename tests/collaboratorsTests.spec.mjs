@@ -11,7 +11,7 @@ const password = process.env.allAccountsPassword;
 const account = process.env.account;
 const user = process.env.adminEMail
 const space = "Amir";
-const collaboratorName = 'amiromazgin@gmail.com';
+const collaboratorName = 'amir.o@quali.com';
 const count = 1
 let page;
 let session;
