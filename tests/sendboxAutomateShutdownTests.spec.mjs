@@ -7,9 +7,9 @@ const baseURL = process.env.baseURL
 const password = process.env.allAccountsPassword
 const account = process.env.account
 const user = process.env.adminEMail
-const space = "Amir"
-const BPName = "autogen_create-ec2-instance"
-const inputs = { ami: "ami-0cd01c7fb16a9b497", instance_type: "t3.micro", host_name: "qa-eks3" }
+const space = "extend-test"
+const BPName = "autogen_simpleTF"
+const inputs = { agent: "qa-eks" }
 const repoName = 'qtorque'
 let duration
 let session
@@ -20,7 +20,7 @@ test.describe.serial('SendBox extention tests', () => {
         console.log(session)
     });
 
-    test.skip("Create 6 minutes sendbox and validate automate shutdown ", async () => {
+    test("Create 6 minutes sendbox and validate automate shutdown ", async () => {
         const response = await launchBlueprintAPI(session, baseURL, BPName, space, inputs, repoName, duration = "PT6M") 
         const responseJson = await response.json()
         console.log(responseJson)
