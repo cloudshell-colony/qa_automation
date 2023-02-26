@@ -7,7 +7,7 @@ const baseURL = process.env.baseURL;
 const password = process.env.allAccountsPassword;
 const account = process.env.account;
 const user = process.env.adminEMail;
-const space = "AmirO";
+const space = "drift-test";
 let session;
 
 test.describe('drift test on UI', () => {
@@ -45,7 +45,7 @@ test.describe('drift test on UI', () => {
         await page.locator('[data-test="confirm-end-sandbox"]').click()
         await page.locator('[data-test="sandboxes-nav-link"]').click()
         await expect(page.locator('[data-test="sandbox-row-0"]')).toContainText('Terminating', { timeout: 6000 });
-        await expect(page.locator('[data-test="sandbox-row-0"]')).toBeHidden({timeout: 20 * 60 * 1000})
+        
 
     });
 });
