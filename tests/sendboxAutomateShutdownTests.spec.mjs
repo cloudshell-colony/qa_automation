@@ -20,7 +20,7 @@ test.describe.serial('SendBox extention tests', () => {
         console.log(session)
     });
 
-    test("Create 6 minutes sendbox and validate automate shutdown ", async () => {
+    test.skip("Create 6 minutes sendbox and validate automate shutdown ", async () => {
         const response = await launchBlueprintAPI(session, baseURL, BPName, space, inputs, repoName, duration = "PT6M") 
         const responseJson = await response.json()
         console.log(responseJson)

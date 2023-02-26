@@ -36,7 +36,7 @@ test.describe('sendbox launch with collab', () => {
         await(collaborator.locator('.btn-content')).click()
         await page.locator('.select-set_collab__control').click()
         await page.keyboard.press("Enter");
-        await expect (page.locator('.sc-iuhXDa')).toContainText(collaboratorName)
+        await expect (page.locator('.fElMzr')).toContainText(collaboratorName)
         await page.locator('[data-test="go-to-next-step"]').click()
         await page.locator('[data-test="inputs.ami"]').type('ami-0cd01c7fb16a9b497')
         selectFromDropbox(page, 'inputs.host_name', 'qa-eks3' )
