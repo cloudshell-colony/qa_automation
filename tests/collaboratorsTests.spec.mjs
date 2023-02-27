@@ -10,7 +10,7 @@ const baseURL = process.env.baseURL;
 const password = process.env.allAccountsPassword;
 const account = process.env.account;
 const user = process.env.adminEMail
-const space = "Amir";
+const space = "Collaborator";
 const collaboratorName = 'amir.o@quali.com';
 const count = 1
 let page;
