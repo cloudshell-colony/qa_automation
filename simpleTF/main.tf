@@ -1,4 +1,3 @@
 output "message" {
-  value = "ahlan wasahlan"
- 
+      value = "ahlan 16775043524xc1ec"
 }
