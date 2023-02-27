@@ -85,7 +85,7 @@ test.describe.serial("Basic drift AWS with API", () => {
         console.log('Reconciled completed successfully');
         // check tags in S3 bucket
         let output = execSync(`aws s3api get-bucket-tagging --bucket ${bucketName}`, { encoding: 'utf-8' });
-        // expect(output, "Tags after reconcile do not match original bucket tags").toBe(originalTags);
+        expect(output, "Tags after reconcile do not match original bucket tags").toBe(originalTags);
         console.log('Reconcile successfully reverted tags on AWS S3 bucket');
     });
 });
