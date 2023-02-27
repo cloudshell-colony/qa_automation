@@ -102,7 +102,7 @@ test.describe('Blueprint validation', () => {
         await page.click("[data-test=close-modal]");  // close sandbox launch
     });
 
-    test.skip("Dynamic validation - Sandbox launches successfully when providing correct execution host input", async () => {
+    test("Dynamic validation - Sandbox launches successfully when providing correct execution host input", async () => {
         let err;
         blueprintName = "host input";
         const inputsDict = { "inputs\.host": associatedAgent};
