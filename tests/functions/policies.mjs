@@ -30,12 +30,9 @@ export const editRego = async (page, DATA) => {
     await page.locator('[data-test="policies-row-0"]').click()
     const area = page.locator('.monaco-editor').nth(0)
     await area.click()
-    const newData = {
-        "allowed_regions": [DATA]
-     }
      await page.keyboard.press('Control+A')
      await page.keyboard.press('Delete')
-     await page.keyboard.type(JSON.stringify(newData));
+     await page.keyboard.type(JSON.stringify(DATA));
      await page.getByRole('button', { name: 'save' }).click()
     
 };

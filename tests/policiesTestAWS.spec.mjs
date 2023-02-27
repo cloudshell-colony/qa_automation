@@ -28,24 +28,24 @@ test.describe('Check AWS policies', () => {
     });
 
 
-// Launch fails with public S3
+    // Launch fails with public S3
     test('Private S3 policy test with public ACL', async () => {
         let policyType = 'Only_Private_S3_Buckets'
         let policyName = policyType + '-' + id;
         let bucketName = policyName.replaceAll('_', '-').toLowerCase();
-        let inputs = {'inputs\.acl': "public-read", 'inputs\.agent': `${executionHostName}`,'inputs\.name': `${bucketName}`,}
+        let inputs = { 'inputs\.acl': "public-read", 'inputs\.agent': `${executionHostName}`, 'inputs\.name': `${bucketName}`, }
         console.log('Adding private S3 only policy');
         await addPolicy(page, policyType, policyName, 'space', '', space);
-         await page.waitForTimeout(1500); 
+        await page.waitForTimeout(1500);
         await page.locator('[data-test="policy-enable-toggle"]').click();
-        await page.waitForTimeout(1500); 
+        await page.waitForTimeout(1500);
         await goToSpace(page, space);
         console.log('Launching blueprint with public bucket');
         await launchBlueprintFromCatalogPage(page, 's3', inputs)
         await validateSandboxFailedDueToPolicy(page, 'Deployment of not private AWS S3 bucket is not allowed');
         await endSandbox(page);
-        await expect(page.locator('[data-test="sandbox-row-0"]')).toBeHidden({timeout: 10 * 60 * 1000})
-   
+        await expect(page.locator('[data-test="sandbox-row-0"]')).toBeHidden({ timeout: 10 * 60 * 1000 })
+
     });
 
     // Launch succeed with private S3
@@ -55,51 +55,74 @@ test.describe('Check AWS policies', () => {
         let bucketName = policyName.replaceAll('_', '-').toLowerCase();
         console.log('Adding private S3 only policy');
         await goToSpace(page, space);
-        let inputs = {'inputs\.acl': "private", 'inputs\.agent': `${executionHostName}`,'inputs\.name': `${bucketName}`,}
+        let inputs = { 'inputs\.acl': "private", 'inputs\.agent': `${executionHostName}`, 'inputs\.name': `${bucketName}`, }
         await page.click('[data-test=blueprints-nav-link]');
         console.log('Launching blueprint with private bucket');
         await launchBlueprintFromCatalogPage(page, 's3', inputs)
         await validateSBisActive(page);
         await endSandbox(page);
-        await expect(page.locator('[data-test="sandbox-row-0"]')).toBeHidden({timeout: 10 * 60 * 1000})
+        await expect(page.locator('[data-test="sandbox-row-0"]')).toBeHidden({ timeout: 10 * 60 * 1000 })
         await deletePolicy(page, policyName);
     });
 
     // Launch fails with wrong region
-    test('wrong region', async() => {
+    test.only('wrong region', async () => {
         let policyType = 'allowed_regions'
         let policyName = policyType + '-' + id;
-        let region = 'eu-west-1'
+        let region = 'eu-west-1';
+        let regoValue = '{"allowed_regions":["eu-west-1"]}'
         let bucketName = policyName.replaceAll('_', '-').toLowerCase();
-        let inputs = {'inputs\.region': "eu-west-2", 'inputs\.agent': `${executionHostName}`,'inputs\.name': `${bucketName}`,}
+        let inputs = { 'inputs\.region': "eu-west-2", 'inputs\.agent': `${executionHostName}`, 'inputs\.name': `${bucketName}`, }
         console.log('Adding allowed regions policy');
         await addPolicy(page, policyType, policyName, 'space', region, space);
         await editRego(page, region)
-        await page.waitForTimeout(1500); 
+        await page.waitForTimeout(1500);
         await page.locator('[data-test="policy-enable-toggle"]').click();
-        await page.waitForTimeout(1500); 
+        await page.waitForTimeout(1500);
         await goToSpace(page, space);
         await page.click('[data-test=blueprints-nav-link]');
         console.log('Launching blueprint with prohibited region');
         await launchBlueprintFromCatalogPage(page, 's3', inputs)
         await validateSandboxFailedDueToPolicy(page, 'allowed_regions - "Invalid region:');
         await endSandbox(page);
-        await expect(page.locator('[data-test="sandbox-row-0"]')).toBeHidden({timeout: 10 * 60 * 1000})
+        await expect(page.locator('[data-test="sandbox-row-0"]')).toBeHidden({ timeout: 10 * 60 * 1000 })
     })
 
- // Launch succeeds with correct region
-    test('Allowed region ', async() => {
+    // Launch succeeds with correct region
+    test('Allowed region ', async () => {
         let policyType = 'allowed_regions'
         let policyName = policyType + '-' + id;
         let region = 'eu-west-1'
         let bucketName = policyName.replaceAll('_', '-').toLowerCase();
-        let inputs = {'inputs\.region': "eu-west-1", 'inputs\.agent': `${executionHostName}`,'inputs\.name': `${bucketName}`,}
+        let inputs = { 'inputs\.region': "eu-west-1", 'inputs\.agent': `${executionHostName}`, 'inputs\.name': `${bucketName}`, }
         await page.click('[data-test=blueprints-nav-link]');
         console.log('Launching blueprint with allowed region');
         await launchBlueprintFromCatalogPage(page, 's3', inputs)
         await validateSBisActive(page);
         await endSandbox(page);
-        await expect(page.locator('[data-test="sandbox-row-0"]')).toBeHidden({timeout: 10 * 60 * 1000})
+        await expect(page.locator('[data-test="sandbox-row-0"]')).toBeHidden({ timeout: 10 * 60 * 1000 })
         await deletePolicy(page, policyName);
     })
+
+   
+    test('environment duration ', async () => {
+        let policyType = 'environment-duration'
+        let policyName = policyType + '-' + id;
+        let duration = '"env_max_duration_minutes": 7,  "env_duration_for_manual_approval_minutes": 6 '
+        // let region = 'eu-west-1'
+        let bucketName = policyName.replaceAll('_', '-').toLowerCase();
+        let inputs = { 'inputs\.region': "eu-west-1", 'inputs\.agent': `${executionHostName}`, 'inputs\.name': `${bucketName}`, }
+        console.log('Adding environment duration policy');
+        await addPolicy(page, policyType, policyName, 'space', space);
+        await editRego(page, duration)
+        // await page.click('[data-test=blueprints-nav-link]');
+        // console.log('Launching blueprint with allowed region');
+        await launchBlueprintFromCatalogPage(page, 's3', inputs)
+        await validateSBisActive(page);
+        await endSandbox(page);
+        await expect(page.locator('[data-test="sandbox-row-0"]')).toBeHidden({ timeout: 10 * 60 * 1000 })
+        // await deletePolicy(page, policyName);
+    })
+
+
 });
