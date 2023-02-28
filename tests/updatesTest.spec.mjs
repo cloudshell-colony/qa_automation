@@ -49,11 +49,13 @@ test.describe.serial("Asset updates test", () => {
 
     test("Change TF file in github", async() => {
         await page.goto('https://github.com/cloudshell-colony/qa_automation');
+        //Sign in to github
         await page.locator('header[role="banner"] >> text=Sign in').click();
         await page.locator('input[name="login"]').fill(repoKeys.userName);
         await page.locator('input[name="password"]').fill(repoKeys.password);
         await page.locator('input:has-text("Sign in")').click();
         console.log('Signed in to github');
+        //Edit tf file
         await page.goto('https://github.com/cloudshell-colony/qa_automation/blob/main/simpleTF/main.tf');
         await page.keyboard.press("e");
         await page.locator('pre[role="presentation"]').first().click();
@@ -61,24 +63,28 @@ test.describe.serial("Asset updates test", () => {
         await page.keyboard.press("Delete");
         await page.keyboard.type(tfText);
         await page.click('button:has-text("Commit changes")');
-        console.log('Changed message value in TF file');
+        console.log('Changed TF file to \n' + tfText);
     })
 
-    test("Update grain and validate change", async() => {
+    test("Update sandbox and validate change", async() => {
+        //Go back to active sandbox
         await page.goto(`${baseURL}`, { timeout: 90000 });
         await goToSandbox(page, sandboxName, spaceName);
         const detectUpdate = await page.locator('[data-test="asset-drift-card"]')
         await detectUpdate.click()
         const numLocator = await detectUpdate.locator('[data-test="amount"]')
+        //Wait for update to show up in screen
         await expect(numLocator, 'Update in asset not detected after 2 minutes').toContainText('1', { timeout: 120000});
-        console.log('Update detected in sandbox');
+        console.log('Update (asset drift) detected in sandbox');
         await page.getByText('Detected Changes on simpleTF').click();
         let updatesPage = await page.locator('[data-test="assetDrift-drawer"]');
         expect(updatesPage).toContainText(`ahlan ${id}`);
+         //Initiate update according to change in file
         updatesPage = await page.locator('.scrollable-container');
         await updatesPage.getByRole('button', { name: /Update/i }).click()
         await expect(numLocator, 'Sandbox resource not updated after 1 minute').toContainText('0', { timeout: 60000});
         console.log('Executed update in sandbox');
+        //Check logs show the correct new message from the changed tf file
         await page.click('[data-test="logs-card"]');
         await page.locator('td > div').first().click();
         const logBlock = await page.locator('[data-test="log-block"]');
