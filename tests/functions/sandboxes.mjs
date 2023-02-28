@@ -44,8 +44,8 @@ export const validateS3BucketWasCreatedInSB = async (page, bucketName) => {
   console.log(`validated bucket arn is arn:aws:s3:::${bucketName}`);
 };
 
-export const goToSandbox = async (page, sandboxName) => {
-  await goToSpace(page, "Sample");
+export const goToSandbox = async (page, sandboxName, space="Sample") => {
+  await goToSpace(page, space);
   await page.click("[data-test=sandboxes-nav-link]");
   await page.click(`tr:has-text("${sandboxName}")`);
 };
