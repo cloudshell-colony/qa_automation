@@ -3,7 +3,7 @@ import goToAdminConsole from "./goToAdminConsole.mjs";
 import fetch from "node-fetch";
 import { selectFromDropbox } from "./general.mjs";
 
-export const addPolicy = async (page, policyType, policyName, scope, extra = '', space = '') => {
+export const addPolicy = async (page, policyType, extra = '', space = '') => {
     await goToAdminConsole(page, 'policies');
     await page.click('[data-test=apply-new-policy]');
     await page.click('.select-policy-repos-dropdown__menu')
@@ -33,6 +33,13 @@ export const editRego = async (page, DATA) => {
      await page.keyboard.press('Control+A')
      await page.keyboard.press('Delete')
      await page.keyboard.type(JSON.stringify(DATA));
+     await page.getByRole('button', { name: 'save' }).click()
+    
+};
+
+export const addApprovalChannel = async (page, approval) => {
+    await page.locator('[data-test="policies-row-0"]').click()
+    await selectFromDropbox(page, 'approval-channels', approval);
      await page.getByRole('button', { name: 'save' }).click()
     
 };
