@@ -119,7 +119,7 @@ test.describe.serial('Multiple blueprints onBoarding API', () => {
     //Launch all blueprints in our blueprint map
     for (const blueprintData of blueprintMap) {
         test(`Launching blueprint "${blueprintData.name}"`, async () => {
-            const resp = await launchBlueprintAPI(session, baseURL, blueprintData.name, spaceName, blueprintData.inputs, repoName);
+            const resp = await launchBlueprintAPI(session, email, baseURL, blueprintData.name, spaceName, blueprintData.inputs, repoName);
             const jsonResponse = await resp.json()
             expect(resp.status, 'Sandbox launch failed, received following error: ' + JSON.stringify(jsonResponse)).toBe(202);
             sandboxId = await jsonResponse.id;

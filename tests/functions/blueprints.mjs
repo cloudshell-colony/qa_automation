@@ -181,7 +181,7 @@ export const validateBlueprintErrors = async (page, BPName, errList, expectedErr
     }
 };
 
-export const launchBlueprintAPI = async (session, baseURL, BPName, spaceName, inputs, repoName, duration = "PT2H") => {
+export const launchBlueprintAPI = async (session, Email, baseURL, BPName, spaceName, inputs, repoName, duration = "PT2H") => {
     const timestemp = Math.floor(Date.now() / 1000);
     const data = {
         "sandbox_name": `${BPName}-${timestemp}`,
@@ -192,7 +192,7 @@ export const launchBlueprintAPI = async (session, baseURL, BPName, spaceName, in
         "artifacts": {},
         "Collaborators": { "collaborators_emails": [], "all_space_members": false },
         "notes": '',
-        "owner_email":"qa01@automation.com",
+        "owner_email": `${Email}`,
         "source": {
             "is_editable": true,
             "repository_name": repoName

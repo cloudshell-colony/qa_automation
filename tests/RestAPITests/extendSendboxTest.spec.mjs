@@ -11,6 +11,7 @@ const space = "API-tests"
 const BPName = "autogen_create-ec2-instance"
 const inputs = { ami: "ami-0cd01c7fb16a9b497", instance_type: "t3.micro", host_name: "qa-eks3" }
 const repoName = 'qtorque'
+const email = "qa01@automation.com"
 let duration
 let session
 let ID
@@ -25,7 +26,7 @@ test.describe.serial('SendBox extention tests', () => {
 
 
     test("Create and validate new SendBox", async () => {
-        const response = await launchBlueprintAPI(session, baseURL, BPName, space, inputs, repoName, duration = "PT2H") 
+        const response = await launchBlueprintAPI(session, email,  baseURL, BPName, space, inputs, repoName, duration = "PT2H") 
         const responseJson = await response.json()
         console.log(responseJson)
         ID = responseJson.id
