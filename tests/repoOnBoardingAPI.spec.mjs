@@ -18,7 +18,7 @@ const lastName = "LN.".concat(prefix).concat(timestemp);
 const companyName = "Company.".concat(prefix).concat(timestemp);
 const accountName = prefix.concat(id);
 const spaceName = prefix.concat("-space-").concat(timestemp);
-const email = prefix.concat("@").concat(id).concat(".com");
+const userEmail = prefix.concat("@").concat(id).concat(".com");
 const executionHost = process.env.execHostName;
 const executionHostName = executionHost.concat(timestemp);
 const namespace = process.env.nameSpace;
@@ -119,7 +119,7 @@ test.describe.serial('Multiple blueprints onBoarding API', () => {
     //Launch all blueprints in our blueprint map
     for (const blueprintData of blueprintMap) {
         test(`Launching blueprint "${blueprintData.name}"`, async () => {
-            const resp = await launchBlueprintAPI(session, email, baseURL, blueprintData.name, spaceName, blueprintData.inputs, repoName);
+            const resp = await launchBlueprintAPI(session, userEmail, baseURL, blueprintData.name, spaceName, blueprintData.inputs, repoName);
             const jsonResponse = await resp.json()
             expect(resp.status, 'Sandbox launch failed, received following error: ' + JSON.stringify(jsonResponse)).toBe(202);
             sandboxId = await jsonResponse.id;

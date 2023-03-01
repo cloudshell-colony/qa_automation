@@ -198,7 +198,7 @@ export const launchBlueprintAPI = async (session, Email, baseURL, BPName, spaceN
             "repository_name": repoName
         },
         "tags": { "activity_type": 'other' },
-        "workflows":[],
+        "workflows":[]
     }
     const response = await fetch(`${baseURL}/api/spaces/${spaceName}/environments`, {
         "method": "POST",
