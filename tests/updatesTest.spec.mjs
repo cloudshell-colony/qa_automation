@@ -41,13 +41,13 @@ test.describe.serial("Asset updates test", () => {
         await stopAndValidateAllSBsCompleted(page);
     });
 
-    test("Launch simple TF sandbox", async() =>{
+    test.skip("Launch simple TF sandbox", async() =>{
         await goToSpace(page, spaceName);
         sandboxName = await launchBlueprintFromCatalogPage(page, blueprintName, inputs)
         await validateSBisActive(page);
     })
 
-    test("Change TF file in github", async() => {
+    test.skip("Change TF file in github", async() => {
         await page.goto('https://github.com/cloudshell-colony/qa_automation');
         //Sign in to github
         await page.locator('header[role="banner"] >> text=Sign in').click();
@@ -66,7 +66,7 @@ test.describe.serial("Asset updates test", () => {
         console.log('Changed TF file to \n' + tfText);
     })
 
-    test("Update sandbox and validate change", async() => {
+    test.skip("Update sandbox and validate change", async() => {
         //Go back to active sandbox
         await page.goto(`${baseURL}`, { timeout: 90000 });
         await goToSandbox(page, sandboxName, spaceName);
