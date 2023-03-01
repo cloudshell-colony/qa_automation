@@ -33,7 +33,7 @@ let blueprintName;
 
 let session = "empty session";
 let sandboxId = '';
-// const secret = generateSecret(email, account);
+// const secret = generateSecret(mail, account);
 
 
 test.describe.serial('On boarding with APIs', () => {
@@ -44,13 +44,13 @@ test.describe.serial('On boarding with APIs', () => {
 
     test('Create new account', async () => {
         console.log(`Creating new account with the following paramaters:`);
-        console.log(`"account_name": ${accountName}, "first_name": ${firstName}, "last_name": ${lastName}, "email": ${email}, "password": ${password}, "company_name": ${companyName}`);
-        const response = await createAccountAPI(baseURL, accountName, companyName, email, firstName, lastName, password);
+        console.log(`"account_name": ${accountName}, "first_name": ${firstName}, "last_name": ${lastName}, "mail": ${mail}, "password": ${password}, "company_name": ${companyName}`);
+        const response = await createAccountAPI(baseURL, accountName, companyName, mail, firstName, lastName, password);
         await validateAPIResponseis200(response);
     });
 
     test('Get admin session from new account', async () => {
-        session = await getSessionAPI(email, password, baseURL, accountName);
+        session = await getSessionAPI(mail, password, baseURL, accountName);
         await validateGetSessionAPI(session);
         console.log(`Got the following admin session: ${session}`);
     });
