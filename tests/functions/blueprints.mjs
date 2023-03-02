@@ -191,7 +191,6 @@ export const launchBlueprintAPI = async (session,  baseURL, BPName, spaceName, i
         "duration": duration,
         "inputs": inputs,
         "notes": '',
-        // "owner_email": `${Email}`,
         "sandbox_name": `${BPName}-${timestemp}`,
         "source": {
             "is_editable": true,

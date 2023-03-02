@@ -19,7 +19,6 @@ const companyName = "Company.".concat(prefix).concat(timestemp);
 const accountName = prefix.concat(id);
 const spaceName = prefix.concat("-space-").concat(timestemp);
 const userEmail = prefix.concat("@").concat(id).concat(".com");
-// const userEmail = "qa25@automation.com"
 const executionHost = process.env.execHostName;
 const executionHostName = executionHost.concat(timestemp);
 const namespace = process.env.nameSpace;
