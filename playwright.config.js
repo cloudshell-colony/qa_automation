@@ -52,7 +52,6 @@ const config = {
     // /*
     {
       name: 'chromium',
-      testMatch: /.repoOnBoardingAPI.spec.mjs/,
       use: {
         ...devices['Desktop Chrome'],
       },

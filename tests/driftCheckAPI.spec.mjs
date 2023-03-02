@@ -41,7 +41,7 @@ test.describe.serial("Basic drift AWS with API", () => {
         await stopAndValidateAllSBsCompletedAPI(session, baseURL, spaceName);
     });
 
-    test.skip("Launch S3 bucket sandbox", async() =>{
+    test("Launch S3 bucket sandbox", async() =>{
         let inputs = {
             'acl': "private",
             'host_name': `${executionHostName}`,
@@ -49,7 +49,7 @@ test.describe.serial("Basic drift AWS with API", () => {
             'region': "eu-west-1",
             'user': "none"
         }
-        const resp = await launchBlueprintAPI(session, baseURL, blueprintName, spaceName, inputs, repoName);
+        const resp = await launchBlueprintAPI(session, email, baseURL, blueprintName, spaceName, inputs, repoName);
         const jsonResponse = await resp.json()
         expect(resp.status, 'Sandbox launch failed, received following error: ' + JSON.stringify(jsonResponse)).toBe(202);
         sandboxId = await jsonResponse.id;
@@ -57,7 +57,7 @@ test.describe.serial("Basic drift AWS with API", () => {
         await validateSBisActiveAPI(session, baseURL, sandboxId, spaceName);
     });
 
-    test.skip("Tag bucket with CLI", async() => {
+    test("Tag bucket with CLI", async() => {
         originalTags = execSync(`aws s3api get-bucket-tagging --bucket ${bucketName}`, { encoding: 'utf-8' });
         console.log("Original bucket tags are:\n" + originalTags);
         execSync(`aws s3api put-bucket-tagging --bucket ${bucketName} --tagging "${tagging}"`, { encoding: 'utf-8' });
@@ -65,7 +65,7 @@ test.describe.serial("Basic drift AWS with API", () => {
         console.log('New bucket tags:\n' + newTags);
     });
 
-    test.skip("Check for drift", async() =>{
+    test("Check for drift", async() =>{
         let sandboxDetails = await (await getSandboxDetailsAPI(session, baseURL, spaceName, sandboxId)).json();
         grainId = sandboxDetails.details.state.grains[0].id;
         console.log('Grain ID is: ' + grainId);
@@ -74,7 +74,7 @@ test.describe.serial("Basic drift AWS with API", () => {
         await waitForDriftStatusAPI(session, baseURL, spaceName, sandboxId, grainId);
     });
   
-    test.skip("Reconcile and validate tags are changed", async()=>{
+    test("Reconcile and validate tags are changed", async()=>{
         // initiate reconcile and wait for it to end
         const response = await reconcileDriftAPI(session, baseURL, spaceName, sandboxId, [grainId]);
         await validateAPIResponseis200(response);
