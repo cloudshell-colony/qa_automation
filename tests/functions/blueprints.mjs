@@ -184,21 +184,21 @@ export const validateBlueprintErrors = async (page, BPName, errList, expectedErr
 export const launchBlueprintAPI = async (session, Email, baseURL, BPName, spaceName, inputs, repoName, duration = "PT2H") => {
     const timestemp = Math.floor(Date.now() / 1000);
     const data = {
-        "sandbox_name": `${BPName}-${timestemp}`,
-        "blueprint_name": `${BPName}`,
-        "inputs": inputs,
-        "duration": duration,
-        "automation": false,
         "artifacts": {},
+        "automation": false,
+        "blueprint_name": `${BPName}`,
         "Collaborators": { "collaborators_emails": [], "all_space_members": false },
+        "duration": duration,
+        "inputs": inputs,
         "notes": '',
         "owner_email": `${Email}`,
+        "sandbox_name": `${BPName}-${timestemp}`,
         "source": {
             "is_editable": true,
             "repository_name": repoName
         },
         "tags": { "activity_type": 'other' },
-        "workflows":[]
+        "workflows": []
     }
     const response = await fetch(`${baseURL}/api/spaces/${spaceName}/environments`, {
         "method": "POST",
