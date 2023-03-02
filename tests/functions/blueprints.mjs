@@ -181,21 +181,23 @@ export const validateBlueprintErrors = async (page, BPName, errList, expectedErr
     }
 };
 
-export const launchBlueprintAPI = async (session, baseURL, BPName, spaceName, inputs, repoName, duration = "PT2H") => {
+export const launchBlueprintAPI = async (session,  baseURL, BPName, spaceName, inputs, repoName, duration = "PT2H") => {
     const timestemp = Math.floor(Date.now() / 1000);
     const data = {
-        "sandbox_name": `${BPName}-${timestemp}`,
-        "blueprint_name": `${BPName}`,
-        "inputs": inputs,
-        "duration": duration,
-        "automation": false,
         "artifacts": {},
-        "activity_type": 'other',
+        "automation": false,
+        "blueprint_name": `${BPName}`,
+        "Collaborators": { "collaborators_emails": [], "all_space_members": false },
+        "duration": duration,
+        "inputs": inputs,
         "notes": '',
-        "source": { 
+        "sandbox_name": `${BPName}-${timestemp}`,
+        "source": {
             "is_editable": true,
             "repository_name": repoName
-         }
+        },
+        "tags": { "activity_type": 'other' },
+        "workflows": []
     }
     const response = await fetch(`${baseURL}/api/spaces/${spaceName}/environments`, {
         "method": "POST",
@@ -257,7 +259,7 @@ export const generateSpecificAssetsFromRepoAPI = async (session, baseURL, spaceN
     console.log(`Got blueprint list from repo ${repoName}`);
     const blueprintCandidates = await filterBlueprintCandidatesForAPI(await response.json(), assetNameList)
     expect(blueprintCandidates.length, 'Got incompatible length of blueprints list to generate from repo').toBe(assetNameList.length)
-    response = await generateBlueprintsFromCandidatesAPI(session,baseURL,spaceName,blueprintCandidates,repoName);
+    response = await generateBlueprintsFromCandidatesAPI(session, baseURL, spaceName, blueprintCandidates, repoName);
     await validateAPIResponseis200(response);
     console.log(`Generated ${blueprintCandidates.length} blueprints from repo ${repoName}`);
 }
@@ -269,7 +271,7 @@ export const generateSpecificAssetsFromRepoAPI = async (session, baseURL, spaceN
  * @param {*} assetNameList Array of the asset names which you want to generate blueprints from
  * @returns An array of only the relevant blueprint candidates, can be passed to generateBlueprintsFromCandidatesAPI function
  */
-export const filterBlueprintCandidatesForAPI = async(blueprintCandidates, assetNameList) => {
+export const filterBlueprintCandidatesForAPI = async (blueprintCandidates, assetNameList) => {
     const blueprintList = []
     for (const key of blueprintCandidates) {
         if (assetNameList.includes(key.name)) {
@@ -279,7 +281,7 @@ export const filterBlueprintCandidatesForAPI = async(blueprintCandidates, assetN
     return blueprintList
 }
 
-export const publishBlueprintAPI = async(session, baseURL, space, blueprintName, repoName) =>{
+export const publishBlueprintAPI = async (session, baseURL, space, blueprintName, repoName) => {
     const data = {
         "blueprint_name": blueprintName,
         "repository_name": repoName
@@ -295,7 +297,7 @@ export const publishBlueprintAPI = async(session, baseURL, space, blueprintName,
     return response;
 }
 
-export const getBlueprintsAPI = async(session, baseURL,space) =>{
+export const getBlueprintsAPI = async (session, baseURL, space) => {
     const response = await fetch(`${baseURL}/api/spaces/${space}/blueprints`, {
         "method": "GET",
         "headers": {
@@ -306,7 +308,7 @@ export const getBlueprintsAPI = async(session, baseURL,space) =>{
     return response;
 }
 
-export const validateBlueprintAPI = async(session, baseURL, space, blueprintName,blueprintRaw) =>{
+export const validateBlueprintAPI = async (session, baseURL, space, blueprintName, blueprintRaw) => {
     const data = {
         "blueprint_name": blueprintName,
         "blueprint_raw_64": blueprintRaw
@@ -322,7 +324,7 @@ export const validateBlueprintAPI = async(session, baseURL, space, blueprintName
     return response;
 }
 
-export const getBlueprintsInCatalogAPI = async(session, baseURL, space ) =>{
+export const getBlueprintsInCatalogAPI = async (session, baseURL, space) => {
     const response = await fetch(`${baseURL}/api/spaces/${space}/catalog`, {
         "method": "GET",
         "headers": {
@@ -333,7 +335,7 @@ export const getBlueprintsInCatalogAPI = async(session, baseURL, space ) =>{
     return response;
 }
 
-export const getBlueprintsDetailsInCatalogAPI = async(session, baseURL, space, blueprintName, repoName ) =>{
+export const getBlueprintsDetailsInCatalogAPI = async (session, baseURL, space, blueprintName, repoName) => {
     const response = await fetch(`${baseURL}/api/spaces/${space}/catalog/${blueprintName}?repository_name=${repoName}`, {
         "method": "GET",
         "headers": {
@@ -344,7 +346,7 @@ export const getBlueprintsDetailsInCatalogAPI = async(session, baseURL, space, b
     return response;
 }
 
-export const unpublishBlueprintInCatalogAPI = async(session, baseURL, space, blueprintName, repoName) =>{
+export const unpublishBlueprintInCatalogAPI = async (session, baseURL, space, blueprintName, repoName) => {
     const response = await fetch(`${baseURL}/api/spaces/${space}/catalog/${blueprintName}?repository_name=${repoName}`, {
         "method": "DELETE",
         "headers": {
