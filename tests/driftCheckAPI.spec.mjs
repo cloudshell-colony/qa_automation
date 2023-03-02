@@ -49,7 +49,7 @@ test.describe.serial("Basic drift AWS with API", () => {
             'region': "eu-west-1",
             'user': "none"
         }
-        const resp = await launchBlueprintAPI(session, email, baseURL, blueprintName, spaceName, inputs, repoName);
+        const resp = await launchBlueprintAPI(session, baseURL, blueprintName, spaceName, inputs, repoName);
         const jsonResponse = await resp.json()
         expect(resp.status, 'Sandbox launch failed, received following error: ' + JSON.stringify(jsonResponse)).toBe(202);
         sandboxId = await jsonResponse.id;

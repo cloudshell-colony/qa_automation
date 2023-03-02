@@ -181,7 +181,7 @@ export const validateBlueprintErrors = async (page, BPName, errList, expectedErr
     }
 };
 
-export const launchBlueprintAPI = async (session, Email, baseURL, BPName, spaceName, inputs, repoName, duration = "PT2H") => {
+export const launchBlueprintAPI = async (session,  baseURL, BPName, spaceName, inputs, repoName, duration = "PT2H") => {
     const timestemp = Math.floor(Date.now() / 1000);
     const data = {
         "artifacts": {},
@@ -191,7 +191,7 @@ export const launchBlueprintAPI = async (session, Email, baseURL, BPName, spaceN
         "duration": duration,
         "inputs": inputs,
         "notes": '',
-        "owner_email": `${Email}`,
+        // "owner_email": `${Email}`,
         "sandbox_name": `${BPName}-${timestemp}`,
         "source": {
             "is_editable": true,
