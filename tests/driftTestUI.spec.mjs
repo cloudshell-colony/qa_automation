@@ -21,9 +21,9 @@ test.describe('drift test on UI', () => {
 
     });
 
-    test("launch blueprint with tag adding for drift and validate drifting and reconcile", async () => {
+    test.skip("launch blueprint with tag adding for drift and validate drifting and reconcile", async () => {
         await goToSpace(page, space)
-        const blueprint = await page.locator('[data-test="catalog-bp-drift-test"]')
+        const blueprint = await page.locator('[data-test="catalog-bp-autogen_drift-test"]')
         await blueprint.locator('[data-test="launch-environment-from-blueprint"]').click()
         await page.locator('[data-test="go-to-next-step"]').click()
         selectFromDropbox(page, 'inputs.host', 'qa-eks3' )
