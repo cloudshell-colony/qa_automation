@@ -17,6 +17,10 @@ const newName = "qa-new-" + timestamp;
 const newSpaceName = "api-" + timestamp;
 let session;
 
+/** Test prerequisites
+ * Have account with credentials as saved in .env file
+ */
+
 test.describe.serial("can create new space, validate creation and delete it", () => {
     let page;
     test.beforeAll(async ({ browser }) => {

@@ -20,6 +20,13 @@ const tfText = `output "message" {
   }`;
 let inputs = {'inputs\.agent': `${executionHostName}`};
 
+/** Test prerequisites
+ * Have account with credentials as saved in .env file
+ * @spaceName should exist in the account
+ * space should have repo https://github.com/cloudshell-colony/qa_automation associated
+ * and simpleTF asset auto-generated to a published blueprint
+ * @executionHostName agent should be associated to space
+ */
 
 test.describe.serial("Asset updates test", () => {
     let page;

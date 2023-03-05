@@ -10,6 +10,13 @@ const user = process.env.adminEMail;
 const space = "drift-test";
 let session;
 
+/** Test prerequisites
+ * Have account with credentials as saved in .env file
+ * @space should exist in the account
+ * space should have repo https://github.com/QualiNext/torque-demo associated
+ * and drift-test blueprint from the repo published
+ */
+
 test.describe('drift test on UI', () => {
     let page;
     test.beforeAll(async ({ browser }) => {

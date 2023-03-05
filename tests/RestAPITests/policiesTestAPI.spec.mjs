@@ -12,6 +12,10 @@ const timestemp = Math.floor(Date.now() / 1000);
 const space = 'api-policies'+timestemp;
 let session = "empty session";
 
+/** Test prerequisites
+ * Have account with credentials as saved in .env file
+ */
+
 test.describe('Check AWS policies', () => {
 
     test.beforeAll(async () => {

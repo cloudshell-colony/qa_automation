@@ -14,6 +14,14 @@ const repoName = 'qtorque'
 let duration
 let session
 
+/** Test prerequisites
+ * Have account with credentials as saved in .env file
+ * @space should exist in the account
+ * space should have repo https://github.com/QualiNext/qa-bp-validation associated
+ * and simpleTF asset auto-generated to a published blueprint
+ * agent called 'qa-eks' should be associated (as saved in blueprint inputs)
+ */
+
 test.describe.serial('SendBox extention tests', () => {
     test.beforeAll(async () => {
         session = await getSessionAPI(user, password, baseURL, account);

@@ -12,14 +12,25 @@ const password = process.env.allAccountsPassword;
 const account = process.env.account;
 const user = process.env.adminEMail
 const space = "Collaborator";
+const logOutLetter = user.charAt(0).toUpperCase();
 const collaboratorName = 'amir.o@quali.com';
 const count = 1
 const bpName = 'simpleTF';
 const executionHostName = 'qa-eks3';
+const spaceMember = 'asaf.y@quali.com';
+const spaceMemberPassword = 'Qual!123';
 let inputs = {'inputs\.agent': executionHostName};
 let page;
 let session;
 let sandboxName;
+
+/** Test prerequisites
+ * Have account with credentials as saved in .env file
+ * @space should exist in the account with @executionHostName associated to the space
+ * Space should have repo https://github.com/QualiNext/qa-bp-validation associated
+ * and simpleTF asset auto-generated to a published blueprint
+ * @spaceMember user should be a space member in the used space
+ */
 
 test.describe('sendbox launch with collab', () => {
    
@@ -80,10 +91,10 @@ test.describe('sendbox launch with collab', () => {
         expect(await page.isVisible('[data-test="sandbox-info-column"] div:has-text("StatusActive")', 500)).toBeTruthy();
         const sandboxId = await findSandboxIdByNameAPI(session, baseURL, space, sandboxName);
         console.log(sandboxId);
-        await addCollaboratorToSandbox(page, 'asaf.y@quali.com');
+        await addCollaboratorToSandbox(page, spaceMember);
         console.log('Added collaborator to sandbox');
-        await logOut(page, 'Q');
-        await loginToAccount(page, 'asaf.y@quali.com', account, 'Qual!123', baseURL);
+        await logOut(page, logOutLetter);
+        await loginToAccount(page, spaceMember, account, spaceMemberPassword, baseURL);
         //Change filter to show only collaborated sandboxes
         await page.click('[data-test=sandboxes-nav-link]');
         await selectFromDropbox(page, 'filters__control', "Collaborator");

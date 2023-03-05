@@ -15,6 +15,10 @@ let session = "empty session";
 let page;
 let values;
 
+/** Test prerequisites
+ * Have account with credentials as saved in .env file
+ * Space saved in .env file should exist in the account
+ */
 
 test.describe('Add and delete user', () => {
 
