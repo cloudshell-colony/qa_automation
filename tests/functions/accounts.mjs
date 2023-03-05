@@ -1,4 +1,4 @@
-import { addCaptchaBypass } from "./general.mjs";
+import { addCaptchaBypass, selectFromDropbox } from "./general.mjs";
 import fetch from "node-fetch";
 import { expect } from "@playwright/test";
 import goToAdminConsole from "./goToAdminConsole.mjs";
@@ -165,8 +165,13 @@ export const loginToAccount = async (page, email, accountName, allAccountsPasswo
     // TO DO
     // need to add validation and handeling for account selection
     // currently - YAGNI
+    await page.waitForTimeout(1000);
+    let visi = await page.isVisible("[data-test=login-title]");
+    if(visi){
+        await selectFromDropbox(page, 'account__control', accountName);
+    }
     // await page.click('class="select-account__control"');
-    await page.waitForURL(`${baseURL}/Sample`);
+    await page.waitForSelector("[data-test=sidebar-dropdown]");
 };
 
 export const loginToAccountAfterDelite = async (page, email, accountName, allAccountsPassword, baseURL) => {
@@ -208,3 +213,8 @@ export const ValidteLoginFalureAfterDelition = async (accountName, allAccountsPa
     expect(await page.locator('[data-test="auth-error"]'), "Login Should Fail");
 
 };
+
+export const logOut = async(page, firstLetter) =>{
+    await page.getByText(firstLetter).first().click();
+    await page.click("[data-test=logout-button]");
+}
