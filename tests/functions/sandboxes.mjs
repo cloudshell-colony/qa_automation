@@ -1,6 +1,7 @@
 import { expect } from "@playwright/test";
 import { goToSpace } from "./spaces.mjs";
 import fetch from "node-fetch";
+import { selectFromDropbox } from "./general.mjs";
 
 
 export const startSampleSandbox = async (page, sandboxFullName) => {
@@ -390,4 +391,39 @@ export const validateSandboxFailedDueToPolicy = async(page, expectedText) =>{
   await page.click('[data-test=event-name]:has-text("Plan Validation")');
   const logLocator = await page.locator('[data-test=log-block]');
   await expect(logLocator).toHaveText(regExpected);
+}
+
+export const addCollaboratorToSandbox = async(page, email) =>{
+  await page.getByText('Add').click();
+  await selectFromDropbox(page, 'add_collab', email);
+  await page.getByRole('button', { name: 'Save' }).click();
+}
+
+export const changeSBCollaboratorAPI = async(session, baseURL, sandboxId, colabEmails, allSpaceMembers = false) =>{
+  const data = {
+    "all_space_members": allSpaceMembers,
+    "collaborators_emails": colabEmails
+  }
+  const response = await fetch(`${baseURL}/api/spaces/Collaborator/environments/${sandboxId}/collaborators`, {
+    "method": "PUT",
+    "body": JSON.stringify(data),
+    "headers": {
+        'Authorization': `Bearer ${session}`,
+        'Content-Type': 'application/json',
+        'Accept': '*/*'
+    }
+  });
+  return response;
+}
+
+export const findSandboxIdByNameAPI = async(session, baseURL, spaceName, sandboxName) =>{
+  let sandboxId;
+  const sandboxesJson = await (await getAllSandboxesAPI(session, baseURL, spaceName)).json();
+  for (const sandbox of sandboxesJson){
+    if(sandbox.details.definition.metadata.name === sandboxName){
+      sandboxId = sandbox.id;
+      break
+    }
+  }
+  return sandboxId;
 }
