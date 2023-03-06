@@ -16,6 +16,13 @@ const emptyBPRaw = ""
 let session
 
 
+/** Test prerequisites
+ * Have account with credentials as saved in .env file
+ * @space should exist in the account with
+ * Space should have repo https://github.com/QualiNext/test-spec2-public associated
+ * and @BPName asset auto-generated to a blueprint
+ */
+
 test.describe.serial('Validate Blueprint tests', () => {
     test.beforeAll(async () => {
        

@@ -9,11 +9,19 @@ const account = process.env.account
 const user = process.env.adminEMail
 const space = "API-tests"
 const BPName = "autogen_create-ec2-instance"
-const inputs = { ami: "ami-0cd01c7fb16a9b497", instance_type: "t3.micro", host_name: "qa-eks3" }
+const executionHostName = "qa-eks";
+const inputs = { ami: "ami-0cd01c7fb16a9b497", instance_type: "t3.micro", agent: executionHostName }
 const repoName = 'qtorque'
 let duration
 let session
 let ID
+
+/** Test prerequisites
+ * Have account with credentials as saved in .env file
+ * @space should exist in the account with @executionHostName associated to it
+ * Space should have repo https://github.com/QualiNext/test-spec2-public associated
+ * and @BPName asset auto-generated to a blueprint
+ */
 
 test.describe.serial('SendBox extention tests', () => {
     test.beforeAll(async () => {

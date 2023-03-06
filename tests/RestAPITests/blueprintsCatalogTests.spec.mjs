@@ -13,6 +13,13 @@ const wrongBPName = "autogen_eks"
 const repoName = 'qtorque'
 let session
 
+/** Test prerequisites
+ * Have account with credentials as saved in .env file
+ * @space should exist in the account with @executionHostName associated to it
+ * Space should have repo https://github.com/QualiNext/test-spec2-public associated
+ * and @BPName asset auto-generated to a blueprint
+ * Space should have repo https://github.com/QualiNext/torque-demo associated and dirft-test blueprint published
+ */
 
 test.describe.serial('Validate Blueprint from catalog tests', () => {
     test.beforeAll(async () => {

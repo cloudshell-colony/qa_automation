@@ -8,11 +8,12 @@ const password = process.env.allAccountsPassword;
 const account = process.env.account;
 const user = process.env.adminEMail;
 const space = "drift-test";
+const executionHostName = 'qa-eks';
 let session;
 
 /** Test prerequisites
  * Have account with credentials as saved in .env file
- * @space should exist in the account
+ * @space should exist in the account with @executionHostName agent associated to it
  * space should have repo https://github.com/QualiNext/torque-demo associated
  * and drift-test blueprint from the repo published
  */
@@ -33,7 +34,7 @@ test.describe('drift test on UI', () => {
         const blueprint = await page.locator('[data-test="catalog-bp-drift-test"]')
         await blueprint.locator('[data-test="launch-environment-from-blueprint"]').click()
         await page.locator('[data-test="go-to-next-step"]').click()
-        selectFromDropbox(page, 'inputs.host', 'qa-eks3' )
+        selectFromDropbox(page, 'inputs.host', executionHostName )
         await page.locator('[ data-test="launch-environment"]').click()
         await page.locator('[data-test="sandboxes-nav-link"]').click()
         await expect(page.locator('[data-test="sandbox-row-0"]')).toContainText('Launching', { timeout: 6000 });
