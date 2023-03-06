@@ -12,6 +12,7 @@ export const addPolicy = async (page, policyType, extra = '', space = '') => {
     await page.locator('[data-test="policy-toggle"]').click()
     await page.locator('[data-test="submit-button"]').click()
     await page.locator('[data-test="policies-row-0"]').click()
+    await page.waitForTimeout(1500);
     await page.locator('[data-test="allSpaces"]').click()
     await selectFromDropbox(page, 'spaces', space);
     await page.getByRole('button', { name: 'save' }).click()

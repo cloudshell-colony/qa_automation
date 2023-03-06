@@ -53,7 +53,6 @@ test.describe('Check AWS policies', () => {
         await validateSandboxFailedDueToPolicy(page, 'Deployment of not private AWS S3 bucket is not allowed');
         await endSandbox(page);
         await expect(page.locator('[data-test="sandbox-row-0"]')).toBeHidden({ timeout: 10 * 60 * 1000 })
-
     });
 
     // Launch succeed with private S3
@@ -119,6 +118,7 @@ test.describe('Check AWS policies', () => {
         let regoValue = {  "env_max_duration_minutes": 110, "env_duration_for_manual_approval_minutes": 5 }
         let bucketName = policyName.replaceAll('_', '-').toLowerCase();
         let inputs = { 'inputs\.region': "eu-west-1", 'inputs\.agent': `${executionHostName}`, 'inputs\.name': `${bucketName}`, }
+        let approval = 'policy approval'
         console.log('Adding environment duration policy');
         await addPolicy(page, policyType, 'space', space);
         await page.waitForTimeout(1500);
@@ -138,13 +138,14 @@ test.describe('Check AWS policies', () => {
         await deletePolicy(page, policyName);
     })
 
-    //launch pending for approval//
+    //launch pending for duration approval//
     test('env duration for manual approval test ', async () => {
         let policyType = 'environment-duration'
         let policyName = policyType + '-' + id;
         let regoValue = {  "env_max_duration_minutes": 130, "env_duration_for_manual_approval_minutes": 5 }
         let bucketName = policyName.replaceAll('_', '-').toLowerCase();
         let inputs = { 'inputs\.region': "eu-west-1", 'inputs\.agent': `${executionHostName}`, 'inputs\.name': `${bucketName}`, }
+        let approval = 'policy approval'
         console.log('Adding environment duration policy');
         await addPolicy(page, policyType, 'space', space);
         await page.waitForTimeout(1500);
@@ -160,6 +161,106 @@ test.describe('Check AWS policies', () => {
         await page.getByText('View Request').click()
         await page.getByText('Cancel the request').click()
         await deletePolicy(page, policyName);
-     
+    })
+
+    test('Request Manual Approval ', async () => {
+        let policyType = 'request-manual-approval'
+        let policyName = policyType + '-' + id;
+        let bucketName = policyName.replaceAll('_', '-').toLowerCase();
+        let inputs = { 'inputs\.region': "eu-west-1", 'inputs\.agent': `${executionHostName}`, 'inputs\.name': `${bucketName}` }
+        let approval = 'policy approval'
+        console.log('Adding Request Manual Approval policy');
+        await addPolicy(page, policyType, 'space', space);
+        await page.waitForTimeout(1500);
+        await addApprovalChannel(page, approval)
+        await page.waitForTimeout(1500);
+        await page.locator('[data-test="policy-enable-toggle"]').click();
+        await page.waitForTimeout(1500);
+        await goToSpace(page, space);
+        await launchBlueprintFromCatalogPage(page, 's3', inputs)
+        await expect(page.locator('[data-test="request-row-0"]')).toContainText('Pending', { timeout: 6000 });
+        await page.getByText('View Request').click()
+        await page.getByText('Cancel the request').click()
+        await deletePolicy(page, policyName);
+    })
+   
+    test('pohibited instance type policy with wrong rego ', async () => {
+        let policyType = 'prohibited_instance_types'
+        let policyName = policyType + '-' + id;
+        let regoValue = {  "prohibited_instance_types": "t3.micro" }
+        let inputs = { 'inputs\.ami': "ami-0cd01c7fb16a9b497", 'inputs\.agent': `${executionHostName}`, 'inputs\.instance_type': `t3.micro`, }
+        console.log('Adding pohibited instance type policy');
+        await addPolicy(page, policyType, 'space', space);
+        await editRego(page, regoValue )
+        await page.waitForTimeout(1500);
+        await page.locator('[data-test="policy-enable-toggle"]').click();
+        await page.waitForTimeout(1500);
+        await goToSpace(page, space);
+        await launchBlueprintFromCatalogPage(page, 'create-ec2-instance', inputs)
+        await validateSandboxFailedDueToPolicy(page, 'has to be an array')
+        await endSandbox(page);
+        await deletePolicy(page, policyName);
+    })
+
+    test('pohibited instance type policy with prohibited instance ', async () => {
+
+        let policyType = 'prohibited_instance_types'
+        let policyName = policyType + '-' + id;
+        let regoValue = {"prohibited_instance_types": ["t3.micro"]}
+        let inputs = { 'inputs\.ami': "ami-0cd01c7fb16a9b497", 'inputs\.agent': `${executionHostName}`, 'inputs\.instance_type': `t3.micro`, }
+        console.log('Adding pohibited instance type policy');
+        await addPolicy(page, policyType, 'space', space);
+        await editRego(page, regoValue )
+        await page.waitForTimeout(1500);
+        await page.locator('[data-test="policy-enable-toggle"]').click();
+        await page.waitForTimeout(1500);
+        await goToSpace(page, space);
+        await launchBlueprintFromCatalogPage(page, 'create-ec2-instance', inputs)
+        await validateSandboxFailedDueToPolicy(page, 'Invalid instance type')
+        await endSandbox(page);
+        await deletePolicy(page, policyName);
+    })
+
+    test('Allowed resources ', async () => {
+        
+        let policyType = 'aws/allowed_resource_types'
+        let policyName = policyType + '-' + id;
+        let regoValue = {"allowed_resource_types": ["aws_s3_bucket"]}
+        let bucketName = 'asaf-bucket2'
+        let inputs = { 'inputs\.region': "eu-west-1", 'inputs\.agent': `${executionHostName}`, 'inputs\.name': `${bucketName}`}
+        console.log('Adding Allowed resources policy');
+        await addPolicy(page, policyType, 'space', space);
+        await editRego(page, regoValue )
+        await page.waitForTimeout(1500);
+        await page.locator('[data-test="policy-enable-toggle"]').click();
+        await page.waitForTimeout(1500);
+        await goToSpace(page, space);
+        await launchBlueprintFromCatalogPage(page, 's3', inputs)
+        await page.locator('[data-test="sandboxes-nav-link"]').click()
+        const sendboxRow = page.locator('[data-test="sandbox-row-0"]')
+        await expect(sendboxRow).toContainText('Active', { timeout: 90000 });
+        await sendboxRow.click()
+        await page.locator('[data-test="end-sandbox"]').click()
+        await page.locator('[data-test="confirm-end-sandbox"]').click()
+        // await validateSandboxFailedDueToPolicy(page, 'Invalid resource type')
+        await deletePolicy(page, policyName);
+    })
+
+    test('Allowed resources with wrong resource ', async () => {
+        let policyType = 'aws/allowed_resource_types'
+        let policyName = policyType + '-' + id;
+        let regoValue = {"allowed_resource_types": ["aws_s3_bucket"]}
+        let inputs = { 'inputs\.ami': "ami-0cd01c7fb16a9b497", 'inputs\.agent': `${executionHostName}`, 'inputs\.instance_type': `t3.micro`, }
+        console.log('Adding Allowed resources policy');
+        await addPolicy(page, policyType, 'space', space);
+        await editRego(page, regoValue )
+        await page.waitForTimeout(1500);
+        await page.locator('[data-test="policy-enable-toggle"]').click();
+        await page.waitForTimeout(1500);
+        await goToSpace(page, space);
+        await launchBlueprintFromCatalogPage(page, 'create-ec2-instance', inputs)
+        await validateSandboxFailedDueToPolicy(page, 'Invalid resource type')
+        await endSandbox(page);
+        await deletePolicy(page, policyName);
     })
 });
