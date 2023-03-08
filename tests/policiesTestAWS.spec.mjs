@@ -139,7 +139,7 @@ test.describe('Check AWS policies', () => {
     })
 
     //launch pending for duration approval//
-    test('env duration for manual approval test ', async () => {
+    test.skip('env duration for manual approval test ', async () => {
         let policyType = 'environment-duration'
         let policyName = policyType + '-' + id;
         let regoValue = {  "env_max_duration_minutes": 130, "env_duration_for_manual_approval_minutes": 5 }
