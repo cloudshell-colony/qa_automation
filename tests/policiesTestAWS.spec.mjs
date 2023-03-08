@@ -111,38 +111,11 @@ test.describe('Check AWS policies', () => {
         await deletePolicy(page, policyName);
     })
 
-    // Launch fails with max duration less than 2H//
-    test('environment max duration test ', async () => {
-        let policyType = 'environment-duration'
-        let policyName = policyType + '-' + id;
-        let regoValue = {  "env_max_duration_minutes": 110, "env_duration_for_manual_approval_minutes": 5 }
-        let bucketName = policyName.replaceAll('_', '-').toLowerCase();
-        let inputs = { 'inputs\.region': "eu-west-1", 'inputs\.agent': `${executionHostName}`, 'inputs\.name': `${bucketName}`, }
-        let approval = 'policy approval'
-        console.log('Adding environment duration policy');
-        await addPolicy(page, policyType, 'space', space);
-        await page.waitForTimeout(1500);
-        await editRego(page, regoValue)
-        await page.waitForTimeout(1500);
-        await addApprovalChannel(page, approval)
-        await page.waitForTimeout(1500);
-        await page.locator('[data-test="policy-enable-toggle"]').click();
-        await page.waitForTimeout(1500);
-        await goToSpace(page, space);
-        await launchBlueprintFromCatalogPage(page, 's3', inputs)
-        const popup = await page.getByText('You are not allowed to perform this action')
-        await expect(popup).toBeVisible()
-        await page.locator('[data-test="close-popup"]').click()
-        await page.locator('[data-test="close-modal"]').click()
-        await page.locator('[data-test="close-modal"]').click()
-        await deletePolicy(page, policyName);
-    })
-
     //launch pending for duration approval//
-    test.skip('env duration for manual approval test ', async () => {
+    test('env duration for manual approval test ', async () => {
         let policyType = 'environment-duration'
         let policyName = policyType + '-' + id;
-        let regoValue = {  "env_max_duration_minutes": 130, "env_duration_for_manual_approval_minutes": 5 }
+        let regoValue = {  "env_max_duration_minutes": 130, "env_duration_for_manual_approval_minutes": 30 }
         let bucketName = policyName.replaceAll('_', '-').toLowerCase();
         let inputs = { 'inputs\.region': "eu-west-1", 'inputs\.agent': `${executionHostName}`, 'inputs\.name': `${bucketName}`, }
         let approval = 'policy approval'
@@ -162,6 +135,33 @@ test.describe('Check AWS policies', () => {
         await page.getByText('Cancel the request').click()
         await deletePolicy(page, policyName);
     })
+
+        // Launch fails with max duration less than 2H//
+        test('environment max duration test ', async () => {
+            let policyType = 'environment-duration'
+            let policyName = policyType + '-' + id;
+            let regoValue = {  "env_max_duration_minutes": 110, "env_duration_for_manual_approval_minutes": 5 }
+            let bucketName = policyName.replaceAll('_', '-').toLowerCase();
+            let inputs = { 'inputs\.region': "eu-west-1", 'inputs\.agent': `${executionHostName}`, 'inputs\.name': `${bucketName}`, }
+            let approval = 'policy approval'
+            console.log('Adding environment duration policy');
+            await addPolicy(page, policyType, 'space', space);
+            await page.waitForTimeout(1500);
+            await editRego(page, regoValue)
+            await page.waitForTimeout(1500);
+            await addApprovalChannel(page, approval)
+            await page.waitForTimeout(1500);
+            await page.locator('[data-test="policy-enable-toggle"]').click();
+            await page.waitForTimeout(1500);
+            await goToSpace(page, space);
+            await launchBlueprintFromCatalogPage(page, 's3', inputs)
+            const popup = await page.getByText('You are not allowed to perform this action')
+            await expect(popup).toBeVisible()
+            await page.locator('[data-test="close-popup"]').click()
+            await page.locator('[data-test="close-modal"]').click()
+            await page.locator('[data-test="close-modal"]').click()
+            await deletePolicy(page, policyName);
+        })
 
     test('Request Manual Approval ', async () => {
         let policyType = 'request-manual-approval'
