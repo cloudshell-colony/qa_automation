@@ -74,6 +74,11 @@ test.describe.serial('onboarding flow', () => {
         // await page.click('[data-test="additional-option"]');
         // await page.click('[data-test="submit-button"]');
         // select the EKS compute service
+        if(baseURL.includes('portal')){
+            await page.click(`[class~="select-select-existing-cloud"]`);
+            await page.getByText("Install new self-hosted agent").click();
+            await page.click('[data-test="submit-button"]');
+        }
         await page.click('[data-test="cloud-type-aws"]');
         // select @#!$@! technology
         await page.click('[data-test="technology-type-EKS"]');

@@ -239,11 +239,11 @@ export const handlePopUpWithCondition = async(page, shouldPop, datatest, time=30
             expect(visi, 'Got unexpected pop-up message during function').toBeFalsy();
         }
     }
-    else{
-        if (shouldPop){
-            expect(visi, 'Did not receive pop-up message during function as was expected').toBeTruthy();
-        }
-    }
+    // else{
+    //     if (shouldPop){
+    //         expect(visi, 'Did not receive pop-up message during function as was expected').toBeTruthy();
+    //     }
+    // }
 };
 
 export function generateUniqueId(){

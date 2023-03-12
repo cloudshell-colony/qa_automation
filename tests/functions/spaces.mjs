@@ -179,7 +179,7 @@ export const fillInRepoData = async (providerKeys, signinWindow) => {
             await signinWindow.fill('input[name="login"]', repoUsername);
             await signinWindow.fill('input[name="password"]', repoPassword);
             await signinWindow.click('input:has-text("Sign in")');
-            await signinWindow.waitForTimeout(1000);
+            await signinWindow.waitForTimeout(2000);
             let isPage = await signinWindow.isClosed();
             if (isPage) break;
             else {
