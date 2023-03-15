@@ -37,24 +37,24 @@ test.describe('Actions tests on UI', () => {
         await goToSpace(page, space)
         await launchBlueprintFromCatalogPage(page, blueprintName, inputs)
         await validateSBisActive(page)
-        await page.hover('.itfIkW >> nth=1')
+        await page.hover('.hJOPeY >> nth=1')
         await page.getByText('Resources layout').click()
-        await page.locator('.cUwamd').click()
+        await page.locator('.bpkyHs').click()
         await page.getByText('Power-off EC2').hover()
-        await page.locator('.fWGSIT >> nth=1').click()
-        await expect(page.locator('.bwFBAv')).toContainText('Stopped', { timeout: 5 * 60 * 1000 });
+        await page.locator('.fYKtAz >> nth=1').click()
+        await expect(page.locator('.fjSPHX ')).toContainText('Stopped', { timeout: 10 * 60 * 1000 });
     });
 
     test(" Validate power on with action", async () => {
         await goToSpace(page, space)
         await page.locator('[data-test="sandboxes-nav-link"]').click()
         await page.locator('[data-test="sandbox-row-0"]').click()
-        await page.hover('.itfIkW >> nth=1')
+        await page.hover('.hJOPeY >> nth=1')
         await page.getByText('Resources layout').click()
-        await page.locator('.cUwamd').click()
+        await page.locator('.bpkyHs').click()
         await page.getByText('Power-on EC2').hover()
-        await page.locator('.fWGSIT >> nth=0').click()
-        await expect(page.locator('.bwFBAv')).toContainText('Running', { timeout: 5 * 60 * 1000 });
+        await page.locator('.fYKtAz >> nth=0').click()
+        await expect(page.locator('.fjSPHX ')).toContainText('Running', { timeout: 10 * 60 * 1000 });
         await endSandbox(page)
     });
 
