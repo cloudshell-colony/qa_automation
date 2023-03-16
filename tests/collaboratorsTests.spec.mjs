@@ -67,10 +67,11 @@ test.describe('sendbox launch with collab', () => {
         const responseJson = await response.json()
         console.log(responseJson)
         const firstSB = await responseJson[0]
+        const ID = await firstSB.id
+        console.log("the id is " + ID)
         const collabInfo = await firstSB.collaborators_info.collaborators
         console.log(collabInfo[0].email)
-         const ID = await firstSB.id
-        console.log("the id is " + ID)
+       
         try {
             expect(await collabInfo[0].email).toContain(collaboratorName)
             await endSandboxAPI(session, baseURL, space, ID)
