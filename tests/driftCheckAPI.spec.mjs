@@ -3,7 +3,7 @@ import { generateUniqueId, validateAPIResponseis200 } from "./functions/general.
 import {execSync} from 'child_process';
 import { getSessionAPI, validateGetSessionAPI } from "./functions/accounts.mjs";
 import { launchBlueprintAPI } from "./functions/blueprints.mjs";
-import { driftCheckAPI, getLastSandboxActivityFromGrainAPI, getSandboxDetailsAPI, reconcileDriftAPI, stopAndValidateAllSBsCompletedAPI, validateSBisActiveAPI, waitForDriftStatusAPI } from "./functions/sandboxes.mjs";
+import { driftCheckAPI, endSandboxAPI, getLastSandboxActivityFromGrainAPI, getSandboxDetailsAPI, reconcileDriftAPI, stopAndValidateAllSBsCompletedAPI, validateSBisActiveAPI, waitForDriftStatusAPI } from "./functions/sandboxes.mjs";
 
 const baseURL = process.env.baseURL;
 const password = process.env.allAccountsPassword;
@@ -38,7 +38,8 @@ test.describe.serial("Basic drift AWS with API", () => {
     });
 
     test.afterAll(async () =>{
-        await stopAndValidateAllSBsCompletedAPI(session, baseURL, spaceName);
+        // await stopAndValidateAllSBsCompletedAPI(session, baseURL, spaceName);
+        await endSandboxAPI(session, baseURL, spaceName, sandboxId)
     });
 
     test("Launch S3 bucket sandbox", async() =>{
