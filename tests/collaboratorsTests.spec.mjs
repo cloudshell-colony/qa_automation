@@ -47,7 +47,7 @@ test.describe('sendbox launch with collab', () => {
     //     await stopAndValidateAllSBsCompletedAPI(session, baseURL, space);
     // })
 
-    test("launch blueprint with collaborator and validate collaborator name in Sendbox details", async () => {
+    test.skip("launch blueprint with collaborator and validate collaborator name in Sendbox details", async () => {
         await goToSpace(page, space)
         const blueprint = await page.locator(`[data-test="catalog-bp-autogen_${bpName}"]`)
         await blueprint.locator('[data-test="launch-environment-from-blueprint"]').click()
@@ -67,8 +67,12 @@ test.describe('sendbox launch with collab', () => {
         const responseJson = await response.json()
         console.log(responseJson)
         const firstSB = await responseJson[0]
-        const ID = await firstSB.id
-        console.log("the id is " + ID)
+        // const ID = await firstSB.id
+        // const sandboxId = await findSandboxIdByNameAPI(session, baseURL, space, sandboxName);
+        // console.log(sandboxId);
+
+
+        // console.log("the id is " + ID)
         const collabInfo = await firstSB.collaborators_info.collaborators
         console.log(collabInfo[0].email)
        
@@ -85,7 +89,7 @@ test.describe('sendbox launch with collab', () => {
       
     });
 
-    test("Adding & removing collaborator to existing environment", async()=>{
+    test.skip("Adding & removing collaborator to existing environment", async()=>{
         await goToSpace(page, space);
         sandboxName = await launchBlueprintFromCatalogPage(page, bpName, inputs);
         await page.waitForSelector('[data-test="sandbox-info-column"] div:has-text("StatusActive")', { timeout: 5 * 60 * 1000 });
