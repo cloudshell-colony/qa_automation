@@ -24,6 +24,9 @@ export default async (page, target) => {
     case "account":
       await page.click('[data-test="settings-tab"]');
       break;
+      case "workflows":
+        await page.click('[href="/admin/workflows"]');
+        break;
     case "parameters":
       await page.click('[href="/admin/parameters"]');
       break;
