@@ -5,6 +5,7 @@ import { closeModal, selectFromDropbox } from "./functions/general.mjs";
 import goToAdminConsole from "./functions/goToAdminConsole.mjs";
 import { endSandbox, validateSBisActive } from "./functions/sandboxes.mjs";
 import { goToSpace } from "./functions/spaces.mjs";
+import { addWorkflow, removeWorkflow } from "./functions/workflows.mjs";
 
 const baseURL = process.env.baseURL;
 const password = process.env.allAccountsPassword;
@@ -36,28 +37,14 @@ test.describe('Workflows tests on UI', () => {
 
     test("Create env power off workflow", async () => {
         await goToAdminConsole(page, 'workflows')
-        await page.getByRole('button', { name: 'Add Workflow' }).click()
-        await page.locator('[data-test="name"]').fill('power-off-env')
-        await page.locator('[data-test="displayName"]').fill('env power off')
-        await page.locator('[data-test="description"]').fill('shutting down sandbox')
-        await selectFromDropbox(page, 'action__control', 'Terminate Environment')
-        await selectFromDropbox(page, 'spaces', space)
-        await page.locator('.iA-DCaG').click()
-        await page.getByRole('button', { name: 'Save' }).first().click()
+        await addWorkflow(page, 'power-off-env', 'env power off', 'shutting down sandbox', 'Terminate Environment', space)
         await page.waitForTimeout(1500);
         await page.locator('[data-test="workflow-enable-toggle"]').click()
 
     });
 
     test("Add ec2 power off workflow", async () => {
-        await page.getByRole('button', { name: 'Add Workflow' }).click()
-        await page.locator('[data-test="name"]').fill('power-off-ec2')
-        await page.locator('[data-test="displayName"]').fill('power ec2 off')
-        await page.locator('[data-test="description"]').fill('shutting down resource')
-        await selectFromDropbox(page, 'action__control', 'Power-off EC2')
-        await selectFromDropbox(page, 'spaces', space)
-        await page.locator('.iA-DCaG').click()
-        await page.getByRole('button', { name: 'Save' }).first().click()
+        await addWorkflow(page, 'power-off-ec2', 'power ec2 off', 'shutting down resource', 'Power-off EC2', space)
         await page.waitForTimeout(1500);
         await page.getByRole('row', { name: 'power ec2 off shutting down resource Workflows' })
             .locator('[data-test="workflow-enable-toggle"]').click()
@@ -100,23 +87,12 @@ test.describe('Workflows tests on UI', () => {
 
     test(" Delete power off ec2 workflow", async () => {
         await goToAdminConsole(page, 'workflows')
-        const row = await page.getByText('shutting down resource')
-        await row.hover('[data-test="remove-workflow-power-off-ec2"]')
-        await page.locator('[data-test="remove-workflow-power-off-ec2"]').click()
-        await page.locator('[data-test="confirm-button"]').click()
-
+        await removeWorkflow(page, 'shutting down resource')
     });
 
     test(" Delete shutting down sb workflow", async () => {
         await goToAdminConsole(page, 'workflows')
-        const row = await page.getByText('shutting down sandbox')
-        await row.hover('[data-test="remove-workflow-power-off-env"]')
-        await page.locator('[data-test="remove-workflow-power-off-env"]').click()
-        await page.locator('[data-test="confirm-button"]').click()
-
+        await removeWorkflow(page, 'shutting down sandbox')
     });
-
-
-
 
 });
