@@ -43,16 +43,22 @@ test.describe('Check AWS policies', () => {
         let bucketName = policyName.replaceAll('_', '-').toLowerCase();
         let inputs = { 'inputs\.acl': "public-read", 'inputs\.agent': `${executionHostName}`, 'inputs\.name': `${bucketName}`, }
         console.log('Adding private S3 only policy');
-        await addPolicy(page, policyType, 'space', space);
-        await page.waitForTimeout(1500);
-        await page.locator('[data-test="policy-enable-toggle"]').click();
-        await page.waitForTimeout(1500);
-        await goToSpace(page, space);
-        console.log('Launching blueprint with public bucket');
-        await launchBlueprintFromCatalogPage(page, 's3', inputs)
-        await validateSandboxFailedDueToPolicy(page, 'Deployment of not private AWS S3 bucket is not allowed');
-        await endSandbox(page);
-        await expect(page.locator('[data-test="sandbox-row-0"]')).toBeHidden({ timeout: 10 * 60 * 1000 })
+        try {
+            await addPolicy(page, policyType, 'space', space);
+            await page.waitForTimeout(1500);
+            await page.locator('[data-test="policy-enable-toggle"]').click();
+            await page.waitForTimeout(1500);
+            await goToSpace(page, space);
+            console.log('Launching blueprint with public bucket');
+            await launchBlueprintFromCatalogPage(page, 's3', inputs)
+            await validateSandboxFailedDueToPolicy(page, 'Deployment of not private AWS S3 bucket is not allowed');
+            await endSandbox(page);
+            await expect(page.locator('[data-test="sandbox-row-0"]')).toBeHidden({ timeout: 10 * 60 * 1000 })
+        } catch (error) {
+            console.log('Error occurred: ' + error);
+            await deletePolicy(page, policyName);
+            throw error;
+        }
     });
 
     // Launch succeed with private S3
@@ -61,15 +67,23 @@ test.describe('Check AWS policies', () => {
         let policyName = policyType + '-' + id;
         let bucketName = policyName.replaceAll('_', '-').toLowerCase();
         console.log('Adding private S3 only policy');
-        await goToSpace(page, space);
-        let inputs = { 'inputs\.acl': "private", 'inputs\.agent': `${executionHostName}`, 'inputs\.name': `${bucketName}`, }
-        await page.click('[data-test=blueprints-nav-link]');
-        console.log('Launching blueprint with private bucket');
-        await launchBlueprintFromCatalogPage(page, 's3', inputs)
-        await validateSBisActive(page);
-        await endSandbox(page);
-        await expect(page.locator('[data-test="sandbox-row-0"]')).toBeHidden({ timeout: 10 * 60 * 1000 })
-        await deletePolicy(page, policyName);
+        try {
+            await goToSpace(page, space);
+            let inputs = { 'inputs\.acl': "private", 'inputs\.agent': `${executionHostName}`, 'inputs\.name': `${bucketName}`, }
+            await page.click('[data-test=blueprints-nav-link]');
+            console.log('Launching blueprint with private bucket');
+            await launchBlueprintFromCatalogPage(page, 's3', inputs)
+            await validateSBisActive(page);
+            await endSandbox(page);
+            await expect(page.locator('[data-test="sandbox-row-0"]')).toBeHidden({ timeout: 10 * 60 * 1000 })
+            await deletePolicy(page, policyName);
+        } catch (error) {
+            console.log('Error occurred: ' + error);
+            await deletePolicy(page, policyName);
+            throw error;
+            
+        }
+       
     });
 
     // Launch fails with wrong region
@@ -81,18 +95,25 @@ test.describe('Check AWS policies', () => {
         let bucketName = policyName.replaceAll('_', '-').toLowerCase();
         let inputs = { 'inputs\.region': "eu-west-2", 'inputs\.agent': `${executionHostName}`, 'inputs\.name': `${bucketName}`, }
         console.log('Adding allowed regions policy');
-        await addPolicy(page, policyType, 'space', space);
-        await editRego(page, regoValue)
-        await page.waitForTimeout(1500);
-        await page.locator('[data-test="policy-enable-toggle"]').click();
-        await page.waitForTimeout(1500);
-        await goToSpace(page, space);
-        await page.click('[data-test=blueprints-nav-link]');
-        console.log('Launching blueprint with prohibited region');
-        await launchBlueprintFromCatalogPage(page, 's3', inputs)
-        await validateSandboxFailedDueToPolicy(page, 'allowed_regions - "Invalid region:');
-        await endSandbox(page);
-        await expect(page.locator('[data-test="sandbox-row-0"]')).toBeHidden({ timeout: 10 * 60 * 1000 })
+        try {
+            await addPolicy(page, policyType, 'space', space);
+            await editRego(page, regoValue)
+            await page.waitForTimeout(1500);
+            await page.locator('[data-test="policy-enable-toggle"]').click();
+            await page.waitForTimeout(1500);
+            await goToSpace(page, space);
+            await page.click('[data-test=blueprints-nav-link]');
+            console.log('Launching blueprint with prohibited region');
+            await launchBlueprintFromCatalogPage(page, 's3', inputs)
+            await validateSandboxFailedDueToPolicy(page, 'allowed_regions - "Invalid region:');
+            await endSandbox(page);
+            await expect(page.locator('[data-test="sandbox-row-0"]')).toBeHidden({ timeout: 10 * 60 * 1000 })
+        } catch (error) {
+            console.log('Error occurred: ' + error);
+            await deletePolicy(page, policyName);
+            throw error;
+        }
+      
     })
 
     // Launch succeeds with correct region
@@ -104,11 +125,20 @@ test.describe('Check AWS policies', () => {
         let inputs = { 'inputs\.region': "eu-west-1", 'inputs\.agent': `${executionHostName}`, 'inputs\.name': `${bucketName}`, }
         await page.click('[data-test=blueprints-nav-link]');
         console.log('Launching blueprint with allowed region');
-        await launchBlueprintFromCatalogPage(page, 's3', inputs)
-        await validateSBisActive(page);
-        await endSandbox(page);
-        await expect(page.locator('[data-test="sandbox-row-0"]')).toBeHidden({ timeout: 10 * 60 * 1000 })
-        await deletePolicy(page, policyName);
+        try {
+            await launchBlueprintFromCatalogPage(page, 's3', inputs)
+            await validateSBisActive(page);
+            await endSandbox(page);
+            await expect(page.locator('[data-test="sandbox-row-0"]')).toBeHidden({ timeout: 10 * 60 * 1000 })
+            await deletePolicy(page, policyName);
+            
+        } catch (error) {
+            console.log('Error occurred: ' + error);
+            await deletePolicy(page, policyName);
+            throw error;
+            
+        }
+    
     })
 
     //launch pending for duration approval//
@@ -120,20 +150,27 @@ test.describe('Check AWS policies', () => {
         let inputs = { 'inputs\.region': "eu-west-1", 'inputs\.agent': `${executionHostName}`, 'inputs\.name': `${bucketName}`, }
         let approval = 'policy approval'
         console.log('Adding environment duration policy');
-        await addPolicy(page, policyType, 'space', space);
-        await page.waitForTimeout(1500);
-        await editRego(page, regoValue)
-        await page.waitForTimeout(1500);
-        await addApprovalChannel(page, approval)
-        await page.waitForTimeout(1500);
-        await page.locator('[data-test="policy-enable-toggle"]').click();
-        await page.waitForTimeout(1500);
-        await goToSpace(page, space);
-        await launchBlueprintFromCatalogPage(page, 's3', inputs)
-        await expect(page.locator('[data-test="request-row-0"]')).toContainText('Pending', { timeout: 6000 });
-        await page.getByText('View Request').click()
-        await page.getByText('Cancel the request').click()
-        await deletePolicy(page, policyName);
+        try {
+            await addPolicy(page, policyType, 'space', space);
+            await page.waitForTimeout(1500);
+            await editRego(page, regoValue)
+            await page.waitForTimeout(1500);
+            await addApprovalChannel(page, approval)
+            await page.waitForTimeout(1500);
+            await page.locator('[data-test="policy-enable-toggle"]').click();
+            await page.waitForTimeout(1500);
+            await goToSpace(page, space);
+            await launchBlueprintFromCatalogPage(page, 's3', inputs)
+            await expect(page.locator('[data-test="request-row-0"]')).toContainText('Pending', { timeout: 6000 });
+            await page.getByText('View Request').click()
+            await page.getByText('Cancel the request').click()
+            await deletePolicy(page, policyName);
+        } catch (error) {
+            console.log('Error occurred: ' + error);
+            await deletePolicy(page, policyName);
+            throw error;
+        }
+      
     })
 
         // Launch fails with max duration less than 2H//
@@ -145,22 +182,29 @@ test.describe('Check AWS policies', () => {
             let inputs = { 'inputs\.region': "eu-west-1", 'inputs\.agent': `${executionHostName}`, 'inputs\.name': `${bucketName}`, }
             let approval = 'policy approval'
             console.log('Adding environment duration policy');
-            await addPolicy(page, policyType, 'space', space);
-            await page.waitForTimeout(1500);
-            await editRego(page, regoValue)
-            await page.waitForTimeout(1500);
-            await addApprovalChannel(page, approval)
-            await page.waitForTimeout(1500);
-            await page.locator('[data-test="policy-enable-toggle"]').click();
-            await page.waitForTimeout(1500);
-            await goToSpace(page, space);
-            await launchBlueprintFromCatalogPage(page, 's3', inputs)
-            const popup = await page.getByText('You are not allowed to perform this action')
-            await expect(popup).toBeVisible()
-            await page.locator('[data-test="close-popup"]').click()
-            await page.locator('[data-test="close-modal"]').click()
-            await page.locator('[data-test="close-modal"]').click()
-            await deletePolicy(page, policyName);
+            try {
+                await addPolicy(page, policyType, 'space', space);
+                await page.waitForTimeout(1500);
+                await editRego(page, regoValue)
+                await page.waitForTimeout(1500);
+                await addApprovalChannel(page, approval)
+                await page.waitForTimeout(1500);
+                await page.locator('[data-test="policy-enable-toggle"]').click();
+                await page.waitForTimeout(1500);
+                await goToSpace(page, space);
+                await launchBlueprintFromCatalogPage(page, 's3', inputs)
+                const popup = await page.getByText('You are not allowed to perform this action')
+                await expect(popup).toBeVisible()
+                await page.locator('[data-test="close-popup"]').click()
+                await page.locator('[data-test="close-modal"]').click()
+                await page.locator('[data-test="close-modal"]').click()
+                await deletePolicy(page, policyName);
+            } catch (error) {
+                console.log('Error occurred: ' + error);
+                await deletePolicy(page, policyName);
+                throw error;
+            }
+           
         })
 
     test('Request Manual Approval ', async () => {
@@ -170,18 +214,25 @@ test.describe('Check AWS policies', () => {
         let inputs = { 'inputs\.region': "eu-west-1", 'inputs\.agent': `${executionHostName}`, 'inputs\.name': `${bucketName}` }
         let approval = 'policy approval'
         console.log('Adding Request Manual Approval policy');
-        await addPolicy(page, policyType, 'space', space);
-        await page.waitForTimeout(1500);
-        await addApprovalChannel(page, approval)
-        await page.waitForTimeout(1500);
-        await page.locator('[data-test="policy-enable-toggle"]').click();
-        await page.waitForTimeout(1500);
-        await goToSpace(page, space);
-        await launchBlueprintFromCatalogPage(page, 's3', inputs)
-        await expect(page.locator('[data-test="request-row-0"]')).toContainText('Pending', { timeout: 6000 });
-        await page.getByText('View Request').click()
-        await page.getByText('Cancel the request').click()
-        await deletePolicy(page, policyName);
+        try {
+            await addPolicy(page, policyType, 'space', space);
+            await page.waitForTimeout(1500);
+            await addApprovalChannel(page, approval)
+            await page.waitForTimeout(1500);
+            await page.locator('[data-test="policy-enable-toggle"]').click();
+            await page.waitForTimeout(1500);
+            await goToSpace(page, space);
+            await launchBlueprintFromCatalogPage(page, 's3', inputs)
+            await expect(page.locator('[data-test="request-row-0"]')).toContainText('Pending', { timeout: 6000 });
+            await page.getByText('View Request').click()
+            await page.getByText('Cancel the request').click()
+            await deletePolicy(page, policyName);
+        } catch (error) {
+            console.log('Error occurred: ' + error);
+            await deletePolicy(page, policyName);
+            throw error;
+        }
+       
     })
    
     test('pohibited instance type policy with wrong rego ', async () => {
@@ -190,7 +241,8 @@ test.describe('Check AWS policies', () => {
         let regoValue = {  "prohibited_instance_types": "t3.micro" }
         let inputs = { 'inputs\.ami': "ami-0cd01c7fb16a9b497", 'inputs\.agent': `${executionHostName}`, 'inputs\.instance_type': `t3.micro`, }
         console.log('Adding pohibited instance type policy');
-        await addPolicy(page, policyType, 'space', space);
+        try {
+            await addPolicy(page, policyType, 'space', space);
         await editRego(page, regoValue )
         await page.waitForTimeout(1500);
         await page.locator('[data-test="policy-enable-toggle"]').click();
@@ -200,6 +252,12 @@ test.describe('Check AWS policies', () => {
         await validateSandboxFailedDueToPolicy(page, 'has to be an array')
         await endSandbox(page);
         await deletePolicy(page, policyName);
+        } catch (error) {
+            console.log('Error occurred: ' + error);
+            await deletePolicy(page, policyName);
+            throw error;
+        }
+        
     })
 
     test('pohibited instance type policy with prohibited instance ', async () => {
@@ -209,7 +267,8 @@ test.describe('Check AWS policies', () => {
         let regoValue = {"prohibited_instance_types": ["t3.micro"]}
         let inputs = { 'inputs\.ami': "ami-0cd01c7fb16a9b497", 'inputs\.agent': `${executionHostName}`, 'inputs\.instance_type': `t3.micro`, }
         console.log('Adding pohibited instance type policy');
-        await addPolicy(page, policyType, 'space', space);
+        try {
+            await addPolicy(page, policyType, 'space', space);
         await editRego(page, regoValue )
         await page.waitForTimeout(1500);
         await page.locator('[data-test="policy-enable-toggle"]').click();
@@ -219,6 +278,12 @@ test.describe('Check AWS policies', () => {
         await validateSandboxFailedDueToPolicy(page, 'Invalid instance type')
         await endSandbox(page);
         await deletePolicy(page, policyName);
+        } catch (error) {
+            console.log('Error occurred: ' + error);
+            await deletePolicy(page, policyName);
+            throw error;
+        }
+        
     })
 
     test('Allowed resources ', async () => {
@@ -229,7 +294,8 @@ test.describe('Check AWS policies', () => {
         let bucketName = 'asaf-bucket2'
         let inputs = { 'inputs\.region': "eu-west-1", 'inputs\.agent': `${executionHostName}`, 'inputs\.name': `${bucketName}`}
         console.log('Adding Allowed resources policy');
-        await addPolicy(page, policyType, 'space', space);
+        try {
+            await addPolicy(page, policyType, 'space', space);
         await editRego(page, regoValue )
         await page.waitForTimeout(1500);
         await page.locator('[data-test="policy-enable-toggle"]').click();
@@ -242,8 +308,13 @@ test.describe('Check AWS policies', () => {
         await sendboxRow.click()
         await page.locator('[data-test="end-sandbox"]').click()
         await page.locator('[data-test="confirm-end-sandbox"]').click()
-        // await validateSandboxFailedDueToPolicy(page, 'Invalid resource type')
         await deletePolicy(page, policyName);
+        } catch (error) {
+            console.log('Error occurred: ' + error);
+            await deletePolicy(page, policyName);
+            throw error;
+        }
+        
     })
 
     test('Allowed resources with wrong resource ', async () => {
@@ -252,15 +323,22 @@ test.describe('Check AWS policies', () => {
         let regoValue = {"allowed_resource_types": ["aws_s3_bucket"]}
         let inputs = { 'inputs\.ami': "ami-0cd01c7fb16a9b497", 'inputs\.agent': `${executionHostName}`, 'inputs\.instance_type': `t3.micro`, }
         console.log('Adding Allowed resources policy');
-        await addPolicy(page, policyType, 'space', space);
-        await editRego(page, regoValue )
-        await page.waitForTimeout(1500);
-        await page.locator('[data-test="policy-enable-toggle"]').click();
-        await page.waitForTimeout(1500);
-        await goToSpace(page, space);
-        await launchBlueprintFromCatalogPage(page, 'create-ec2-instance', inputs)
-        await validateSandboxFailedDueToPolicy(page, 'Invalid resource type')
-        await endSandbox(page);
-        await deletePolicy(page, policyName);
+        try {
+            await addPolicy(page, policyType, 'space', space);
+            await editRego(page, regoValue )
+            await page.waitForTimeout(1500);
+            await page.locator('[data-test="policy-enable-toggle"]').click();
+            await page.waitForTimeout(1500);
+            await goToSpace(page, space);
+            await launchBlueprintFromCatalogPage(page, 'create-ec2-instance', inputs)
+            await validateSandboxFailedDueToPolicy(page, 'Invalid resource type')
+            await endSandbox(page);
+            await deletePolicy(page, policyName);
+        } catch (error) {
+            console.log('Error occurred: ' + error);
+            await deletePolicy(page, policyName);
+            throw error;
+        }
+      
     })
 });
