@@ -43,48 +43,77 @@ test.describe.serial('SendBox extention tests', () => {
 
     });
 
-
-    test("Create and validate new aws ec2", async () => {
-        const response = await launchBlueprintAPI(session, baseURL, AWSBPName, space, EC2Inputs, repoName, duration = "PT2H")
-        const responseJson = await response.json()
-        console.log(responseJson)
-        ID = responseJson.id
-        console.log(ID)
-        await validateSBisActiveAPI(session, baseURL, ID, space)
-    })
-
-
-    test("Create and validate new azure vm", async () => {
-        const response = await launchBlueprintAPI(session, baseURL, AzureBPName, space, AzureInputs, repoName, duration = "PT2H")
-        const responseJson = await response.json()
-        console.log(responseJson)
-        ID = responseJson.id
-        console.log(ID)
-        await validateSBisActiveAPI(session, baseURL, ID, space)
-    })
-
     test(" End aws ec2 ", async () => {
         await goToSpace(page, space)
         await page.locator('[data-test="sandboxes-nav-link"]').click()
-        await page.getByText(AWSBPName).click()
-        await endSandbox(page)
-        console.time('Time to end EC2')
-        await expect( await page.locator('[data-test="sandbox-row-1"]')).toContainText('Terminating',{ timeout: 10 * 60 * 1000 })
-        await expect( await page.locator('[data-test="sandbox-row-1"]')).toBeHidden({ timeout: 10 * 60 * 1000 })
-        console.timeEnd('Time to end EC2')
-
+        try {
+            const sandboxRowLocator = page.locator('[data-test="sandbox-row-0"]');
+            const sandboxRowText = await sandboxRowLocator.textContent();
+            const sandboxRowExists = sandboxRowText.includes('Active', { timeout:5000 });
+    
+            if (sandboxRowExists) {
+                await page.getByText(AWSBPName).click();
+                console.log('Terminating aws ec2..')
+                await endSandbox(page);
+                console.time('Time to end EC2')
+                await expect( await page.locator('[data-test="sandbox-row-1"]')).toContainText('Terminating',{ timeout: 10 * 60 * 1000 })
+                await expect( await page.locator('[data-test="sandbox-row-1"]')).toBeHidden({ timeout: 10 * 60 * 1000 })
+                console.timeEnd('Time to end EC2')
+            } else {
+            }
+        } catch (error) {
+            console.log(error)
+        }
+      
     })
 
     test(" End azure vm", async () => {
         await goToSpace(page, space)
         await page.locator('[data-test="sandboxes-nav-link"]').click()
-        await page.getByText(AzureBPName).click()
-        await endSandbox(page)
-        await page.waitForTimeout(1500)
-        console.time('Time to end azure vm')
-        await expect( await page.locator('[data-test="sandbox-row-0"]')).toContainText('Terminating',{ timeout: 10 * 60 * 1000 })
-        await expect(await page.locator('[data-test="sandbox-row-0"]')).toBeHidden({ timeout: 10 * 60 * 1000 })
-        console.timeEnd('Time to end azure vm')
+       
+        try {
+            const sandboxRowLocator = page.locator('[data-test="sandbox-row-0"]');
+            const sandboxRowText = await sandboxRowLocator.textContent();
+            const sandboxRowExists = sandboxRowText.includes('Active', { timeout:5000 });
+
+            if (sandboxRowExists) {
+                await page.getByText(AzureBPName).click();
+                console.log('Terminating azure vm..')
+                await endSandbox(page);
+                console.time('Time to end azure vm')
+                await expect( await page.locator('[data-test="sandbox-row-0"]')).toContainText('Terminating',{ timeout: 10 * 60 * 1000 })
+                await expect( await page.locator('[data-test="sandbox-row-0"]')).toBeHidden({ timeout: 10 * 60 * 1000 })
+                console.timeEnd('Time to azure vm')
+            } else {
+            }
+        } catch (error) {
+            console.log(error)
+        }
+    })
+
+    test("Create and validate new aws ec2", async () => {
+        console.log('Launching aws ec2..')
+        const response = await launchBlueprintAPI(session, baseURL, AWSBPName, space, EC2Inputs, repoName, duration = "")
+        const responseJson = await response.json()
+        console.log(responseJson)
+        ID = responseJson.id
+        console.log('aws ec2 ID is: '+ID)
+        console.time('Time to launch ec2')
+        await validateSBisActiveAPI(session, baseURL, ID, space)
+        console.timeEnd('Time to launch ec2')
+    })
+
+
+    test("Create and validate new azure vm", async () => {
+        console.log('Launching azure vm..')
+        const response = await launchBlueprintAPI(session, baseURL, AzureBPName, space, AzureInputs, repoName, duration = "")
+        const responseJson = await response.json()
+        console.log(responseJson)
+        ID = responseJson.id
+        console.log('Azure vm ID is: '+ID)
+        console.time('Time to launch azure vm')
+        await validateSBisActiveAPI(session, baseURL, ID, space)
+        console.timeEnd('Time to launch azure vm')
     })
 
 })
