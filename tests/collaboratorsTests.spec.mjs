@@ -77,6 +77,8 @@ test.describe('sendbox launch with collab', () => {
 
         try {
             expect(await collabInfo[0].email).toContain(collaboratorName)
+            console.log(collabInfo[0].email+' is equal to '+ collaboratorName);
+            console.log("Terminating sandbox...");
             await endSandboxAPI(session, baseURL, space, ID)
         } catch (e) {
             await endSandboxAPI(session, baseURL, space, ID)
@@ -84,7 +86,8 @@ test.describe('sendbox launch with collab', () => {
             console.log(e)
             test.fail()
         }
-        await expect(page.locator('[data-test="sandbox-row-0"]')).toContainText('Terminating', { timeout: 10000 });
+       
+        await expect( await page.locator('[data-test="sandbox-row-0"]')).toBeHidden({ timeout: 10 * 60 * 1000 })
 
     });
 
