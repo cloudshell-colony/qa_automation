@@ -83,7 +83,7 @@ test.describe.serial("Basic drift AWS with API", () => {
         await waitForDriftStatusAPI(session, baseURL, spaceName, sandboxId, grainId, false);
         // validate reconcile completed
         let lastActivity = await getLastSandboxActivityFromGrainAPI(session, baseURL, spaceName, sandboxId, grainId);
-        expect(lastActivity.name).toBe('Reconcile');
+        expect(lastActivity.name).toBe('Reconcile', {timeout:10000});
         expect(lastActivity.status).toBe('Done');
         console.log('Reconciled completed successfully');
         // check tags in S3 bucket
