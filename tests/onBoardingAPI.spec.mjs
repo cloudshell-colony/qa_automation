@@ -62,7 +62,8 @@ test.describe.serial('On boarding with APIs', () => {
     });
 
     test('Add BPs repository to space', async () => {
-        await addRepositoryAPI(session, baseURL, spaceName, repoUrl, token, repoName);
+        const resp = await addRepositoryAPI(session, baseURL, spaceName, repoUrl, token, repoName);
+        expect(resp.status, await resp.text()).toBe(200);
         console.log(`Added repository ${repoName}`);
     });
 

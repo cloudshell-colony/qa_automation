@@ -107,13 +107,13 @@ export const deleteAccountAPI = async (baseURL, account_name, session) => {
     return response;
 };
 
-export const signupUserAPI = async (myURL, secret) => {
-    // signup user by approving the secret that was sewnt to his e-mail addrees, the secret is calculated from the user e-mail and the account.
-    // after this call the user is a registarted user and can use APIs based hon his role in the system.
+export const signupUserAPI = async (myURL, secret, password = "Quali!Pass@Fail3") => {
+    // signup user by approving the secret that was sent to his e-mail addrees, the secret is calculated from the user e-mail and the account.
+    // after this call the user is a registarted user and can use APIs based on his role in the system.
     const data = {
         "first_name": "",
         "last_name": "",
-        "password": "Quali!Pass@Fail3",
+        "password": password,
         "secret": secret
     }
     const response = await fetch(`${myURL}/api/accounts/signup`, {

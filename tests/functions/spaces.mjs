@@ -301,5 +301,5 @@ export const addRepositoryAPI = async (session, baseURL, space, repoUrl, token, 
         },
         "body": JSON.stringify(data)
     });
-    expect((resp.status), await resp.text()).toBe(200);
+    return resp;
 };

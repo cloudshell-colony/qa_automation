@@ -93,3 +93,48 @@ export const deletePolicyAPI = async (session, baseURL, policyName) => {
     });
     return response;
 }
+
+export const addApprovalChannelAPI = async(session, baseURL, channelName, type, approversEmailList) =>{
+    const approversList = [];
+    for (const email of approversEmailList) {
+        let approverData = {user_email: email};
+        approversList.push(approverData);
+    }
+    const data = {
+        'name': channelName,
+        'details': {'type': type, 'approvers': approversList}
+    }
+    const response = await fetch(`${baseURL}/api/approval/channels`,{
+        "method": "POST",
+        "body": JSON.stringify(data),
+        "headers": {
+            'Authorization': `Bearer ${session}`,
+            'Content-Type': 'application/json',
+            'Accept': '*/*'
+        }
+    });
+    return response;
+}
+
+
+export const getApprovalChannelsAPI = async(session, baseURL) =>{
+    const response = await fetch(`${baseURL}/api/approval/channels`,{
+        "method": "GET",
+        "headers": {
+            'Authorization': `Bearer ${session}`,
+            'Content-Type': 'application/json',
+            'Accept': '*/*'
+        }
+    });
+    return response;
+}
+
+export const checkIfApprovalChannelExistsAPI = async(session, baseURL, channelName) =>{
+    let channelsJson = await (await getApprovalChannelsAPI(session, baseURL)).json();
+    for(const channel of channelsJson){
+        if(channel.name === channelName){
+            return true;
+        }
+    }
+    return false;
+}
