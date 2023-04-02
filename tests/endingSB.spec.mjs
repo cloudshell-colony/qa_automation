@@ -32,7 +32,7 @@ let page
  * and @BPName asset auto-generated to a blueprint
  */
 
-test.describe.serial('SendBox extention tests', () => {
+test.describe.serial('End sendbox tests', () => {
     test.beforeAll(async ({ browser }) => {
         session = await getSessionAPI(user, password, baseURL, account);
         console.log(session)
