@@ -39,8 +39,11 @@ For 1st time usage (for ad-hoc/new accounts)
 > These setup steps will bootstrap all tests pre-reqs (e.g. create new account, space, agent and more.)
 
 ```
-TBD
+Go to the root directory of the repository
+run "node dependencyRunner.mjs"
 ```
+>If you only want to run specific tests, use the 'dependencyTests' variable in our .env file.
+After updating it with the tests list, running the dependencyRunner will only install pre-reqs relevant for those tests
 
 Running tests:
 
