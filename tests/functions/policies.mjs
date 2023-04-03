@@ -130,7 +130,11 @@ export const getApprovalChannelsAPI = async(session, baseURL) =>{
 }
 
 export const checkIfApprovalChannelExistsAPI = async(session, baseURL, channelName) =>{
-    let channelsJson = await (await getApprovalChannelsAPI(session, baseURL)).json();
+    let response = await getApprovalChannelsAPI(session, baseURL)
+    if(response.status != 200){
+        throw Error(`Could not get list of approval channels. Full response: \n` + await response.text());
+    }
+    let channelsJson = await response.json();
     for(const channel of channelsJson){
         if(channel.name === channelName){
             return true;

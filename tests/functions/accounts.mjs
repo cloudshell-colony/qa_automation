@@ -38,16 +38,16 @@ export const validateGetSessionAPI = async (getSessionApiResponse) => {
     };
 };
 
-export const sendInvitationsAPI = async (session, newUserEmail, myURL, space) => {
+export const sendInvitationsAPI = async (session, newUserEmail, myURL, space, role="Space Developer") => {
     // send invitation for a user, invitation must contain the user email (can be invalid if no SMTP is needed)
     // space_role cane be: "Space Developer",,,,,
     // reason can be: "AdminJoinAccount", "TeamMemberJoinSpace", "AdminAuthenticateCloudAccount"
     const data = {
         "emails": [newUserEmail],
-        "account_role": "",
+        "account_role": (role==="Admin") ? role: "",
         "reason": "TeamMemberJoinSpace",
-        "space_name": space,
-        "space_role": "Space Developer"
+        "space_name": (role==="Admin") ? "" : space,
+        "space_role":  (role==="Admin") ? "" : role
     }
     const response = await fetch(`${myURL}/api/accounts/invitations`, {
         "method": "POST",
