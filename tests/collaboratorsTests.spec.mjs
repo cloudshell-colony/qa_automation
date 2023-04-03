@@ -95,7 +95,7 @@ test.describe('sendbox launch with collab', () => {
         await goToSpace(page, space);
         sandboxName = await launchBlueprintFromCatalogPage(page, bpName, inputs);
         await page.waitForSelector('[data-test="sandbox-info-column"] div:has-text("StatusActive")', { timeout: 5 * 60 * 1000 });
-        expect(await page.isVisible('[data-test="sandbox-info-column"] div:has-text("StatusActive")', 500)).toBeTruthy();
+        expect(await page.isVisible('[data-test="sandbox-info-column"] div:has-text("StatusActive")', 2000)).toBeTruthy();
         const sandboxId = await findSandboxIdByNameAPI(session, baseURL, space, sandboxName);
         console.log(sandboxId);
         await addCollaboratorToSandbox(page, spaceMember);

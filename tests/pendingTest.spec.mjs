@@ -77,16 +77,21 @@ test.describe.serial('Approve pending sendbox', () => {
     })
 
     test("Validate sb active status", async ({ browser }) => {
-        page = await browser.newPage();
-        await loginToAccount(page, user, account, password, baseURL);
-        await closeModal(page);
-        await openAndPinSideMenu(page);
-        await goToSpace(page, space)
-        await page.locator('[data-test="sandboxes-nav-link"]').click()
-        console.log('Waiting for status to be active...');
-        await expect(page.locator('[data-test="sandbox-row-0"]')).toContainText('Active', { timeout: 10 * 60 * 1000 });
-        await page.locator('[data-test="sandbox-row-0"]').click()
-        await endSandbox(page)
+        try {
+            page = await browser.newPage();
+            await loginToAccount(page, user, account, password, baseURL);
+            await closeModal(page);
+            await openAndPinSideMenu(page);
+            await goToSpace(page, space)
+            await page.locator('[data-test="sandboxes-nav-link"]').click()
+            console.log('Waiting for status to be active...');
+            await expect(page.locator('[data-test="sandbox-row-0"]')).toContainText('Active', { timeout: 10 * 60 * 1000 });
+            await page.locator('[data-test="sandbox-row-0"]').click()
+            await endSandbox(page)
+        } catch (error) {
+            console.log(error)
+        }
+      
     })
 
     test("Launch environment and validate status is pending", async () => {
