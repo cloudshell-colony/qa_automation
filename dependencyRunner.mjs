@@ -13,7 +13,7 @@ const email = process.env.adminEMail;
 const accountName = process.env.account;
 const qualiNextToken = process.env.qualiNextToken
 
-// missing dependencies - AKS agent for endingSB space.
+// missing dependencies:
 // need to develop methods for adding AKS (K8S context switch etc)
 /**
  * This const saves a dictionary of dependencies for each test. 
@@ -42,7 +42,7 @@ const testsDependencies = {
     driftTestUI: {space: "drift-test", agents: [{name: 'qa-eks', type: 'eks',associated: true}], repositories: [{url: "https://github.com/QualiNext/torque-demo",
             token: qualiNextToken, name: 'torque-demo', branch: 'master', published: ['drift-test']}]},
     
-    endingSB: {space: "EndingSB", agents: [{name: 'qa-eks', type: 'eks',associated: true}], repositories: [{url: "https://github.com/QualiNext/test-spec2-public",
+    endingSB: {space: "EndingSB", agents: [{name: 'qa-eks', type: 'eks',associated: true}, {name: 'qa-aks', type: 'aks',associated: true}], repositories: [{url: "https://github.com/QualiNext/test-spec2-public",
             token: qualiNextToken, name: 'test-spec2-public', branch: 'master', assets: ['azure_vm_legacy_wi', 'create-ec2-instance']}]},
 
     parametersTests: {space: process.env.space},
