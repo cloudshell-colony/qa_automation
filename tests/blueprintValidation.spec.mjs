@@ -127,7 +127,7 @@ test.describe('Blueprint validation', () => {
     test("Validate proper yaml link in blueprint", async () => {
       const blueprintDetails = await getBlueprintsAPI(session, baseURL,space)
       const response = await blueprintDetails.json()
-      console.log(`Yaml link response JSON: ` + response);
+      console.log(`Yaml link response JSON: ` + JSON.stringify(response));
       console.log(response[0].url)
       const bpName = await response[0].name
       const bpUrl = await response[0].url

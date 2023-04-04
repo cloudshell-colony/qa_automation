@@ -52,7 +52,7 @@ const config = {
     // /*
     {
       name: 'chromium',
-      testMatch: /.blueprintValidation.spec.mjs/,
+      // testMatch: /.policiesTestAWS.spec.mjs/,
       use: {
         ...devices['Desktop Chrome'],
       },

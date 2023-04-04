@@ -18,7 +18,7 @@ const qualiNextToken = process.env.qualiNextToken
 /**
  * This const saves a dictionary of dependencies for each test. 
  * Keys are the tests names as seen in the spec.mjs files.
- * Values are also (key,value) pairs, currently allowing the following keys: space, agents, repositories, members, channels.
+ * Values are also (key,value) pairs, currently allowing the following keys: space, agents, repositories, users, channels.
  * @param {*} space: a single space name that will be created to run the test.
  * @param {*} agents: an array of agents. Each agent entry should contain 'name', 'type' (currently onyl supports eks) & 'associated' (wether to associate this agent to the test space)
  * @param {*} repositories: an array of repositories. Each repo should contain 'url', 'token', 'name' & 'branch'.
