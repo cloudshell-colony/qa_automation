@@ -51,7 +51,7 @@ export const agentDepHandler = async(session, baseURL, agentList, spaceName) =>{
         try {
             await addAgentHelper(session, baseURL, agentName, associated, spaceName, agentParams.type)
         } catch (err) {
-            throw Error(`Failed to add agent '${agentName}' for space '${spaceName}'. Full response: \n` + err.message);
+            throw Error(`Failed to add agent '${agentName}' for space '${spaceName}'. Original error: \n` + err.message);
         }
     }
 }
@@ -93,8 +93,9 @@ const addAgentHelper = async(session, baseURL, agentName, associated, spaceName,
     }
     if (associated) {
         response = await associateExecutionHostAPI(session, baseURL, spaceName, agentName, namespace, serviceAccount, type)
-        if(response.status != 200 && response.status != 422){ // agent wasn't added successfully and wasn't already associated
-            throw Error(`Received status ${response.status} while associating agent to space ${spaceName}. Full response: \n` + await response.text());
+        const respText = await response.text();
+        if(response.status != 200 && !respText.includes('SPACE_ASSOCIATION_ALREADY_EXIST')){ // agent wasn't added successfully and wasn't already associated
+            throw Error(`Received status ${response.status} while associating agent to space ${spaceName}. Full response: \n` + respText);
         }
         console.log(`Agent ${agentName} is associated to space ${spaceName}`);
     } else {
