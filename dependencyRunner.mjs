@@ -71,7 +71,14 @@ const testsDependencies = {
             token: qualiNextToken, name: 'test-spec2-public', branch: 'master', assets: ['create-ec2-instance']}]},
     
     validateBlueprintTest: {space: "API-tests", repositories: [{url: "https://github.com/QualiNext/test-spec2-public", 
-            token: qualiNextToken, name: 'test-spec2-public', branch: 'master', assets: ['create-ec2-instance']}]}
+            token: qualiNextToken, name: 'test-spec2-public', branch: 'master', assets: ['create-ec2-instance']}]},
+
+    pendingTest:{space:"PendingTest", agents: [{name: 'qa-eks', type: 'eks',associated: true}], repositories:[{url: "https://github.com/QualiNext/test-spec2-public",
+      token: qualiNextToken, name: 'test-spec2-public', branch:'master', assets:['create-ec2-instance']}]},  
+
+    endlessSendboxTests: {space: "endlessSB", agents: [{name: 'qa-eks', type: 'eks',associated: true}, {name: 'qa-aks', type: 'aks',associated: true}],  repositories: [{url: "https://github.com/QualiNext/test-spec2-public", 
+      token: qualiNextToken, name: 'test-spec2-public', branch: 'master', assets: ['create-ec2-instance']},{url: "https://github.com/QualiNext/torque-demo", 
+      token: qualiNextToken, name: 'torque-demo', branch: 'master', assets: ['drift-test']}]},
 }
 
 /**
