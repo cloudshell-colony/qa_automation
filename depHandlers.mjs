@@ -49,7 +49,7 @@ export const agentDepHandler = async(session, baseURL, agentList, spaceName) =>{
         let agentName = agentParams.name;
         let associated = agentParams.associated;
         try {
-            await addAgentHelper(session, baseURL, agentName, associated, spaceName)
+            await addAgentHelper(session, baseURL, agentName, associated, spaceName, agentParams.type)
         } catch (err) {
             throw Error(`Failed to add agent '${agentName}' for space '${spaceName}'. Full response: \n` + err.message);
         }
@@ -65,7 +65,7 @@ export const agentDepHandler = async(session, baseURL, agentList, spaceName) =>{
  * @param {*} associated Wether the agent needs to be associated to a space or not
  * @param {*} spaceName Space to associate the agent to if necessary
  */
-const addAgentHelper = async(session, baseURL, agentName, associated, spaceName) =>{
+const addAgentHelper = async(session, baseURL, agentName, associated, spaceName, type) =>{
     let response = await createEKSAPI(session, baseURL, agentName);
     if (response.status != 200 && response.status != 422) {
         throw Error(`Received status ${response.status} while creating agent. Full response: \n` + await response.text());
@@ -92,7 +92,7 @@ const addAgentHelper = async(session, baseURL, agentName, associated, spaceName)
         console.log(`Agent ${agentName} should now be active`);
     }
     if (associated) {
-        response = await associateExecutionHostAPI(session, baseURL, spaceName, agentName, namespace, serviceAccount)
+        response = await associateExecutionHostAPI(session, baseURL, spaceName, agentName, namespace, serviceAccount, type)
         if(response.status != 200 && response.status != 422){ // agent wasn't added successfully and wasn't already associated
             throw Error(`Received status ${response.status} while associating agent to space ${spaceName}. Full response: \n` + await response.text());
         }

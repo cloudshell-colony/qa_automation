@@ -94,9 +94,9 @@ export const getDeploymentFileByTokenAPI = async (session, myURL, token, fileNam
     return response;
 };
 
-export const associateExecutionHostAPI = async (session, myURL, space, executionHost, nameSpace, serviceAccount) => {
+export const associateExecutionHostAPI = async (session, myURL, space, executionHost, nameSpace, serviceAccount, type='EKS') => {
     const data = {
-        "type": "K8S",
+        "type": (type.toUpperCase()==='EKS') ? "K8S" : type,
         "default_namespace": `${nameSpace}`,
         "default_service_account": `${serviceAccount}`
     };
