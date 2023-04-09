@@ -20,7 +20,7 @@ const qualiNextToken = process.env.qualiNextToken
  * Keys are the tests names as seen in the spec.mjs files.
  * Values are also (key,value) pairs, currently allowing the following keys: space, agents, repositories, users, channels.
  * @param {*} space: a single space name that will be created to run the test.
- * @param {*} agents: an array of agents. Each agent entry should contain 'name', 'type' (currently onyl supports eks) & 'associated' (wether to associate this agent to the test space)
+ * @param {*} agents: an array of agents. Each agent entry should contain 'name', 'type' & 'associated' (whether to associate this agent to the test space). If agent is AKS it should also include 'tenantId'.
  * @param {*} repositories: an array of repositories. Each repo should contain 'url', 'token', 'name' & 'branch'.
  * Optionally, repositories can also contain 'assets' and 'published'. Assets is an array of asset name to auto-generate, Published is an array of ready blueprints in the repo that need to be published for the test.
  * @param {*} users: an array of users that need to be added to the test account and/or space. Each user should have 'email', 'password' & 'role'. Role can be 'Admin' or 'Space Developer'
@@ -65,7 +65,7 @@ const testsDependencies = {
             token: qualiNextToken, name: 'test-spec2-public', branch: 'master', assets: ['create-ec2-instance']},{url: "https://github.com/QualiNext/torque-demo", 
             token: qualiNextToken, name: 'torque-demo', branch: 'master', assets: ['drift-test']}]},
     
-    ExecutionHost: {space: "API-tests", agents: [{name: 'bp-validation2', type: 'eks', associated: false}]},
+    ExecutionHost: {space: "API-tests", agents: [{name: 'bp-validation2', type: 'eks', associated: false},{name: 'AKSTest', type: 'AKS', associated: false}]},
 
     extendSendboxTest: {space: "API-tests", agents: [{name: 'qa-eks', type: 'eks',associated: true}], repositories: [{url: "https://github.com/QualiNext/test-spec2-public", 
             token: qualiNextToken, name: 'test-spec2-public', branch: 'master', assets: ['create-ec2-instance']}]},

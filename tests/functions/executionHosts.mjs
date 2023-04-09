@@ -164,17 +164,21 @@ export const getExecutionHostListInSpace = async (myURL, space, session) => {
     return response
 }
 
-export const createEKSAPI = async (session, baseURL, executionHost) => {
+export const createExecutionHostAPI = async (session, baseURL, executionHost, type='EKS', tenantId="") => {
+    type = type.toUpperCase();
     const data = {
         "details": {
             "configure_dns": "false",
             "generate_certificate": "false",
             "ingress_class": "alb",
             "ingress_controller_type": "alb",
-            "type": "EKS"
+            "type": type
         },
         "service_type": "k8s",
         "service_name": `${executionHost}`
+    }
+    if(type === "AKS"){
+        data.details.tenant_id = tenantId;
     }
     const response = await fetch(`${baseURL}/api/settings/computeservices`, {
         "method": "POST",

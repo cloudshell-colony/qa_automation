@@ -1,6 +1,6 @@
 import { sendInvitationsAPI, signupUserAPI } from "./tests/functions/accounts.mjs";
 import { generateSpecificAssetsFromRepoAPI, getBlueprintsDetailsInCatalogAPI, publishBlueprintAPI } from "./tests/functions/blueprints.mjs";
-import { associateExecutionHostAPI, createEKSAPI, disassociateExecutionHostAPI, getdeploymentFileAPI, getExecutionHostDetailsAPI } from "./tests/functions/executionHosts.mjs";
+import { associateExecutionHostAPI, createExecutionHostAPI, disassociateExecutionHostAPI, getdeploymentFileAPI, getExecutionHostDetailsAPI } from "./tests/functions/executionHosts.mjs";
 import { executeCLIcommand, generateSecret, overwriteAndSaveToFile } from "./tests/functions/general.mjs";
 import { addApprovalChannelAPI, checkIfApprovalChannelExistsAPI } from "./tests/functions/policies.mjs";
 import { addRepositoryAPI, createSpaceAPI } from "./tests/functions/spaces.mjs"
@@ -49,7 +49,7 @@ export const agentDepHandler = async(session, baseURL, agentList, spaceName) =>{
         let agentName = agentParams.name;
         let associated = agentParams.associated;
         try {
-            await addAgentHelper(session, baseURL, agentName, associated, spaceName, agentParams.type)
+            await addAgentHelper(session, baseURL, agentName, associated, spaceName, agentParams.type, agentParams.tenantId)
         } catch (err) {
             throw Error(`Failed to add agent '${agentName}' for space '${spaceName}'. Original error: \n` + err.message);
         }
@@ -65,8 +65,8 @@ export const agentDepHandler = async(session, baseURL, agentList, spaceName) =>{
  * @param {*} associated Wether the agent needs to be associated to a space or not
  * @param {*} spaceName Space to associate the agent to if necessary
  */
-const addAgentHelper = async(session, baseURL, agentName, associated, spaceName, type) =>{
-    let response = await createEKSAPI(session, baseURL, agentName);
+const addAgentHelper = async(session, baseURL, agentName, associated, spaceName, type, tenantId) =>{
+    let response = await createExecutionHostAPI(session, baseURL, agentName, type, tenantId);
     if (response.status != 200 && response.status != 422) {
         throw Error(`Received status ${response.status} while creating agent. Full response: \n` + await response.text());
     }
