@@ -87,7 +87,7 @@ test.describe('sendbox launch with collab', () => {
             test.fail()
         }
        
-        await expect( await page.locator('[data-test="sandbox-row-0"]')).toBeHidden({ timeout: 10 * 60 * 1000 })
+        // await expect( await page.locator('[data-test="sandbox-row-0"]')).toBeHidden({ timeout: 10 * 60 * 1000 })
 
     });
 

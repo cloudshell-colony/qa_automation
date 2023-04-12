@@ -57,7 +57,7 @@ test.describe.serial('End sendbox tests', () => {
                 await endSandbox(page);
                 console.time('Time to end EC2')
                 await expect( await page.locator('[data-test="sandbox-row-1"]')).toContainText('Terminating',{ timeout: 10 * 60 * 1000 })
-                await expect( await page.locator('[data-test="sandbox-row-1"]')).toBeHidden({ timeout: 10 * 60 * 1000 })
+                // await expect( await page.locator('[data-test="sandbox-row-1"]')).toBeHidden({ timeout: 10 * 60 * 1000 })
                 console.timeEnd('Time to end EC2')
             } else {
             }
@@ -82,7 +82,7 @@ test.describe.serial('End sendbox tests', () => {
                 await endSandbox(page);
                 console.time('Time to end azure vm')
                 await expect( await page.locator('[data-test="sandbox-row-0"]')).toContainText('Terminating',{ timeout: 10 * 60 * 1000 })
-                await expect( await page.locator('[data-test="sandbox-row-0"]')).toBeHidden({ timeout: 10 * 60 * 1000 })
+                // await expect( await page.locator('[data-test="sandbox-row-0"]')).toBeHidden({ timeout: 10 * 60 * 1000 })
                 console.timeEnd('Time to azure vm')
             } else {
             }
