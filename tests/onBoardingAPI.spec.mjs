@@ -3,7 +3,7 @@ import test, { expect } from "@playwright/test";
 import { validateAPIResponseis200, overwriteAndSaveToFile, executeCLIcommand, generateUniqueId } from './functions/general.mjs';
 import { getSessionAPI, validateGetSessionAPI, createAccountAPI, deleteAccountAPI } from "./functions/accounts.mjs";
 import { addRepositoryAPI, createSpaceAPI } from "./functions/spaces.mjs";
-import { associateExecutionHostAPI, createEKSAPI, getdeploymentFileAPI, getExecutionHostDetailsAPI } from "./functions/executionHosts.mjs";
+import { associateExecutionHostAPI, createExecutionHostAPI, getdeploymentFileAPI, getExecutionHostDetailsAPI } from "./functions/executionHosts.mjs";
 import { validateSBisActiveAPI, validateSBisEndedAPI, endSandboxAPI } from "./functions/sandboxes.mjs";
 import { generateSpecificAssetsFromRepoAPI, launchBlueprintAPI, publishBlueprintAPI } from "./functions/blueprints.mjs";
 
@@ -80,7 +80,7 @@ test.describe.serial('On boarding with APIs', () => {
     })
 
     test('Create execution host', async () => {
-        const response = await createEKSAPI(session, baseURL, executionHostName);
+        const response = await createExecutionHostAPI(session, baseURL, executionHostName);
         await validateAPIResponseis200(response);
     });
     test('Create execution host deployment file', async () => {

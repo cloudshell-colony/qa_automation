@@ -95,8 +95,9 @@ export const getDeploymentFileByTokenAPI = async (session, myURL, token, fileNam
 };
 
 export const associateExecutionHostAPI = async (session, myURL, space, executionHost, nameSpace, serviceAccount, type='EKS') => {
+    type = type.toUpperCase();
     const data = {
-        "type": (type.toUpperCase()==='EKS') ? "K8S" : type,
+        "type": (type==='EKS') ? "K8S" : type,
         "default_namespace": `${nameSpace}`,
         "default_service_account": `${serviceAccount}`
     };
@@ -163,17 +164,21 @@ export const getExecutionHostListInSpace = async (myURL, space, session) => {
     return response
 }
 
-export const createEKSAPI = async (session, baseURL, executionHost) => {
+export const createExecutionHostAPI = async (session, baseURL, executionHost, type='EKS', tenantId="") => {
+    type = type.toUpperCase();
     const data = {
         "details": {
             "configure_dns": "false",
             "generate_certificate": "false",
             "ingress_class": "alb",
             "ingress_controller_type": "alb",
-            "type": "EKS"
+            "type": type
         },
         "service_type": "k8s",
         "service_name": `${executionHost}`
+    }
+    if(type === "AKS"){
+        data.details.tenant_id = tenantId;
     }
     const response = await fetch(`${baseURL}/api/settings/computeservices`, {
         "method": "POST",
