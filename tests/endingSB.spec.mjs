@@ -43,7 +43,7 @@ test.describe.serial('End sendbox tests', () => {
 
     });
 
-    test(" End aws ec2 ", async () => {
+    test(" End azure vm  ", async () => {
         await goToSpace(page, space)
         await page.locator('[data-test="sandboxes-nav-link"]').click()
         try {
@@ -52,13 +52,14 @@ test.describe.serial('End sendbox tests', () => {
             const sandboxRowExists = sandboxRowText.includes('Active', { timeout:5000 });
     
             if (sandboxRowExists) {
-                await page.getByText(AWSBPName).click();
-                console.log('Terminating aws ec2..')
+                await page.locator('[data-test="sandbox-row-0"]').click();
+                console.log('Terminating azure vm..')
                 await endSandbox(page);
-                console.time('Time to end EC2')
-                await expect( await page.locator('[data-test="sandbox-row-1"]')).toContainText('Terminating',{ timeout: 10 * 60 * 1000 })
+                console.time('Time to end azure vm')
+                await expect( await page.locator('[data-test="sandbox-row-0"]')).toContainText('Terminating',{ timeout: 10 * 60 * 1000 })
+                await expect( await page.locator('[data-test="sandbox-row-0"]')).toContainText('Ended',{ timeout: 10 * 60 * 1000 })
                 // await expect( await page.locator('[data-test="sandbox-row-1"]')).toBeHidden({ timeout: 10 * 60 * 1000 })
-                console.timeEnd('Time to end EC2')
+                console.timeEnd('Time to end azure vm')
             } else {
             }
         } catch (error) {
@@ -67,23 +68,24 @@ test.describe.serial('End sendbox tests', () => {
       
     })
 
-    test(" End azure vm", async () => {
+    test(" End aws ec2", async () => {
         await goToSpace(page, space)
         await page.locator('[data-test="sandboxes-nav-link"]').click()
        
         try {
-            const sandboxRowLocator = page.locator('[data-test="sandbox-row-0"]');
+            const sandboxRowLocator = page.locator('[data-test="sandbox-row-1"]');
             const sandboxRowText = await sandboxRowLocator.textContent();
             const sandboxRowExists = sandboxRowText.includes('Active', { timeout:5000 });
 
             if (sandboxRowExists) {
-                await page.getByText(AzureBPName).click();
-                console.log('Terminating azure vm..')
+                await page.locator('[data-test="sandbox-row-1"]').click();
+                console.log('Terminating aws ec2..')
                 await endSandbox(page);
-                console.time('Time to end azure vm')
-                await expect( await page.locator('[data-test="sandbox-row-0"]')).toContainText('Terminating',{ timeout: 10 * 60 * 1000 })
+                console.time('Time to end aws ec2')
+                await expect( await page.locator('[data-test="sandbox-row-1"]')).toContainText('Terminating',{ timeout: 10 * 60 * 1000 })
+                await expect( await page.locator('[data-test="sandbox-row-1"]')).toContainText('Ended',{ timeout: 10 * 60 * 1000 })
                 // await expect( await page.locator('[data-test="sandbox-row-0"]')).toBeHidden({ timeout: 10 * 60 * 1000 })
-                console.timeEnd('Time to azure vm')
+                console.timeEnd('Time to end aws ec2')
             } else {
             }
         } catch (error) {
