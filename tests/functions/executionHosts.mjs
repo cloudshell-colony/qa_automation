@@ -94,13 +94,16 @@ export const getDeploymentFileByTokenAPI = async (session, myURL, token, fileNam
     return response;
 };
 
-export const associateExecutionHostAPI = async (session, myURL, space, executionHost, nameSpace, serviceAccount, type='EKS') => {
+export const associateExecutionHostAPI = async (session, myURL, space, executionHost, nameSpace, serviceAccount, type='EKS', subscriptionId="") => {
     type = type.toUpperCase();
     const data = {
         "type": (type==='EKS') ? "K8S" : type,
         "default_namespace": `${nameSpace}`,
         "default_service_account": `${serviceAccount}`
     };
+    if(type === "AKS"){
+        data.subscription_id = subscriptionId;
+    }
     const response = await fetch(`${myURL}/api/executionhosts/k8s/${executionHost}/spaces/${space}`, {
         "method": "POST",
         "body": JSON.stringify(data),
