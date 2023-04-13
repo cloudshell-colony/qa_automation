@@ -165,7 +165,7 @@ export const loginToAccount = async (page, email, accountName, allAccountsPasswo
     // TO DO
     // need to add validation and handeling for account selection
     // currently - YAGNI
-    await page.waitForTimeout(1000);
+    await page.waitForTimeout(1500);
     let visi = await page.isVisible("[data-test=login-title]");
     if(visi){
         await selectFromDropbox(page, 'account__control', accountName);
