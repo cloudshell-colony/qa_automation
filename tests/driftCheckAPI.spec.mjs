@@ -81,12 +81,24 @@ test.describe.serial("Basic drift AWS with API", () => {
         await validateAPIResponseis200(response);
         console.log('Reconciled grain ' + grainId);
         await waitForDriftStatusAPI(session, baseURL, spaceName, sandboxId, grainId, false);
-        // validate reconcile completed
-        let lastActivity = await getLastSandboxActivityFromGrainAPI(session, baseURL, spaceName, sandboxId, grainId);
-        expect(lastActivity.name).toBe('Reconcile', {timeout:10000});
-        expect(lastActivity.status).toBe('Done');
+        // validate reconcile completed through grain activities
+        let sandboxDetails = await (await getSandboxDetailsAPI(session, baseURL, spaceName, sandboxId)).json();
+        let grain = sandboxDetails.details.state.grains[0];
+        let reconcileFound = false;
+        for(var stage of grain.state.stages){
+            for(var activity of stage.activities){
+                if(activity.name === "Reconcile"){
+                    console.log(`Found reconcile activity: \n` + JSON.stringify(activity));
+                    expect(activity.status, `Reconcile is not done, sandbox details: \n`+ JSON.stringify(sandboxDetails)).toBe("Done");
+                    reconcileFound = true;
+                    break
+                }
+            }
+            if(reconcileFound) break;
+        }
+        expect(reconcileFound, 'Reconcile not found, sandbox details: \n' + JSON.stringify(sandboxDetails)).toBeTruthy();
         console.log('Reconciled completed successfully');
-        // check tags in S3 bucket
+        // check tags in S3 bucket were changed back to original ones
         let output = execSync(`aws s3api get-bucket-tagging --bucket ${bucketName}`, { encoding: 'utf-8' });
         expect(output, "Tags after reconcile do not match original bucket tags").toBe(originalTags);
         console.log('Reconcile successfully reverted tags on AWS S3 bucket');

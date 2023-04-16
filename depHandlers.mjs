@@ -5,8 +5,10 @@ import { executeCLIcommand, generateSecret, overwriteAndSaveToFile } from "./tes
 import { addApprovalChannelAPI, checkIfApprovalChannelExistsAPI } from "./tests/functions/policies.mjs";
 import { addRepositoryAPI, createSpaceAPI } from "./tests/functions/spaces.mjs"
 
-const namespace = process.env.nameSpace;
-const serviceAccount = process.env.serviceAccount;
+var namespace;
+var serviceAccount;
+var tenantId;
+var subscriptionId;
 export var spacesCreated = 0;
 export var agentsCreated = 0;
 export var repositoriesCreated = 0;
@@ -44,12 +46,17 @@ export const spaceDepHandler = async(session, baseURL, spaceName) => {
  * @param {Array} agentList list of agents, each containing name, type & associated (boolean) value
  * @param {*} spaceName name of the requested space
  */
-export const agentDepHandler = async(session, baseURL, agentList, spaceName) =>{
+export const agentDepHandler = async(session, baseURL, agentList, spaceName, testNameSpace, testServiceAccount, testTenantId, testSubscriptionId) =>{
+    namespace = testNameSpace;
+    serviceAccount = testServiceAccount;
+    tenantId = testTenantId;
+    subscriptionId = testSubscriptionId;
     for (const agentParams of agentList) {
         let agentName = agentParams.name;
         let associated = agentParams.associated;
         try {
-            await addAgentHelper(session, baseURL, agentName, associated, spaceName, agentParams.type, agentParams.tenantId)
+            await executeCLIcommand("kubectl config use-context playground-eks");
+            await addAgentHelper(session, baseURL, agentName, associated, spaceName, agentParams.type)
         } catch (err) {
             throw Error(`Failed to add agent '${agentName}' for space '${spaceName}'. Original error: \n` + err.message);
         }
@@ -65,7 +72,7 @@ export const agentDepHandler = async(session, baseURL, agentList, spaceName) =>{
  * @param {*} associated Wether the agent needs to be associated to a space or not
  * @param {*} spaceName Space to associate the agent to if necessary
  */
-const addAgentHelper = async(session, baseURL, agentName, associated, spaceName, type, tenantId) =>{
+const addAgentHelper = async(session, baseURL, agentName, associated, spaceName, type) =>{
     let response = await createExecutionHostAPI(session, baseURL, agentName, type, tenantId);
     if (response.status != 200 && response.status != 422) {
         throw Error(`Received status ${response.status} while creating agent. Full response: \n` + await response.text());
@@ -75,6 +82,10 @@ const addAgentHelper = async(session, baseURL, agentName, associated, spaceName,
         agentsCreated++;
         response = await getdeploymentFileAPI(session, baseURL, "k8s", agentName);
         await overwriteAndSaveToFile("deploymentFile.yaml", response);
+        if(type.toUpperCase() === "AKS"){
+            await executeCLIcommand("kubectl config use-context qualidev-aks");
+            await new Promise(r => setTimeout(r, 1000)); //wait for 1 second
+        }
         await executeCLIcommand("kubectl apply -f deploymentFile.yaml");
         let ESInfo, ESText;
         //wait for max 5 minutes until host status is active
@@ -92,7 +103,7 @@ const addAgentHelper = async(session, baseURL, agentName, associated, spaceName,
         console.log(`Agent ${agentName} should now be active`);
     }
     if (associated) {
-        response = await associateExecutionHostAPI(session, baseURL, spaceName, agentName, namespace, serviceAccount, type)
+        response = await associateExecutionHostAPI(session, baseURL, spaceName, agentName, namespace, serviceAccount, type, subscriptionId)
         const respText = await response.text();
         if(response.status != 200 && !respText.includes('SPACE_ASSOCIATION_ALREADY_EXIST')){ // agent wasn't added successfully and wasn't already associated
             throw Error(`Received status ${response.status} while associating agent to space ${spaceName}. Full response: \n` + respText);

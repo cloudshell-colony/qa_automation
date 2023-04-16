@@ -2,7 +2,7 @@ import { test, expect } from "@playwright/test";
 import { loginToAccount, getSessionAPI, validateGetSessionAPI, logOut } from "./functions/accounts.mjs";
 import { launchBlueprintFromCatalogPage } from "./functions/blueprints.mjs";
 import { closeModal, selectFromDropbox, validateAPIResponseis200 } from "./functions/general.mjs";
-import { addCollaboratorToSandbox, changeSBCollaboratorAPI, endSandbox, endSandboxAPI, findSandboxIdByNameAPI, getFirstSandboxesAPI, goToSandbox, stopAndValidateAllSBsCompletedAPI, validateSBisActive } from "./functions/sandboxes.mjs";
+import { addCollaboratorToSandbox, changeSBCollaboratorAPI, endSandbox, endSandboxAPI, findSandboxIdByNameAPI, getFirstSandboxesAPI, getSandboxDetailsAPI, goToSandbox, stopAndValidateAllSBsCompletedAPI, validateSBisActive } from "./functions/sandboxes.mjs";
 import { goToSpace } from "./functions/spaces.mjs";
 
 
@@ -55,6 +55,7 @@ test.describe('sendbox launch with collab', () => {
         await goToSpace(page, space)
         const blueprint = await page.locator(`[data-test="catalog-bp-autogen_${bpName}"]`)
         await blueprint.locator('[data-test="launch-environment-from-blueprint"]').click()
+        const sandboxName = await page.getAttribute("[data-test=sandboxName]", "value");
         const collaborator = await page.locator('.hFDyZZ')
         await (collaborator.locator('.btn-content')).click()
         await page.locator('.select-set_collab__control').click()
@@ -66,11 +67,8 @@ test.describe('sendbox launch with collab', () => {
         await page.locator('[data-test="sandboxes-nav-link"]').click()
         await expect(page.locator('[data-test="sandbox-row-0"]')).toContainText('Launching', { timeout: 4000 });
         await expect(page.locator('[data-test="sandbox-row-0"]')).toContainText('Active', { timeout: 5 * 60 * 1000 });
-        response = await getFirstSandboxesAPI(session, baseURL, space, count)
-        responseJson = await response.json()
-        console.log(responseJson)
-        firstSB = await responseJson[0]
-        ID = await firstSB.id
+        ID = await findSandboxIdByNameAPI(session, baseURL, space, sandboxName);
+        firstSB = await (await getSandboxDetailsAPI(session,baseURL,space,ID)).json();
         console.log("the id is " + ID)
         collabInfo = await firstSB.collaborators_info.collaborators
         console.log(collabInfo[0].email)
@@ -104,7 +102,9 @@ test.describe('sendbox launch with collab', () => {
         await loginToAccount(page, spaceMember, account, spaceMemberPassword, baseURL);
         //Change filter to show only collaborated sandboxes
         await page.click('[data-test=sandboxes-nav-link]');
-        await selectFromDropbox(page, 'filters__control', "Collaborator");
+        await page.click(`[data-test=multiple-filters-toggle]`);
+        await page.click(`[data-test=collaborators-filter]`);
+        await selectFromDropbox(page, 'collaborators__control', spaceMember);
         await expect(page.locator(`tr:has-text("${sandboxName}")`)).toBeVisible();
         console.log("Sandbox is listed in `I'm a Collaborator` filter");
         //Collaborator can enter sandbox
