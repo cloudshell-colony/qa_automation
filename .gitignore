@@ -11,7 +11,7 @@ tests/asafTest.spec.mjs
 asafEnv/.env
 giladEnv/.env
 tests/testTestCleanBPsAndProvider.spec.mjs
-deploymentFile.yaml
+deploymentFile*.yaml
 tests/testTest.spec.mjs
 tests/AlexTest.spec.mjs
 tests/testAPIs.spec.mjs

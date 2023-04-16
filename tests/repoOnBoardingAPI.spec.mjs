@@ -6,7 +6,10 @@ import { addRepositoryAPI, createSpaceAPI } from "./functions/spaces.mjs";
 import { associateExecutionHostAPI, createExecutionHostAPI, getdeploymentFileAPI, getExecutionHostDetailsAPI } from "./functions/executionHosts.mjs";
 import { stopAndValidateAllSBsCompletedAPI, getNonActiveAliveSandboxesAPI, waitForSandboxesToBeActiveAPI} from "./functions/sandboxes.mjs";
 import { launchBlueprintAPI } from "./functions/blueprints.mjs";
-import { addParameterToAccountAPI, deleteAccountParameterAPI } from "./functions/parameters.mjs";
+import { addParameterToAccountAPI } from "./functions/parameters.mjs";
+import { execSync } from "child_process";
+import fs from "fs";
+
 
 const prefix = process.env.accountPrefix;
 const baseURL = process.env.baseURL;
@@ -26,6 +29,8 @@ const serviceAccount = process.env.serviceAccount;
 const repoUrl = process.env.githubRepo;
 const repoName = "qa_automation"
 const token = process.env.githubToken;
+const fileName = `deploymentFile${id}.yaml`
+const path = `./${fileName}`;
 let session = "empty session";
 let sandboxId = '';
 const blueprintMap = [{name: 'kube-nginx', inputs: {'namespace': namespace, 'host_name':executionHostName}},
@@ -48,10 +53,14 @@ test.describe.serial('Multiple blueprints onBoarding API', () => {
         console.log(`Delete account "${accountName}", as part of test cleanup`);
         await deleteAccountAPI(baseURL, accountName, session);
         // delete execution host in k8s
-        if (executionHostName !== "enter real if needed") {
-            console.log(`Deleting all the namespaces containing ${executionHostName}`);
-            await executeCLIcommand(`sh cleanEHosts.sh ${executionHostName}`);
-        };
+        const res =  execSync(`kubectl delete -f ${fileName}`, {encoding: 'utf8'});
+        console.log(res);
+        try {
+            fs.unlinkSync(path);
+            console.log("File removed:", path);
+          } catch (err) {
+            console.error(err);
+          }
     });
 
     test('Create new account', async () => {
@@ -90,11 +99,11 @@ test.describe.serial('Multiple blueprints onBoarding API', () => {
     test('Create execution host deployment file', async () => {
         // get session for API call
         const response = await getdeploymentFileAPI(session, baseURL, "k8s", executionHostName);
-        await overwriteAndSaveToFile("deploymentFile.yaml", response);
+        await overwriteAndSaveToFile(fileName, response);
     });
 
     test('Apply the execution host yaml file to K8S', async () => {
-        await executeCLIcommand("kubectl apply -f deploymentFile.yaml");
+        await executeCLIcommand(`kubectl apply -f ${fileName}`);
         let ESInfo, ESText;
         //wait for max 5 minutes until host status is active
         for(let i=0; i<5*60; i++){
