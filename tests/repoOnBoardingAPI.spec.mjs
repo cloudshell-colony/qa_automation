@@ -50,8 +50,6 @@ test.describe.serial('Multiple blueprints onBoarding API', () => {
     test.afterAll(async () => {
         console.log(`Stopping all Sbs after test complteted in space ${spaceName}`);
         await stopAndValidateAllSBsCompletedAPI(session, baseURL, spaceName, 7);
-        console.log(`Delete account "${accountName}", as part of test cleanup`);
-        await deleteAccountAPI(baseURL, accountName, session);
         // delete execution host in k8s
         const res =  execSync(`kubectl delete -f ${fileName}`, {encoding: 'utf8'});
         console.log(res);
@@ -60,7 +58,11 @@ test.describe.serial('Multiple blueprints onBoarding API', () => {
             console.log("File removed:", path);
           } catch (err) {
             console.error(err);
-          }
+        }
+        console.log(`Delete account "${accountName}", as part of test cleanup`);
+        await deleteAccountAPI(baseURL, accountName, session);
+        // add when bug 11268 is fixed
+        // await catchErrorUI(page, 'Delete account'); 
     });
 
     test('Create new account', async () => {

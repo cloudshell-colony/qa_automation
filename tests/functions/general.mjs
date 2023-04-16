@@ -136,14 +136,10 @@ export const selectFromDropbox = async (page, name, text = "") => {
 };
 
 export const afterTestCleanup = async (page, accountName, baseURL, spaceName, filePath = "enter real if needed") => {
-    // execution host is not mandatory, and should be used only when execution host is created during the test
+    // filePath is not mandatory, and should be used only when execution host is created during the test
     console.log(`Stopping all Sbs after test complteted in space ${spaceName}`);
     await page.goto(`${baseURL}/${spaceName}`);
-    //await goToSandboxListPage(page);
     await stopAndValidateAllSBsCompleted(page);
-    console.log(`Delete account "${accountName}", as part of test cleanup`);
-    await DeleteAcountUI(accountName, page, baseURL);
-    await page.close();
     // delete execution host in k8s
     if (filePath !== "enter real if needed") {
         console.log(`Deleting all kubernetes resources created from file ${filePath}`);
@@ -156,6 +152,12 @@ export const afterTestCleanup = async (page, accountName, baseURL, spaceName, fi
             console.error(err);
           }
     };
+    console.log(`Delete account "${accountName}", as part of test cleanup`);
+    await DeleteAcountUI(accountName, page, baseURL);
+    // add when bug 11268 is fixed
+    // await catchErrorUI(page, 'Delete account'); 
+    await page.close();
+   
 };
 
 export const afterTestCleanupAPI = async(session, baseURL, spaceName, filePath = "enter real if needed") =>{
@@ -267,4 +269,14 @@ export function generateUniqueId(){
     firstPart = ("000" + firstPart.toString(36)).slice(-3);
     secondPart = ("000" + secondPart.toString(36)).slice(-3);
     return firstPart + secondPart;
-} 
+}
+
+export const catchErrorUI = async(page, operationName = 'Operation', waitTime=3000) =>{
+    let err;
+    try {
+        err = await page.locator("[data-testid=error-details-text]", { timeout: waitTime }).innerText();
+    }
+    catch { }
+    let visi = await page.isVisible('[data-testid="error-details-text"]');
+    expect(visi, `${operationName} failed, received following error: ` + err).toBeFalsy();
+}

@@ -1,7 +1,7 @@
 import { test, expect } from "@playwright/test";
 import { loginToAccount, getSessionAPI, validateGetSessionAPI } from "./functions/accounts.mjs";
 import { getBlueprintErrors, getBlueprintsAPI, launchBlueprintFromBPList, validateBlueprintErrors } from "./functions/blueprints.mjs";
-import { closeModal, openAndPinSideMenu } from "./functions/general.mjs";
+import { catchErrorUI, closeModal, openAndPinSideMenu } from "./functions/general.mjs";
 import { goToSpace } from "./functions/spaces.mjs";
 import { associateExecutionHost, disassociateExecutionHostAPI } from "./functions/executionHosts.mjs";
 import { validateSBisActive } from "./functions/sandboxes.mjs";
@@ -102,19 +102,13 @@ test.describe('Blueprint validation', () => {
     });
 
     test("Dynamic validation - Sandbox launches successfully when providing correct execution host input", async () => {
-        let err;
         blueprintName = "host input";
         const inputsDict = { "inputs\.host": associatedAgent};
         await goToSpace(page, space);
         await page.click("[data-test=blueprints-nav-link]");
         console.log("Launching sandbox with correct inputs for execution host name");
         await launchBlueprintFromBPList(page, blueprintName, inputsDict);
-        try {
-            err = await page.locator("[data-testid=error-details-text]", { timeout: 3000 }).innerText();
-        }
-        catch { }
-        let visi = await page.isVisible('[data-testid="error-details-text"]');
-        expect(visi, `Sandbox launch failed, received following error: ` + err).toBeFalsy();
+        await catchErrorUI(page, 'Sandbox launch');
         await page.waitForSelector('[data-test="sandbox-info-column"]');
         console.log("Waiting for sandbox to end launch");
         await validateSBisActive(page);
@@ -125,13 +119,15 @@ test.describe('Blueprint validation', () => {
 
      
     test("Validate proper yaml link in blueprint", async () => {
-      const blueprintDetails = await getBlueprintsAPI(session, baseURL,space)
-      const response = await blueprintDetails.json()
-      console.log(`Yaml link response JSON: ` + JSON.stringify(response));
-      console.log(response[0].url)
-      const bpName = await response[0].name
-      const bpUrl = await response[0].url
-      expect(bpUrl).toEqual('https://github.com/QualiNext/qa-bp-validation/blob/master/blueprints/' + bpName + '.yaml')
+        session = await getSessionAPI(user, password, baseURL, account);
+        await validateGetSessionAPI(session);
+        const blueprintDetails = await getBlueprintsAPI(session, baseURL,space)
+        const response = await blueprintDetails.json()
+        console.log(`Yaml link response JSON: ` + JSON.stringify(response));
+        console.log(response[0].url)
+        const bpName = await response[0].name
+        const bpUrl = await response[0].url
+        expect(bpUrl).toEqual('https://github.com/QualiNext/qa-bp-validation/blob/master/blueprints/' + bpName + '.yaml')
     });
 
 });

@@ -43,8 +43,7 @@ let sandboxId = '';
 
 test.describe.serial('On boarding with APIs', () => {
     test.afterAll(async () => {
-        await deleteAccountAPI(baseURL, accountName, session);
-        // await executeCLIcommand(`sh cleanEHosts.sh ${executionHostName}`);
+        // delete execution host in k8s
         const res =  execSync(`kubectl delete -f ${fileName}`, {encoding: 'utf8'});
         console.log(res);
         try {
@@ -52,7 +51,12 @@ test.describe.serial('On boarding with APIs', () => {
             console.log("File removed:", path);
           } catch (err) {
             console.error(err);
-          }
+        }
+        await deleteAccountAPI(baseURL, accountName, session);
+        // add when bug 11268 is fixed
+        // await catchErrorUI(page, 'Delete account'); 
+        // await executeCLIcommand(`sh cleanEHosts.sh ${executionHostName}`);
+        
     });
 
     test('Create new account', async () => {
