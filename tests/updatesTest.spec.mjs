@@ -42,11 +42,11 @@ test.describe.serial("Asset updates test", () => {
         await openAndPinSideMenu(page);
     });
 
-    test.afterAll(async () =>{
-        await page.goto(`${baseURL}/${spaceName}/environments`);
-        await page.waitForLoadState();
-        await stopAndValidateAllSBsCompleted(page);
-    });
+    // test.afterAll(async () =>{
+    //     await page.goto(`${baseURL}/${spaceName}/environments`);
+    //     await page.waitForLoadState();
+    //     await stopAndValidateAllSBsCompleted(page);
+    // });
 
     test("Launch simple TF sandbox", async() =>{
         await goToSpace(page, spaceName);
