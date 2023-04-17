@@ -6,7 +6,7 @@ import { selectFromDropbox } from "./general.mjs";
 export const addPolicy = async (page, policyType, extra = '', space = '') => {
     await goToAdminConsole(page, 'policies');
     await page.click('[data-test=apply-new-policy]');
-    await page.click('.select-policy-repos-dropdown__menu')
+    await page.click('.select-policy-repos-dropdown__option')
     const search = await page.locator('input[name="search"] >> nth=1')
     await search.fill(policyType)
     await page.locator('[data-test="policy-toggle"]').click()
