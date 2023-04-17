@@ -19,6 +19,8 @@ const companyName = "Company.".concat(prefix).concat(timestemp);
 const accountName = prefix.concat(id);
 const spaceName = prefix.concat("-space-").concat(timestemp);
 const email = prefix.concat("@").concat(id).concat(".com");
+const fileName = `deploymentFile${id}.yaml`
+const path = `./${fileName}`;
 
 const executionHost = process.env.execHostName;
 const executionHostName = executionHost.concat(timestemp);
@@ -39,7 +41,7 @@ test.describe.serial('onboarding flow', () => {
     });
 
     test.afterAll(async () => {
-        await afterTestCleanup(page, accountName, baseURL, spaceName, executionHostName);
+        await afterTestCleanup(page, accountName, baseURL, spaceName, path);
     });
 
     test('create new account', async () => {
@@ -94,11 +96,11 @@ test.describe.serial('onboarding flow', () => {
         // get session for API call
         const session = await getSessionAPI(email, allAccountsPassword, baseURL, accountName);
         const response = await getdeploymentFileAPI(await session, baseURL, "k8s", executionHostName);
-        await overwriteAndSaveToFile("deploymentFile.yaml", response);
+        await overwriteAndSaveToFile(fileName, response);
     });
 
     test('apply the execution host yaml file to K8S', async () => {
-        const applyExecutionHost = await executeCLIcommand("kubectl apply -f deploymentFile.yaml");
+        const applyExecutionHost = await executeCLIcommand(`kubectl apply -f ${fileName}`);
     });
 
     test('complete the actions in the GUI after execution host agent is created in K8S', async () => {

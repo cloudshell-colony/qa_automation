@@ -5,6 +5,7 @@ import { exec } from "child_process";
 import { goToSandboxListPage, stopAndValidateAllSBsCompleted, stopAndValidateAllSBsCompletedAPI } from "./sandboxes.mjs";
 import { deleteAccountAPI, DeleteAcountUI } from "./accounts.mjs";
 import fetch from "node-fetch";
+import { execSync } from "child_process";
 
 const repProvider = process.env.repProvider;
 const password = process.env.allAccountsPassword;
@@ -134,33 +135,49 @@ export const selectFromDropbox = async (page, name, text = "") => {
     await page.keyboard.press("Enter");
 };
 
-export const afterTestCleanup = async (page, accountName, baseURL, spaceName, executionHostName = "enter real if needed") => {
-    // execution host is not mandatory, and should be used only when execution host is created during the test
+export const afterTestCleanup = async (page, accountName, baseURL, spaceName, filePath = "enter real if needed") => {
+    // filePath is not mandatory, and should be used only when execution host is created during the test
     console.log(`Stopping all Sbs after test complteted in space ${spaceName}`);
     await page.goto(`${baseURL}/${spaceName}`);
-    //await goToSandboxListPage(page);
     await stopAndValidateAllSBsCompleted(page);
+    // delete execution host in k8s
+    if (filePath !== "enter real if needed") {
+        console.log(`Deleting all kubernetes resources created from file ${filePath}`);
+        const res =  execSync(`kubectl delete -f ${filePath}`, {encoding: 'utf8'});
+        console.log(res);
+        try {
+            fs.unlinkSync(filePath);
+            console.log("File removed:", filePath);
+          } catch (err) {
+            console.error(err);
+          }
+    };
     console.log(`Delete account "${accountName}", as part of test cleanup`);
     await DeleteAcountUI(accountName, page, baseURL);
+    // add when bug 11268 is fixed
+    // await catchErrorUI(page, 'Delete account'); 
     await page.close();
-    // delete execution host in k8s
-    if (executionHostName !== "enter real if needed") {
-        console.log(`Deleting the all namespaces containing ${executionHostName}`);
-        await executeCLIcommand(`sh cleanEHosts.sh ${executionHostName}`);
-    };
+   
 };
 
-export const afterTestCleanupAPI = async(session, baseURL, spaceName, executionHostName = "enter real if needed") =>{
+export const afterTestCleanupAPI = async(session, baseURL, spaceName, filePath = "enter real if needed") =>{
     // execution host is not mandatory, and should be used only when execution host is created during the test
     console.log(`Stopping all Sbs after test complteted in space ${spaceName}`);
     await stopAndValidateAllSBsCompletedAPI(session, baseURL, spaceName);
     console.log(`Delete account "${accountName}", as part of test cleanup`);
     await deleteAccountAPI(baseURL, accountName, session);
     // delete execution host in k8s
-    if (executionHostName !== "enter real if needed") {
-        console.log(`Deleting the all namespaces containing ${executionHostName}`);
-        await executeCLIcommand(`sh cleanEHosts.sh ${executionHostName}`);
-    };
+    if (filePath !== "enter real if needed") {
+        console.log(`Deleting all kubernetes resources created from file ${filePath}`);
+        const res =  execSync(`kubectl delete -f ${filePath}`, {encoding: 'utf8'});
+        console.log(res);
+        try {
+            fs.unlinkSync(filePath);
+            console.log("File removed:", filePath);
+          } catch (err) {
+            console.error(err);
+          }
+    }
 }
 
 export const getMailsFromMailinator = async () => {
@@ -252,4 +269,14 @@ export function generateUniqueId(){
     firstPart = ("000" + firstPart.toString(36)).slice(-3);
     secondPart = ("000" + secondPart.toString(36)).slice(-3);
     return firstPart + secondPart;
-} 
+}
+
+export const catchErrorUI = async(page, operationName = 'Operation', waitTime=3000) =>{
+    let err;
+    try {
+        err = await page.locator("[data-testid=error-details-text]", { timeout: waitTime }).innerText();
+    }
+    catch { }
+    let visi = await page.isVisible('[data-testid="error-details-text"]');
+    expect(visi, `${operationName} failed, received following error: ` + err).toBeFalsy();
+}

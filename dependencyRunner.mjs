@@ -38,7 +38,7 @@ const testsDependencies = {
             repositories: [{url: "https://github.com/QualiNext/qa-bp-validation", token: qualiNextToken, name: 'qa-bp-validation', branch: 'master'}]},
 
     collaboratorsTests: {space: "Collaborator", agents: [{name: 'qa-eks', type: 'eks',associated: true}], repositories: [{url: "https://github.com/QualiNext/qa-bp-validation",
-            token: qualiNextToken, name: 'qa-bp-validation', branch: 'master', assets: ['simpleTF']}], users: [{email: 'asaf.y@quali.com', password:'Qual!123', role: 'Space Developer'}]},
+            token: qualiNextToken, name: 'qa-bp-validation', branch: 'master', assets: ['simpleTF']}], users: [{email: 'amir.o@quali.com', password:'Qual!123', role: 'Admin'}, {email: 'asaf.y@quali.com', password:'Qual!123', role: 'Space Developer'}]},
 
     driftCheckAPI: {space: "drift-api", agents: [{name: 'qa-eks', type: 'eks',associated: true}], repositories: [{url: "https://github.com/QualiNext/qa-bp-validation",
             token: qualiNextToken, name: 'qa-bp-validation', branch: 'master', assets: ['s3']}]},
