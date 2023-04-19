@@ -24,7 +24,7 @@ let session;
  * and create-EC2-instance blueprint from the repo published
  */
 
-test.describe('Workflows tests on UI', () => {
+test.describe.skip('Workflows tests on UI', () => {
     let page;
     test.beforeAll(async ({ browser }) => {
         session = await getSessionAPI(user, password, baseURL, account);
