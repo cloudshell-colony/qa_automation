@@ -1,7 +1,9 @@
 import test, { expect } from "@playwright/test";
 import { loginToAccount } from "./functions/accounts.mjs";
+import { performEC2Action } from "./functions/actions.mjs";
 import { launchBlueprintFromCatalogPage } from "./functions/blueprints.mjs";
-import { closeModal, openAndPinSideMenu, generateUniqueId } from "./functions/general.mjs";
+import { closeModal, openAndPinSideMenu, generateUniqueId, selectFromDropbox } from "./functions/general.mjs";
+import goToAdminConsole from "./functions/goToAdminConsole.mjs";
 import { addApprovalChannel, addPolicy, deletePolicy, editRego } from "./functions/policies.mjs";
 import { endSandbox, validateSandboxFailedDueToPolicy, validateSBisActive } from "./functions/sandboxes.mjs";
 import { goToSpace } from "./functions/spaces.mjs";
@@ -352,6 +354,45 @@ test.describe('Check AWS policies', () => {
             await deletePolicy(page, policyName);
             throw error;
         }
+
+    })
+
+    test.only('Validate power annotations ', async () => {
+        let space = 'Annotations'
+        let policyType = 'power.rego'
+        let policyName = policyType + '-' + id;
+        let AzureBPName = "azure_vm_legacy_wi"
+        let AzureInputs = { 'inputs\.resource_group':policyName, 'inputs\.vm_name': "vidovm", 'inputs\.agent': 'qa-aks' }
+        console.log('Adding power annotation policy');
+        // try {
+            await goToAdminConsole(page, 'policies');
+            await page.click('[data-test=apply-new-policy]');
+            const policy = await page.locator('.select-policy-repos-dropdown__menu-list')
+            await policy.getByText('opa-policies').click()
+            await page.locator('[data-test="policy-toggle"]').click()
+            await page.locator('[data-test="submit-button"]').click()
+            await page.locator('[data-test="policies-row-1"]').click()
+            await page.locator('[data-test="allSpaces"]').click()
+            await selectFromDropbox(page, 'spaces', space);
+            await page.getByRole('button', { name: 'save' }).click()
+            await page.waitForTimeout(1500);
+            const row = page.locator('[data-test="policies-row-1"]')
+            await row.locator('[data-test="policy-enable-toggle"]').click();
+            await page.waitForTimeout(1500);
+            await goToSpace(page, space);
+            await launchBlueprintFromCatalogPage(page, AzureBPName, AzureInputs)
+            await validateSBisActive(page)
+            await performEC2Action(page, 'vidovm', '(Deallocate) Azure VM', 'off', 'vm', 'azure')
+            await page.locator('[]data-test="sandboxes-nav-link"').click()
+            await expect( await page.locator('[data-test="sandbox-row-0"]')).toContainText('power: off',{ timeout: 10 * 60 * 1000 })
+                  
+            await endSandbox(page);
+            await deletePolicy(page, policyName);
+        // } catch (error) {
+            console.log('Error occurred: ' + error);
+            await deletePolicy(page, policyName);
+            throw error;
+        // }
 
     })
 });
