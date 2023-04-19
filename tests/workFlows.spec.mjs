@@ -35,7 +35,7 @@ test.describe.skip('Workflows tests on UI', () => {
 
     });
 
-    test("Create env power off workflow", async () => {
+    test.skip("Create env power off workflow", async () => {
         await goToAdminConsole(page, 'workflows')
         await addWorkflow(page, 'power-off-env', 'env power off', 'shutting down sandbox', 'Terminate Environment', space)
         await page.waitForTimeout(1500);
@@ -43,7 +43,7 @@ test.describe.skip('Workflows tests on UI', () => {
 
     });
 
-    test("Add ec2 power off workflow", async () => {
+    test.skip("Add ec2 power off workflow", async () => {
         await addWorkflow(page, 'power-off-ec2', 'power ec2 off', 'shutting down resource', 'Power-off EC2', space)
         await page.waitForTimeout(1500);
         await page.getByRole('row', { name: 'power ec2 off shutting down resource Workflows' })
@@ -51,7 +51,7 @@ test.describe.skip('Workflows tests on UI', () => {
 
     });
 
-    test("Launch EC2 instance and validate  ec2 power off with workflow", async () => {
+    test.skip("Launch EC2 instance and validate  ec2 power off with workflow", async () => {
         await goToSpace(page, space)
         console.time('Time to launch ec2')
         await launchBlueprintFromCatalogPage(page, blueprintName, inputs)
@@ -69,7 +69,7 @@ test.describe.skip('Workflows tests on UI', () => {
         console.timeEnd('Time to shut down ec2')
     });
 
-    test(" Validate env termination with workflow", async () => {
+    test.skip(" Validate env termination with workflow", async () => {
         await goToSpace(page, space)
         await page.locator('[data-test="sandboxes-nav-link"]').click()
         await page.locator('[data-test="sandbox-row-0"]').click()
@@ -85,12 +85,12 @@ test.describe.skip('Workflows tests on UI', () => {
 
     });
 
-    test(" Delete power off ec2 workflow", async () => {
+    test.skip(" Delete power off ec2 workflow", async () => {
         await goToAdminConsole(page, 'workflows')
         await removeWorkflow(page, 'shutting down resource')
     });
 
-    test(" Delete shutting down sb workflow", async () => {
+    test.skip(" Delete shutting down sb workflow", async () => {
         await goToAdminConsole(page, 'workflows')
         await removeWorkflow(page, 'shutting down sandbox')
     });
