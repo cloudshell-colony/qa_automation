@@ -45,7 +45,7 @@ test.describe.serial('On boarding with APIs', () => {
     test.afterAll(async () => {
         // delete execution host in k8s
         await stopAndValidateAllSBsCompletedAPI(session, baseURL, spaceName);
-        // await deleteK8SResourcesFromFile(path);
+        await deleteK8SResourcesFromFile(path);
         await deleteAccountAPI(baseURL, accountName, session);
         // add when bug 11268 is fixed
         // await catchErrorUI(page, 'Delete account'); 

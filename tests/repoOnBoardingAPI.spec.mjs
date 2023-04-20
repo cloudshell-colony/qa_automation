@@ -51,7 +51,7 @@ test.describe.serial('Multiple blueprints onBoarding API', () => {
         console.log(`Stopping all Sbs after test complteted in space ${spaceName}`);
         await stopAndValidateAllSBsCompletedAPI(session, baseURL, spaceName, 7);
         // delete execution host in k8s
-        // await deleteK8SResourcesFromFile(path);
+        await deleteK8SResourcesFromFile(path);
         await deleteAccountAPI(baseURL, accountName, session);
         // add when bug 11268 is fixed
         // await catchErrorUI(page, 'Delete account'); 

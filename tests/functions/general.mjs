@@ -142,7 +142,7 @@ export const afterTestCleanup = async (page, accountName, baseURL, spaceName, fi
     await stopAndValidateAllSBsCompleted(page);
     // delete execution host in k8s
     if (filePath !== "enter real if needed") {
-        // await deleteK8SResourcesFromFile(filePath);
+        await deleteK8SResourcesFromFile(filePath);
     };
     console.log(`Delete account "${accountName}", as part of test cleanup`);
     await DeleteAcountUI(accountName, page, baseURL);
@@ -277,7 +277,7 @@ export const deleteK8SResourcesFromFile = async(path) =>{
     console.log(`Deleting all kubernetes resources created from file ${path}`);
     const res = execSync(`kubectl delete -f ${path}`, {encoding: 'utf8'});
     console.log(res);
-    unlink(path, (err) => {
+    fs.unlink(path, (err) => {
         if (err) throw err;
         console.log(`${path} was deleted`);
     });
