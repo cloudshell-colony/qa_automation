@@ -1,10 +1,10 @@
 
 import test, { expect } from "@playwright/test";
-import { validateAPIResponseis200, overwriteAndSaveToFile, executeCLIcommand, generateUniqueId } from './functions/general.mjs';
+import { validateAPIResponseis200, overwriteAndSaveToFile, executeCLIcommand, generateUniqueId, deleteK8SResourcesFromFile } from './functions/general.mjs';
 import { getSessionAPI, validateGetSessionAPI, createAccountAPI, deleteAccountAPI } from "./functions/accounts.mjs";
 import { addRepositoryAPI, createSpaceAPI } from "./functions/spaces.mjs";
 import { associateExecutionHostAPI, createExecutionHostAPI, getdeploymentFileAPI, getExecutionHostDetailsAPI } from "./functions/executionHosts.mjs";
-import { validateSBisActiveAPI, validateSBisEndedAPI, endSandboxAPI } from "./functions/sandboxes.mjs";
+import { validateSBisActiveAPI, validateSBisEndedAPI, endSandboxAPI, stopAndValidateAllSBsCompletedAPI } from "./functions/sandboxes.mjs";
 import { generateSpecificAssetsFromRepoAPI, launchBlueprintAPI, publishBlueprintAPI } from "./functions/blueprints.mjs";
 import fs from "fs";
 import { execSync } from "child_process";
@@ -44,14 +44,8 @@ let sandboxId = '';
 test.describe.serial('On boarding with APIs', () => {
     test.afterAll(async () => {
         // delete execution host in k8s
-        const res =  execSync(`kubectl delete -f ${fileName}`, {encoding: 'utf8'});
-        console.log(res);
-        try {
-            fs.unlinkSync(path);
-            console.log("File removed:", path);
-          } catch (err) {
-            console.error(err);
-        }
+        await stopAndValidateAllSBsCompletedAPI(session, baseURL, spaceName);
+        // await deleteK8SResourcesFromFile(path);
         await deleteAccountAPI(baseURL, accountName, session);
         // add when bug 11268 is fixed
         // await catchErrorUI(page, 'Delete account'); 

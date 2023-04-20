@@ -142,15 +142,7 @@ export const afterTestCleanup = async (page, accountName, baseURL, spaceName, fi
     await stopAndValidateAllSBsCompleted(page);
     // delete execution host in k8s
     if (filePath !== "enter real if needed") {
-        console.log(`Deleting all kubernetes resources created from file ${filePath}`);
-        const res =  execSync(`kubectl delete -f ${filePath}`, {encoding: 'utf8'});
-        console.log(res);
-        try {
-            fs.unlinkSync(filePath);
-            console.log("File removed:", filePath);
-          } catch (err) {
-            console.error(err);
-          }
+        // await deleteK8SResourcesFromFile(filePath);
     };
     console.log(`Delete account "${accountName}", as part of test cleanup`);
     await DeleteAcountUI(accountName, page, baseURL);
@@ -279,4 +271,15 @@ export const catchErrorUI = async(page, operationName = 'Operation', waitTime=30
     catch { }
     let visi = await page.isVisible('[data-testid="error-details-text"]');
     expect(visi, `${operationName} failed, received following error: ` + err).toBeFalsy();
+}
+
+export const deleteK8SResourcesFromFile = async(path) =>{
+    console.log(`Deleting all kubernetes resources created from file ${path}`);
+    const res = execSync(`kubectl delete -f ${path}`, {encoding: 'utf8'});
+    console.log(res);
+    unlink(path, (err) => {
+        if (err) throw err;
+        console.log(`${path} was deleted`);
+    });
+
 }
