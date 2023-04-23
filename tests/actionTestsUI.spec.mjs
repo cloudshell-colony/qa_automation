@@ -1,6 +1,6 @@
 import { test, expect } from "@playwright/test";
 import { loginToAccount, getSessionAPI, validateGetSessionAPI } from "./functions/accounts.mjs";
-import { performEC2Action } from "./functions/actions.mjs";
+import { performAction } from "./functions/actions.mjs";
 import { launchBlueprintFromCatalogPage } from "./functions/blueprints.mjs";
 import { closeModal } from "./functions/general.mjs";
 import { endSandbox, validateSBisActive } from "./functions/sandboxes.mjs";
@@ -34,11 +34,11 @@ test.describe('Actions tests on UI', () => {
 
     });
 
-    test.only("launch EC2 instance and validate power off with action", async () => {
+    test("launch EC2 instance and validate power off with action", async () => {
         await goToSpace(page, space)
         await launchBlueprintFromCatalogPage(page, blueprintName, inputs)
         await validateSBisActive(page)
-        await performEC2Action(page, 'SSH instance', 'off');
+        await performAction(page, 'SSH instance', 'EC2', 'off', 'ec2', 'aws');
         await expect(page.locator('[data-test="resource-status"]')).toContainText('Stopped', { timeout: 10 * 60 * 1000 });
     });
 
@@ -46,7 +46,7 @@ test.describe('Actions tests on UI', () => {
         await goToSpace(page, space)
         await page.locator('[data-test="sandboxes-nav-link"]').click()
         await page.locator('[data-test="sandbox-row-0"]').click()
-        await performEC2Action(page, 'SSH instance', 'on');
+        await performAction(page, 'SSH instance', 'EC2', 'on', 'ec2', 'aws');
         await expect(page.locator('[data-test="resource-status"]')).toContainText('Running', { timeout: 10 * 60 * 1000 });
         await endSandbox(page)
     });

@@ -5,7 +5,7 @@ import { selectFromDropbox } from "./general.mjs";
 
 
 
-export const performEC2Action = async (page, resource, instance,  action, actionInstance, provider) => {
+export const performAction = async (page, resource, instance,  action, actionInstance, provider) => {
     await page.hover('[data-test="environment-views"]');
     await page.getByText('Resources layout').click();
     await page.locator(`[data-test="resource-card-${resource}"]`).click();
