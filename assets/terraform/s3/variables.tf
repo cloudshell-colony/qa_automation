@@ -14,11 +14,11 @@ variable "region" {
 #     type = string
 #     default = "private"
 
-    validation {
-        condition = contains(["private", "public-read", "public-read-write", "aws-exec-read", "authenticated-read", "log-delivery-write"], var.acl)
-        error_message = "Provided ACL is not a recognized canned type. The page https://docs.aws.amazon.com/AmazonS3/latest/userguide/acl-overview.html#canned-acl has available options."
-    }
-}
+#     validation {
+#         condition = contains(["private", "public-read", "public-read-write", "aws-exec-read", "authenticated-read", "log-delivery-write"], var.acl)
+#         error_message = "Provided ACL is not a recognized canned type. The page https://docs.aws.amazon.com/AmazonS3/latest/userguide/acl-overview.html#canned-acl has available options."
+#     }
+# }
 
 variable "user" {
     description = "Username to assign permissions for S3 bucket to. If left blank, will not create permissions."
