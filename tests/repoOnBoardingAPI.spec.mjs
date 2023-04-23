@@ -35,8 +35,8 @@ let session = "empty session";
 let sandboxId = '';
 const blueprintMap = [{name: 'kube-nginx', inputs: {'namespace': namespace, 'host_name':executionHostName}},
 {name: 'provision-s3-buckets', inputs: {'host_name':executionHostName}},
-{name: 'helm-nginx', inputs: {'namespace': namespace, 'host_name':executionHostName}},
-{name: 'Webgame on S3 (TF)', inputs: {'host_name':executionHostName, 'Name Prefix': accountName.toLowerCase()}}]
+{name: 'helm-nginx', inputs: {'namespace': namespace, 'host_name':executionHostName}}]
+// {name: 'Webgame on S3 (TF)', inputs: {'host_name':executionHostName, 'Name Prefix': accountName.toLowerCase()}}
 //{name: 'Wordpress Website on AWS EC2 (TF)', inputs: {'instance_type': 't3a.micro'}}
 const paramMap = [{name: 'default_eks_host', value: executionHostName, sensitive: false},
 {name: 'default_eks_host_namespace', value: namespace, sensitive: false},
