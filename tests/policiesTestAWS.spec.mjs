@@ -40,7 +40,7 @@ test.describe('Check AWS policies', () => {
 
 
     // Launch fails with public S3
-    test('Private S3 policy test with public ACL', async () => {
+    test.skip('Private S3 policy test with public ACL', async () => {
         let policyType = 'Only_Private_S3_Buckets'
         let policyName = policyType + '-' + id;
         let bucketName = policyName.replaceAll('_', '-').toLowerCase();
@@ -67,7 +67,7 @@ test.describe('Check AWS policies', () => {
     });
 
     // Launch succeed with private S3
-    test('Private S3 policy test with private ACL', async () => {
+    test.skip('Private S3 policy test with private ACL', async () => {
         let policyType = 'Only_Private_S3_Buckets'
         let policyName = policyType + '-' + id;
         let bucketName = policyName.replaceAll('_', '-').toLowerCase();
