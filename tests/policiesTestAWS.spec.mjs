@@ -381,7 +381,6 @@ test.describe('Check AWS policies', () => {
             await page.waitForTimeout(1500);
             await goToSpace(page, space);
             await launchBlueprintFromCatalogPage(page, AzureBPName, AzureInputs)
-            await page.pause();
             await page.waitForSelector('[data-test="sandbox-info-column"] div:has-text("StatusActive")', { timeout: 5 * 60 * 1000 });
             await performAction(page, 'vidovm', '(Deallocate) Azure VM', 'off', 'vm', 'azure')
             await page.locator('[data-test="sandboxes-nav-link"]').click()
