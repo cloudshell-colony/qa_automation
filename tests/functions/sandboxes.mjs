@@ -59,7 +59,7 @@ export const endSandbox = async (page) => {
 
 export const endSandboxValidation = async (page, sandboxName) => {
   try {
-    await page.click(`[data-toggle=true]`); //Need UI to add data-test for this button
+    // await page.click(`[data-toggle=true]`); //Need UI to add data-test for this button
   }
   catch { }
   await page.click(`tr:has-text("${sandboxName}")`);
