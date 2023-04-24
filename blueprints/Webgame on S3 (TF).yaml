@@ -2,7 +2,7 @@ spec_version: 2
 description: Launch an S3 bucket with a webgame hosted on it as a static website
 inputs:
   host_name:
-    type: execution-host
+    type: agent
     description: "execution host name"
   Name:
     description: "The name of the storage bucket that will be created"
@@ -28,7 +28,7 @@ grains:
       source:
         store: qa_automation
         path: assets/terraform/kms-key
-      host:
+      agent:
         name: "{{.inputs.host_name}}"
       inputs:
         - enable_key_rotation: "true"
@@ -46,7 +46,7 @@ grains:
       source:
         store: qa_automation
         path: assets/terraform/s3-webapp
-      host:
+      agent:
         name: "{{.inputs.host_name}}"
       inputs:
         - name: "{{ .inputs.Name }}-{{ sandboxid | downcase }}"

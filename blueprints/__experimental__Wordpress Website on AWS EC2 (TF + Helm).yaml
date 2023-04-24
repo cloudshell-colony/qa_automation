@@ -48,7 +48,7 @@ grains:
       source:
         store: qa_automation
         path: assets/terraform/aws_env_infra
-      host:
+      agent:
         name: "{{ .params.default_eks_host }}"
         service-account: "{{ .params.default_eks_host_service_account }}"
       inputs:
@@ -66,7 +66,7 @@ grains:
         store: qa_automation
         path: assets/helm/helm-qualix
       namespace: "{{ .params.default_eks_host_namespace }}"
-      host:
+      agent:
         # Execution Host - the platform where the asset executable will run.
         name: "{{ .params.default_eks_host }}"
         service-account: "{{ .params.default_eks_host_service_account }}"
@@ -93,7 +93,7 @@ grains:
       source:
         store: qa_automation
         path: assets/terraform/aws_mysql_vm
-      host:
+      agent:
         name: "{{ .params.default_eks_host }}"
         service-account: "{{ .params.default_eks_host_service_account }}"
       inputs:
@@ -120,7 +120,7 @@ grains:
       source:
         store: qa_automation
         path: assets/terraform/aws_wordpress_vm
-      host:
+      agent:
         name: "{{ .params.default_eks_host }}"
         service-account: "{{ .params.default_eks_host_service_account }}"
       inputs:

@@ -16,7 +16,7 @@ grains:
       source:
         store: qa_automation
         path: helm/nginx
-      host:
+      agent:
         name: '{{ .inputs.host_name }}'
       namespace: '{{ inputs.namespace }}'
       commands:

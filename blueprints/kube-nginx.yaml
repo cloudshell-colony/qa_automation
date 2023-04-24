@@ -10,7 +10,7 @@ inputs:
     description: "Kubernetes namespace for sandbox to be ran in."
     default: "gmp-aws"
   host_name:
-    type: execution-host
+    type: agent
 
 grains:
   nginx:
@@ -20,5 +20,5 @@ grains:
         store: qa_automation
         path: manifests/manifest_nginx/nginxmanifest.yaml
       namespace: "{{ .inputs.namespace }}"
-      host:
+      agent:
         name: "{{ .inputs.host_name }}"

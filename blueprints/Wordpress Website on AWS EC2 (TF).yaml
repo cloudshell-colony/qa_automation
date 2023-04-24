@@ -53,7 +53,7 @@ grains:
       source:
         store: qa_automation
         path: assets/terraform/aws-wordpress
-      host:
+      agent:
         name: "{{ .params.default_eks_host }}"
         service-account: "{{ .params.default_eks_host_service_account }}"
       inputs:

@@ -3,7 +3,7 @@ description: Simple s3 buckets provisioning
 
 inputs:
   host_name:
-    type: execution-host
+    type: agent
     
 outputs:
   bucket_1:
@@ -18,7 +18,7 @@ grains:
     spec: 
       source:
         path: github.com/QualiNext/torque-demo.git//terraform/s3
-      host:
+      agent:
         name: "{{ .inputs.host_name }}"
       inputs:
         - region: us-west-1
@@ -32,7 +32,7 @@ grains:
     spec: 
       source:
         path: github.com/QualiNext/torque-demo.git//terraform/s3
-      host:
+      agent:
         name: "{{ .inputs.host_name }}"
       inputs:
         - region: us-west-1

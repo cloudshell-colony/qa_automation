@@ -21,7 +21,7 @@ grains:
       source:
         store: qa_automation
         path: assets/terraform/azure-storage-webapp
-      host:
+      agent:
         name: azure-aks-prod
         kubernetes:
           pod-labels:

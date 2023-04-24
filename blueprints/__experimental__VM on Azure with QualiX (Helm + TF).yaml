@@ -26,7 +26,7 @@ grains:
         store: qa_automation
         path: assets/helm/helm-qualix
       namespace: "{{ .params.default_aks_host_namespace }}"
-      host:
+      agent:
         # Execution Host - the platform where the asset executable will run.
         # For example, a Kubernetes cluster can be used as an execution host.
         name: "{{ .params.default_aks_host }}"
@@ -58,7 +58,7 @@ grains:
       source:
         store: qa_automation
         path: assets/terraform/azure-vm-qualix
-      host:
+      agent:
         name: "{{ .params.default_aks_host }}"
         kubernetes:
           pod-labels:

@@ -3,7 +3,7 @@ description: Auto generated blueprint for terraform module vcenter-vm-from-templ
 # blueprint inputs can be provided by the user, API or CI plugin when creating an environment from this blueprint.
 inputs:
   host_name:
-    type: execution-host
+    type: agent
     description: "execution host name"
   qualix_ip:
     type: string
@@ -37,7 +37,7 @@ grains:
       source:
         store: qa_automation
         path: assets/terraform/vcenter-vm-from-template
-      host:
+      agent:
         # Execution Host - the platform where the asset executable will run.
         # For example, a Kubernetes cluster can be used as an execution host.
         name: "{{.inputs.host_name}}"

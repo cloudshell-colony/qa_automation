@@ -3,7 +3,7 @@ description: Robotshot microservices application deployed on K8S with Helm and R
 
 inputs:
   host_name:
-    type: execution-host
+    type: agent
     description: "execution host name"
   Application Version:
     type: string
@@ -40,7 +40,7 @@ grains:
       source:
         store: qa_automation
         path: assets/terraform/rds
-      host:
+      agent:
         name: "{{.inputs.host_name}}"
       inputs:
         - sandbox_id: "{{ sandboxid | downcase }}"
@@ -62,7 +62,7 @@ grains:
       source:
         store: qa_automation
         path: assets/terraform/s3
-      host:
+      agent:
         name: "{{.inputs.host_name}}"
       inputs:
         - region: eu-west-1
@@ -78,7 +78,7 @@ grains:
       source:
         store: qa_automation
         path: assets/helm/robotShop
-      host:
+      agent:
         name: "{{.inputs.host_name}}"
       # commands:
       #   - "dep up xxx"

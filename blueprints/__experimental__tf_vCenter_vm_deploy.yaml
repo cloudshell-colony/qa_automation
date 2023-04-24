@@ -3,7 +3,7 @@ description: Deployes a vm from a template on a vcenter
 
 inputs:
   host_name:
-    type: execution-host
+    type: agent
     description: "execution host name"
 
   virtual_machine_template_name:
@@ -48,5 +48,5 @@ grains:
       source:
         store: qa_automation
         path: assets/terraform/vm-from-template-wait-for-ip
-      host:
+      agent:
         name: "{{.inputs.host_name}}"

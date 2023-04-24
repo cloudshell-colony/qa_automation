@@ -34,7 +34,7 @@ grains:
       source:
         store: qa_automation
         path: assets/terraform/vcenter/env_infra
-      host:
+      agent:
         name: docker-dmz
       inputs:
         - env_id: "{{ sandboxid | downcase }}"
@@ -55,7 +55,7 @@ grains:
       source:
         store: qa_automation
         path: assets/terraform/vcenter/photon_vm
-      host:
+      agent:
         name: docker-dmz
       inputs:
         - vm_folder_path: "{{ .grains.vCenter_Environment_Infrastructure.outputs.env_vm_folder_path }}"
@@ -81,7 +81,7 @@ grains:
       source:
         store: qa_automation
         path: assets/terraform/vcenter/win2012_vm
-      host:
+      agent:
         name: docker-dmz
       inputs:
         - vm_folder_path: "{{ .grains.vCenter_Environment_Infrastructure.outputs.env_vm_folder_path }}"

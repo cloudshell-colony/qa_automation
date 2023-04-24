@@ -30,7 +30,7 @@ grains:
       source:
         store: qa_automation
         path: assets/terraform/azure-vm-secure
-      host:
+      agent:
         name: azure-aks-prod
         kubernetes:
           pod-labels:
