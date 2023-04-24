@@ -382,8 +382,7 @@ test.describe('Check AWS policies', () => {
             await goToSpace(page, space);
             await launchBlueprintFromCatalogPage(page, AzureBPName, AzureInputs)
             await page.pause();
-            await validateSBisActive(page)
-            await page.locator('.FTKIC ').click()
+            await page.waitForSelector('[data-test="sandbox-info-column"] div:has-text("StatusActive")', { timeout: 5 * 60 * 1000 });
             await performAction(page, 'vidovm', '(Deallocate) Azure VM', 'off', 'vm', 'azure')
             await page.locator('[data-test="sandboxes-nav-link"]').click()
             await expect( await page.locator('[data-test="sandbox-row-0"]')).toContainText('power: off',{ timeout: 10 * 60 * 1000 })
