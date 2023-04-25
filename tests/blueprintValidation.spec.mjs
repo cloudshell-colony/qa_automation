@@ -29,7 +29,7 @@ let blueprintName;
 
 //ideally this should be with API
 //But there's no method to get errors of specific a specific blueprint
-test.describe.skip('Blueprint validation', () => {
+test.describe('Blueprint validation', () => {
     let page;
     test.beforeAll(async ({ browser }) => {
         session = await getSessionAPI(user, password, baseURL, account);
