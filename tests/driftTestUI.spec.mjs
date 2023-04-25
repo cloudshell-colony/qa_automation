@@ -34,7 +34,7 @@ test.describe('drift test on UI', () => {
         const blueprint = await page.locator('[data-test="catalog-bp-drift-test"]')
         await blueprint.locator('[data-test="launch-environment-from-blueprint"]').click()
         await page.locator('[data-test="go-to-next-step"]').click()
-        selectFromDropbox(page, 'inputs.host', executionHostName )
+        selectFromDropbox(page, 'inputs.agent', executionHostName )
         await page.locator('[ data-test="launch-environment"]').click()
         await page.locator('[data-test="sandboxes-nav-link"]').click()
         await expect(page.locator('[data-test="sandbox-row-0"]')).toContainText('Launching', { timeout: 6000 });
