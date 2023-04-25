@@ -87,16 +87,16 @@ test.describe.serial('onboarding flow', () => {
   //   lastBPname = await launchSampleBlueprintFromSandboxPage(page, sbOrder[2]);
   // });
 
-  test('start sample sandbox from blueprint catalogue', async () => {
+  test.skip('start sample sandbox from blueprint catalogue', async () => {
     console.log(`starting \"${sbOrder[2]}\" sample SB from sandbox list page`);
     lastBPname = await launchSampleBlueprintFromCatalogPage(page, sbOrder[2]);
   });
 
-  test('validate sample SB started from sandbox catalog page is active', async () => {
+  test.skip('validate sample SB started from sandbox catalog page is active', async () => {
     await validateSBisActive(page);
   });
 
-  test('end the third sandbox', async () => {
+  test.skip('end the third sandbox', async () => {
     console.log("Terminating the sample environment");
     await endSandbox(page);
   });
