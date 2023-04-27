@@ -357,7 +357,7 @@ test.describe('Check AWS policies', () => {
 
     })
 
-    test('Validate power annotations ', async () => {
+    test.only('Validate power annotations ', async () => {
         let space = 'Annotations'
         let policyType = 'power.rego'
         let policyName = policyType + '-' + id;
@@ -391,6 +391,8 @@ test.describe('Check AWS policies', () => {
             await expect( await page.locator('[data-test="sandbox-row-0"]')).toContainText('power: on',{ timeout: 10 * 60 * 1000 })
             await page.locator('[data-test="sandbox-row-0"]').click()
             await endSandbox(page);
+            await page.locator('[data-test="sandboxes-nav-link"]').click()
+            await expect(page.locator('[data-test="request-row-0"]')).toContainText('Ended', { timeout: 10 * 60 * 1000 });
             await deletePolicy(page, policyName);
         } catch (error) {
             console.log('Error occurred: ' + error);
