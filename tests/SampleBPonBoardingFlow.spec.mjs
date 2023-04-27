@@ -21,7 +21,7 @@ const placeA = (day % 3);
 const placeB = ((day + 1) % 3);
 const placeC = ((day + 2) % 3);
 const sbOrder = [];
-sbOrder[placeA] = "Helm Application with MySql and S3 Deployed by Terraform"
+const helmName = "Helm Application with MySql and S3 Deployed by Terraform"
 sbOrder[placeB] = "MySql Terraform Module"
 sbOrder[placeC] = "Bitnami Nginx Helm Chart"
 
@@ -68,8 +68,12 @@ test.describe.serial('onboarding flow', () => {
     page.click('[data-test="blueprints-nav-link"]')
     // await page.waitForNavigation();
     // launch sandbox from BP list page
-    console.log(`starting \"${sbOrder[1]}\" sample SB from blueprints page`);
-    const BPfromBPPage = await launchBlueprintFromBPList(page, sbOrder[1]);
+    console.log(`starting \"${helmName}\" sample SB from blueprints page`);
+    // const BPfromBPPage = await launchBlueprintFromBPList(page, helmName);
+    await page.click(`[data-test="blueprint-row-${helmName}"] [data-test="launch-environment-from-blueprint"]`);
+    await page.locator('[data-test="sandboxName"]').fill(helmName)
+    await page.locator('[data-test="go-to-next-step"]').click()
+    await page.locator('[data-test="launch-environment"]').click()
   });
 
   test('validate sample SB started from blueprint catalog page is active', async () => {
@@ -87,16 +91,16 @@ test.describe.serial('onboarding flow', () => {
   //   lastBPname = await launchSampleBlueprintFromSandboxPage(page, sbOrder[2]);
   // });
 
-  test.skip('start sample sandbox from blueprint catalogue', async () => {
+  test('start sample sandbox from blueprint catalogue', async () => {
     console.log(`starting \"${sbOrder[2]}\" sample SB from sandbox list page`);
     lastBPname = await launchSampleBlueprintFromCatalogPage(page, sbOrder[2]);
   });
 
-  test.skip('validate sample SB started from sandbox catalog page is active', async () => {
+  test('validate sample SB started from sandbox catalog page is active', async () => {
     await validateSBisActive(page);
   });
 
-  test.skip('end the third sandbox', async () => {
+  test('end the third sandbox', async () => {
     console.log("Terminating the sample environment");
     await endSandbox(page);
   });
