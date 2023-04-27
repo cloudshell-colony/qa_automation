@@ -365,7 +365,9 @@ test.describe('Check AWS policies', () => {
         let AzureInputs = { 'inputs\.resource_group':policyName, 'inputs\.vm_name': "vidovm", 'inputs\.agent': 'qa-aks' }
         console.log('Adding power annotation policy');
         try {
-            await goToAdminConsole(page, 'policies');
+            // await goToAdminConsole(page, 'policies');
+            await page.locator('[data-test="administration-console"]').click()
+            await page.locator('[data-test="policies-tab"]').click()
             await page.click('[data-test=apply-new-policy]');
             const policy = await page.locator('.select-policy-repos-dropdown__menu-list')
             await policy.getByText('opa-policies').click()
