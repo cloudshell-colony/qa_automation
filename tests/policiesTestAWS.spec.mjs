@@ -357,7 +357,7 @@ test.describe('Check AWS policies', () => {
 
     })
 
-    test.only('Validate power annotations ', async () => {
+    test('Validate power annotations ', async () => {
         let space = 'Annotations'
         let policyType = 'power.rego'
         let policyName = policyType + '-' + id;
