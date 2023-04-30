@@ -122,54 +122,7 @@ test.describe('Check AWS policies', () => {
 
     })
 
-    
-    test('Validate power annotations ', async () => {
-        let space = 'Annotations'
-        let policyType = 'power.rego'
-        let policyName = policyType + '-' + id;
-        let AzureBPName = "azure_vm_legacy_wi"
-        let AzureInputs = { 'inputs\.resource_group':policyName, 'inputs\.vm_name': "vidovm", 'inputs\.agent': 'qa-aks' }
-        console.log('Adding power annotation policy');
-        try {
-            // await goToAdminConsole(page, 'policies');
-            await page.locator('[data-test="administration-console"]').click()
-            await page.waitForTimeout(2000)
-            await page.locator('[data-test="policies-tab"]').click()
-            await page.click('[data-test=apply-new-policy]');
-            const policy = await page.locator('.select-policy-repos-dropdown__menu-list')
-            await policy.getByText('opa-policies').click()
-            await page.locator('[data-test="policy-toggle"]').click()
-            await page.locator('[data-test="submit-button"]').click()
-            await page.locator('[data-test="policies-row-1"]').click()
-            await page.locator('[data-test="allSpaces"]').click()
-            await selectFromDropbox(page, 'spaces', space);
-            await page.getByRole('button', { name: 'save' }).click()
-            await page.waitForTimeout(1500);
-            const row = page.locator('[data-test="policies-row-1"]')
-            await row.locator('[data-test="policy-enable-toggle"]').click();
-            await page.waitForTimeout(1500)
-            await goToSpace(page, space)
-            await launchBlueprintFromCatalogPage(page, AzureBPName, AzureInputs)
-            await page.waitForSelector('[data-test="sandbox-info-column"] div:has-text("StatusActive")', { timeout: 5 * 60 * 1000 });
-            await performAction(page, 'vidovm', '(Deallocate) Azure VM', 'off', 'vm', 'azure')
-            await page.locator('[data-test="sandboxes-nav-link"]').click()
-            await expect( await page.locator('[data-test="sandbox-row-0"]')).toContainText('power: off',{ timeout: 10 * 60 * 1000 })
-            await page.locator('[data-test="sandbox-row-0"]').click()
-            await performAction(page, 'vidovm', 'Azure VM', 'on', 'vm', 'azure')
-            await page.locator('[data-test="sandboxes-nav-link"]').click()
-            await expect( await page.locator('[data-test="sandbox-row-0"]')).toContainText('power: on',{ timeout: 10 * 60 * 1000 })
-            await page.locator('[data-test="sandbox-row-0"]').click()
-            await endSandbox(page);
-            await page.locator('[data-test="sandboxes-nav-link"]').click()
-            await expect(page.locator('[data-test="sandbox-row-0"]')).toContainText('Ended', { timeout: 10 * 60 * 1000 });
-            await deletePolicy(page, policyName);
-        } catch (error) {
-            console.log('Error occurred: ' + error);
-            await deletePolicy(page, policyName);
-            throw error;
-        }
 
-    })
 
     // Launch fails with wrong region
     test('wrong region', async () => {
@@ -410,5 +363,54 @@ test.describe('Check AWS policies', () => {
             throw error;
         }
 
-    })    
+    })   
+    
+        
+    test('Validate power annotations ', async () => {
+        let space = 'Annotations'
+        let policyType = 'power.rego'
+        let policyName = policyType + '-' + id;
+        let AzureBPName = "azure_vm_legacy_wi"
+        let AzureInputs = { 'inputs\.resource_group':policyName, 'inputs\.vm_name': "vidovm", 'inputs\.agent': 'qa-aks' }
+        console.log('Adding power annotation policy');
+        try {
+            // await goToAdminConsole(page, 'policies');
+            await page.locator('[data-test="administration-console"]').click()
+            await page.waitForTimeout(2000)
+            await page.locator('[data-test="policies-tab"]').click()
+            await page.click('[data-test=apply-new-policy]');
+            const policy = await page.locator('.select-policy-repos-dropdown__menu-list')
+            await policy.getByText('opa-policies').click()
+            await page.locator('[data-test="policy-toggle"]').click()
+            await page.locator('[data-test="submit-button"]').click()
+            await page.locator('[data-test="policies-row-1"]').click()
+            await page.locator('[data-test="allSpaces"]').click()
+            await selectFromDropbox(page, 'spaces', space);
+            await page.getByRole('button', { name: 'save' }).click()
+            await page.waitForTimeout(1500);
+            const row = page.locator('[data-test="policies-row-1"]')
+            await row.locator('[data-test="policy-enable-toggle"]').click();
+            await page.waitForTimeout(1500)
+            await goToSpace(page, space)
+            await launchBlueprintFromCatalogPage(page, AzureBPName, AzureInputs)
+            await page.waitForSelector('[data-test="sandbox-info-column"] div:has-text("StatusActive")', { timeout: 5 * 60 * 1000 });
+            await performAction(page, 'vidovm', '(Deallocate) Azure VM', 'off', 'vm', 'azure')
+            await page.locator('[data-test="sandboxes-nav-link"]').click()
+            await expect( await page.locator('[data-test="sandbox-row-0"]')).toContainText('power: off',{ timeout: 10 * 60 * 1000 })
+            await page.locator('[data-test="sandbox-row-0"]').click()
+            await performAction(page, 'vidovm', 'Azure VM', 'on', 'vm', 'azure')
+            await page.locator('[data-test="sandboxes-nav-link"]').click()
+            await expect( await page.locator('[data-test="sandbox-row-0"]')).toContainText('power: on',{ timeout: 10 * 60 * 1000 })
+            await page.locator('[data-test="sandbox-row-0"]').click()
+            await endSandbox(page);
+            await page.locator('[data-test="sandboxes-nav-link"]').click()
+            await expect(page.locator('[data-test="sandbox-row-0"]')).toContainText('Ended', { timeout: 10 * 60 * 1000 });
+            await deletePolicy(page, policyName);
+        } catch (error) {
+            console.log('Error occurred: ' + error);
+            await deletePolicy(page, policyName);
+            throw error;
+        }
+
+    })
 });
