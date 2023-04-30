@@ -93,13 +93,15 @@ test.describe.serial('Approve pending sendbox', () => {
         }
       
     })
+    
+    
 
     test("Launch environment and validate status is pending", async () => {
-        let AWSBPName = "autogen_create-ec2-instance"
-        let EC2Inputs = { ami: "ami-0cd01c7fb16a9b497", instance_type: "t3.micro", agent: AWSExecutionHostName }
+        let AWSBPName = "autogen_s3"
+        let s3Inputs =   {acl: "private", name: "pending", region: "eu-west-1", user: "none", agent: "qa-eks"}
         let repoName = 'qtorque'
-        console.log('Launching ec2 instance..')
-        await launchBlueprintAPI(session, baseURL, AWSBPName, space, EC2Inputs, repoName, duration = "")
+        console.log('Launching s3..')
+        await launchBlueprintAPI(session, baseURL, AWSBPName, space, s3Inputs, repoName, duration = "")
         await goToSpace(page, space)
         await page.locator('[data-test="sandboxes-nav-link"]').click()
         await expect(page.locator('[data-test="request-row-0"]')).toContainText('Pending', { timeout: 10 * 60 * 1000 });
