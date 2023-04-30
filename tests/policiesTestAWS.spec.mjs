@@ -367,6 +367,7 @@ test.describe('Check AWS policies', () => {
         try {
             // await goToAdminConsole(page, 'policies');
             await page.locator('[data-test="administration-console"]').click()
+            await page.waitForTimeout(2000)
             await page.locator('[data-test="policies-tab"]').click()
             await page.click('[data-test=apply-new-policy]');
             const policy = await page.locator('.select-policy-repos-dropdown__menu-list')
@@ -380,8 +381,8 @@ test.describe('Check AWS policies', () => {
             await page.waitForTimeout(1500);
             const row = page.locator('[data-test="policies-row-1"]')
             await row.locator('[data-test="policy-enable-toggle"]').click();
-            await page.waitForTimeout(1500);
-            await goToSpace(page, space);
+            await page.waitForTimeout(1500)
+            await goToSpace(page, space)
             await launchBlueprintFromCatalogPage(page, AzureBPName, AzureInputs)
             await page.waitForSelector('[data-test="sandbox-info-column"] div:has-text("StatusActive")', { timeout: 5 * 60 * 1000 });
             await performAction(page, 'vidovm', '(Deallocate) Azure VM', 'off', 'vm', 'azure')

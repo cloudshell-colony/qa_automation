@@ -22,8 +22,8 @@ const placeB = ((day + 1) % 3);
 const placeC = ((day + 2) % 3);
 const sbOrder = [];
 const helmName = "Helm Application with MySql and S3 Deployed by Terraform"
-sbOrder[placeB] = "MySql Terraform Module"
-sbOrder[placeC] = "Bitnami Nginx Helm Chart"
+const MySql = "MySql Terraform Module"
+const bitami = "Bitnami Nginx Helm Chart"
 
 test.describe.serial('onboarding flow', () => {
   let page;
@@ -50,8 +50,8 @@ test.describe.serial('onboarding flow', () => {
   });
 
   test('start sample sandbox from "sample sandbox launcher"', async () => {
-    console.log(`starting \"${sbOrder[0]}\" sample SB from quick launcher`);
-    await startSampleSandbox(page, sbOrder[0]);
+    console.log(`starting \"${bitami}\" sample SB from quick launcher`);
+    await startSampleSandbox(page, bitami);
   });
 
   test('validate sample SB started from quick launcher is active', async () => {
@@ -92,8 +92,8 @@ test.describe.serial('onboarding flow', () => {
   // });
 
   test('start sample sandbox from blueprint catalogue', async () => {
-    console.log(`starting \"${sbOrder[2]}\" sample SB from sandbox list page`);
-    lastBPname = await launchSampleBlueprintFromCatalogPage(page, sbOrder[2]);
+    console.log(`starting \"${MySql}\" sample SB from sandbox list page`);
+    lastBPname = await launchSampleBlueprintFromCatalogPage(page, MySql);
   });
 
   test('validate sample SB started from sandbox catalog page is active', async () => {
