@@ -395,7 +395,7 @@ test.describe('Check AWS policies', () => {
             await page.locator('[data-test="sandbox-row-0"]').click()
             await endSandbox(page);
             await page.locator('[data-test="sandboxes-nav-link"]').click()
-            await expect(page.locator('[data-test="request-row-0"]')).toContainText('Ended', { timeout: 10 * 60 * 1000 });
+            await expect(page.locator('[data-test="sandbox-row-0"]')).toContainText('Ended', { timeout: 10 * 60 * 1000 });
             await deletePolicy(page, policyName);
         } catch (error) {
             console.log('Error occurred: ' + error);
