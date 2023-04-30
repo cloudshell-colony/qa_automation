@@ -86,22 +86,7 @@ test.describe('Blueprint validation', () => {
         await validateBlueprintErrors(page, blueprintName, await getBlueprintErrors(page, blueprintName), expectedErrors);
     });
 
-    test("Dynamic validation - Sandobx launch fails when providing wrong store input", async () => {
-        blueprintName = "host input";
-        const inputsDict = { "inputs\.agent": "wrong value" };
-        await goToSpace(page, space);
-        await page.click("[data-test=blueprints-nav-link]");
-        console.log("Launching sandbox with bad inputs for execution host name");
-        await launchBlueprintFromBPList(page, blueprintName, inputsDict);
-        await page.waitForSelector("[data-testid=error-details-text]");
-        const errMsg = await page.locator("[data-testid=error-details-text]");
-        expect(errMsg, "Did not receive expected error when providing wrong host name value").toContainText("The agent 'wrong value (in grains->bucket_1->spec->agent->name)' was not found");
-        await page.click("[data-test=close-popup]");
-        await page.click("[data-test=close-modal]"); // go back in launch flow
-        await page.click("[data-test=close-modal]");  // close sandbox launch
-    });
-
-    test.skip("Dynamic validation - Sandbox launches successfully when providing correct execution host input", async () => {
+    test("Dynamic validation - Sandbox launches successfully when providing correct execution host input", async () => {
         blueprintName = "host input";
         const inputsDict = {"inputs\.agent": associatedAgent};
         await goToSpace(page, space);
@@ -119,6 +104,23 @@ test.describe('Blueprint validation', () => {
         await page.click("[data-test=end-sandbox]");
         await page.click("[data-test=confirm-end-sandbox]");
     });
+
+    test("Dynamic validation - Sandobx launch fails when providing wrong store input", async () => {
+        blueprintName = "host input";
+        const inputsDict = { "inputs\.agent": "wrong value" };
+        await goToSpace(page, space);
+        await page.click("[data-test=blueprints-nav-link]");
+        console.log("Launching sandbox with bad inputs for execution host name");
+        await launchBlueprintFromBPList(page, blueprintName, inputsDict);
+        await page.waitForSelector("[data-testid=error-details-text]");
+        const errMsg = await page.locator("[data-testid=error-details-text]");
+        expect(errMsg, "Did not receive expected error when providing wrong host name value").toContainText("The agent 'wrong value (in grains->bucket_1->spec->agent->name)' was not found");
+        await page.click("[data-test=close-popup]");
+        await page.click("[data-test=close-modal]"); // go back in launch flow
+        await page.click("[data-test=close-modal]");  // close sandbox launch
+    });
+
+   
 
      
     test("Validate proper yaml link in blueprint", async () => {
