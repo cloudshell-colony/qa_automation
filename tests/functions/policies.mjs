@@ -11,7 +11,7 @@ export const addPolicy = async (page, policyType, extra = '', space = '') => {
     await search.fill(policyType)
     await page.locator('[data-test="policy-toggle"]').click()
     await page.locator('[data-test="submit-button"]').click()
-    await page.locator('[data-test="policies-row-1"]').click()
+    await page.locator('[data-test="policies-row-2"]').click()
     await page.waitForTimeout(1500);
     await page.locator('[data-test="allSpaces"]').click()
     await selectFromDropbox(page, 'spaces', space);
@@ -28,7 +28,7 @@ export const addPolicy = async (page, policyType, extra = '', space = '') => {
 // };
 
 export const editRego = async (page, DATA) => {
-    await page.locator('[data-test="policies-row-1"]').click()
+    await page.locator('[data-test="policies-row-2"]').click()
     const area = page.locator('.monaco-editor').nth(0)
     await area.click()
      await page.keyboard.press('Control+A')
@@ -39,7 +39,7 @@ export const editRego = async (page, DATA) => {
 };
 
 export const addApprovalChannel = async (page, approval) => {
-    await page.locator('[data-test="policies-row-1"]').click()
+    await page.locator('[data-test="policies-row-2"]').click()
     await selectFromDropbox(page, 'approval-channels', approval);
      await page.getByRole('button', { name: 'save' }).click()
     
@@ -48,7 +48,7 @@ export const addApprovalChannel = async (page, approval) => {
 
 export const deletePolicy = async (page) => {
     await goToAdminConsole(page, 'policies');
-    const policyRow = await page.locator('[data-test="policies-row-1"]')
+    const policyRow = await page.locator('[data-test="policies-row-2"]')
     policyRow.hover('[data-test=confirm-button]')
     policyRow.locator('[data-test="delete-policy"]').click()
     await page.click('[data-test=confirm-button]');
