@@ -2,10 +2,8 @@ import test, { expect } from "@playwright/test";
 import { loginToAccount } from "./functions/accounts.mjs";
 import { performAction } from "./functions/actions.mjs";
 import { launchBlueprintFromCatalogPage } from "./functions/blueprints.mjs";
-import { closeModal, openAndPinSideMenu, generateUniqueId, selectFromDropbox } from "./functions/general.mjs";
-import goToAdminConsole from "./functions/goToAdminConsole.mjs";
-import { addApprovalChannel, addPolicy, deletePolicy, editRego } from "./functions/policies.mjs";
-import { endSandbox, validateSandboxFailedDueToPolicy, validateSBisActive } from "./functions/sandboxes.mjs";
+import { closeModal, openAndPinSideMenu, generateUniqueId } from "./functions/general.mjs";
+import { endSandbox } from "./functions/sandboxes.mjs";
 import { goToSpace } from "./functions/spaces.mjs";
 
 const baseURL = process.env.baseURL
@@ -14,11 +12,8 @@ const account = process.env.account;
 const user = process.env.adminEMail
 const timestemp = Math.floor(Date.now() / 1000);
 const id = timestemp.toString().concat('-' + generateUniqueId());
-const space = 'aws-policies';
-const approval = 'policy approval'
 
 let page;
-let executionHostName = 'qa-eks'
 
 
 /** Test prerequisites
