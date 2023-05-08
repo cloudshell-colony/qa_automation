@@ -8,8 +8,6 @@ const password = process.env.allAccountsPassword
 const account = process.env.account
 const user = process.env.adminEMail
 const space = "endlessSB"
-const AWSBPName = "drift-test-680171"
-const AzureBPName = "azure_vm_legacy_wi-680171"
 let session
 let page
 
@@ -41,14 +39,14 @@ test.describe.serial('Endless sendbox tests', () => {
             const sandboxRowExists = sandboxRowText.includes('Active', { timeout:5000 });
     
             if (sandboxRowExists) {
-                await page.getByRole('cell', { name: AzureBPName }).click();
+                await page.locator('[data-test="sandbox-row-0"]').click();
                 await page.hover('[data-test="environment-views"]')
                 await page.getByText('Resources layout').click()
-                await page.locator('[data-test="resource-card-680171"]').click()
-                await page.getByText('Power-off Azure Vm').hover()
+                await page.locator('[data-test="resource-card-vidovm"]').click()
+                await page.getByText('Power-off (Deallocate) Azure VM').hover()
                 await page.locator('[data-test="execute-action-azure-power-off-vm-tf"]').click()
                 await expect(page.locator('[data-test="resource-status"]')).toContainText('Deallocated', { timeout: 10 * 60 * 1000 });
-                await page.locator('[data-test="resource-card-680171"]').click()
+                await page.locator('[data-test="resource-card-vidovm"]').click()
                 await page.getByText('Power-on Azure Vm').hover()
                 await page.locator('[data-test="execute-action-azure-power-on-vm-tf"]').click()
                 await expect(page.locator('[data-test="resource-status"]')).toContainText('Running', { timeout: 10 * 60 * 1000 });
@@ -70,7 +68,7 @@ test.describe.serial('Endless sendbox tests', () => {
             const sandboxRowExists = sandboxRowText.includes('Active', { timeout:5000 });
 
             if (sandboxRowExists) {
-                await page.getByText(AWSBPName).click();
+                await page.locator('[data-test="sandbox-row-1"]').click();
                 const detectDrift = await page.locator('[data-test="deployment-drift-card"]')
                 await detectDrift.click()
                 await page.locator('.iKTCU').click()
