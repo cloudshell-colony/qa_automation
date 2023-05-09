@@ -1,3 +1,3 @@
 output "message" {
-          value = "ahlan 1683559066v3g"
+          value = "ahlan 1683559v3g"
 }
