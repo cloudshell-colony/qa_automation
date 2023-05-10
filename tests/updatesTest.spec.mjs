@@ -70,6 +70,7 @@ test.describe.serial("Asset updates test", () => {
         await page.keyboard.press("Delete");
         await page.keyboard.type(tfText);
         await page.click('button:has-text("Commit changes")');
+        await page.click('button:has-text("Commit changes")');
         console.log('Changed TF file to \n' + tfText);
     })
 
