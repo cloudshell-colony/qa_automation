@@ -1,23 +1,23 @@
 import * as dotenv from 'dotenv';
-import { getSessionAPI } from "./tests/functions/accounts.mjs";
-import { getFirstSandboxesAPI, getSandboxDetailsAPI } from './tests/functions/sandboxes.mjs';
-import fs from 'fs';
+const { getSessionAPI } = require("./tests/functions/accounts.mjs");
+const { getFirstSandboxesAPI, getSandboxDetailsAPI } = require('./tests/functions/sandboxes.mjs');
+const fs = require('fs');
 
 
 
 
 dotenv.config();
 
-const baseURL = process.env.baseURL
-const password = process.env.allAccountsPassword;
-const account = process.env.account;
-const user = process.env.adminEMail
-let sendboxes
-const spaceNameList = ['update-test', 'API-tests', 'EndingSB', 'drift-test', 'endlessSB', 'Actions', 'Annotations', 'extend-test', 'PendingTest', 'Workflows', 'bp-validation', 'aws-policies', 'Collaborator']
-let session;
-let ids = []
-let id
-const reportData = []
+const baseURL: string = process.env.baseURL
+const password: string = process.env.allAccountsPassword;
+const account: string = process.env.account;
+const user: string = process.env.adminEMail
+let sendboxes:any
+const spaceNameList:string[] = ['update-test', 'API-tests', 'EndingSB', 'drift-test', 'endlessSB', 'Actions', 'Annotations', 'extend-test', 'PendingTest', 'Workflows', 'bp-validation', 'aws-policies', 'Collaborator']
+let session:any;
+let ids:string[] = []
+let id:string
+const reportData:any[] = []
 session = await getSessionAPI(user, password, baseURL, account)
 console.log(session);
 
@@ -25,7 +25,7 @@ for (let i = 0; i < spaceNameList.length; i++) {
     const spaceName = spaceNameList[i];
     sendboxes = await getFirstSandboxesAPI(session, baseURL, spaceName, 10)
     const sendboxesJson = await sendboxes.json()
-    ids = await sendboxesJson.map(obj => obj.id)
+    ids = await sendboxesJson.map((obj: { id: any; }) => obj.id)
     for (let k = 0; k < ids.length; k++) {
         id = ids[k];
         const sbDetails = await getSandboxDetailsAPI(session, baseURL, spaceName, id)
@@ -48,9 +48,7 @@ for (let i = 0; i < spaceNameList.length; i++) {
                     error: JSON.stringify(error)
                 };
                 reportData.push(report);
-                console.log(report);
-                // const report = `env ${id} from space ${spaceName} is in constant ${state} status since ${startTime}. The error is ${JSON.stringify(error)}`;
-                // console.log(report);                
+                console.log(report);              
                 break;
         }
       
@@ -69,4 +67,6 @@ const csvContent = reportData.map(report => {
 
 
 
+
+export { };
 
