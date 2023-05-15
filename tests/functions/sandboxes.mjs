@@ -45,7 +45,7 @@ export const validateS3BucketWasCreatedInSB = async (page, bucketName) => {
   console.log(`validated bucket arn is arn:aws:s3:::${bucketName}`);
 };
 
-export const goToSandbox = async (page, sandboxName, space="Sample") => {
+export const goToSandbox = async (page, sandboxName, space = "Sample") => {
   await goToSpace(page, space);
   await page.click("[data-test=sandboxes-nav-link]");
   await page.click(`tr:has-text("${sandboxName}")`);
@@ -128,27 +128,27 @@ export const stopAndValidateAllSBsCompleted = async (page) => {
 
 };
 
-export const stopAndValidateAllSBsCompletedAPI = async(session, baseURL, spaceName, minutesToWait=4) =>{
+export const stopAndValidateAllSBsCompletedAPI = async (session, baseURL, spaceName, minutesToWait = 4) => {
   const waitTimeInSec = 15;
-  const loopsToWait = 4*minutesToWait;
+  const loopsToWait = 4 * minutesToWait;
   const sandboxesJson = await (await getAllSandboxesAPI(session, baseURL, spaceName)).json();
   for (const sandbox of sandboxesJson) {
     console.log('Ending sandbox ' + sandbox.details.definition.metadata.name);
     await endSandboxAPI(session, baseURL, spaceName, sandbox.id);
   }
-  for(let index = 0; index < loopsToWait; index++) {
+  for (let index = 0; index < loopsToWait; index++) {
     let cont = false
     let sandboxes = await (await getAllSandboxesAPI(session, baseURL, spaceName)).json();
     console.log(`Waiting for SBs to end, waiting for the ${index + 1} time, max number of wait loops is ${loopsToWait}, each for ${waitTimeInSec} seconds`);
-    for(const sandboxData of sandboxes){
-        if(sandboxData.details.computed_status === 'Terminating'){
-            cont = true;
-            console.log('Sandbox ' + sandboxData.details.definition.metadata.name + ' is still terminating');
-            break;
-        }
+    for (const sandboxData of sandboxes) {
+      if (sandboxData.details.computed_status === 'Terminating') {
+        cont = true;
+        console.log('Sandbox ' + sandboxData.details.definition.metadata.name + ' is still terminating');
+        break;
+      }
     }
-    if (!cont){
-        break
+    if (!cont) {
+      break
     }
     await new Promise(r => setTimeout(r, waitTimeInSec * 1000)); //wait for 15 seconds
   }
@@ -161,12 +161,12 @@ export const goToSandboxListPage = async (page) => {
   await page.click('[data-test="sandboxes-nav-link"]');
 };
 
-export const getSandboxDetailsAPI = async(session, baseURL, spaceName, sandboxId) => {
+export const getSandboxDetailsAPI = async (session, baseURL, spaceName, sandboxId) => {
   const response = await fetch(`${baseURL}/api/spaces/${spaceName}/environments/${sandboxId}`, {
     "method": "GET",
     "headers": {
-        'Authorization': `Bearer ${session}`,
-        'Content-Type': 'application/json',
+      'Authorization': `Bearer ${session}`,
+      'Content-Type': 'application/json',
     }
   });
   return response;
@@ -176,23 +176,23 @@ const validateSBStatusWrapperAPI = async (session, baseURL, sandboxId, space, st
   let sandboxInfo, state, sandboxJson;
   console.log(`Waiting for sandbox status to be '${status}'`)
   //wait for ~8 minutes until sandbox status is active/ended
-  for(let i=0; i<4*60; i++){
+  for (let i = 0; i < 4 * 60; i++) {
     sandboxInfo = await getSandboxDetailsAPI(session, baseURL, space, sandboxId);
     sandboxJson = await sandboxInfo.json();
     state = await sandboxJson.details.computed_status;
-    if(state.includes(status)){
+    if (state.includes(status)) {
       break;
     }
     await new Promise(r => setTimeout(r, 2000)); //wait for 2 seconds
   }
-  expect(state,`"Sandbox status is not '${status}' after 6 minutes. Sandbox info: \n` +  JSON.stringify(sandboxJson)).toBe(status);
+  expect(state, `"Sandbox status is not '${status}' after 6 minutes. Sandbox info: \n` + JSON.stringify(sandboxJson)).toBe(status);
   console.log(`Sandbox status is '${status}'`)
-   // access relevant part of stages executed using the JSON structure
+  // access relevant part of stages executed using the JSON structure
   let stages = sandboxJson['details']['state']['grains'][0]['state']['stages'];
-  for (var type in stages){
+  for (var type in stages) {
     let stage = stages[type];
-    if((stage.name === 'Apply' && status === 'Active') || (stage.name === 'Destroy' && status === 'Ended')){
-      for (var index in stage['activities']){
+    if ((stage.name === 'Apply' && status === 'Active') || (stage.name === 'Destroy' && status === 'Ended')) {
+      for (var index in stage['activities']) {
         //check all activities ended with a valid status
         let action = stage['activities'][index]
         expect(['Done', 'Skipped']).toContain(action.status);
@@ -202,35 +202,46 @@ const validateSBStatusWrapperAPI = async (session, baseURL, sandboxId, space, st
   }
 }
 
-export const validateSBisActiveAPI = async(session, baseURL, sandboxId, space) =>{
+export const validateSBisActiveAPI = async (session, baseURL, sandboxId, space) => {
   await validateSBStatusWrapperAPI(session, baseURL, sandboxId, space, 'Active');
 }
 
-export const validateSBisEndedAPI = async(session, baseURL, sandboxId, space) =>{
+export const validateSBisEndedAPI = async (session, baseURL, sandboxId, space) => {
   await validateSBStatusWrapperAPI(session, baseURL, sandboxId, space, 'Ended');
 }
 
-export const endSandboxAPI = async(session, baseURL, spaceName, sandboxId) => {
+export const endSandboxAPI = async (session, baseURL, spaceName, sandboxId) => {
   const response = await fetch(`${baseURL}/api/spaces/${spaceName}/environments/${sandboxId}`, {
     "method": "DELETE",
     "headers": {
-        'Authorization': `Bearer ${session}`,
-        'Content-Type': 'application/json',
+      'Authorization': `Bearer ${session}`,
+      'Content-Type': 'application/json',
     }
   });
   return response;
 }
 
-export const getAllSandboxesAPI = async(session, baseURL, spaceName, activeOnly=true) =>{
+export const getAllSandboxesAPI = async (session, baseURL, spaceName, activeOnly = true) => {
   let apiUrl = `${baseURL}/api/spaces/${spaceName}/environments`;
-  if(activeOnly){
+  if (activeOnly) {
     apiUrl = apiUrl.concat('?active_only=true')
   }
   const response = await fetch(apiUrl, {
     "method": "GET",
     "headers": {
-        'Authorization': `Bearer ${session}`,
-        'Content-Type': 'application/json',
+      'Authorization': `Bearer ${session}`,
+      'Content-Type': 'application/json',
+    }
+  });
+  return response;
+}
+
+export const getAllSpaceSandboxesAPI = async (session, baseURL, spaceName) => {
+  const response = await fetch(`${baseURL}/api/spaces/${spaceName}/environments`, {
+    "method": "GET",
+    "headers": {
+      'Authorization': `Bearer ${session}`,
+      'Content-Type': 'application/json',
     }
   });
   return response;
@@ -241,16 +252,16 @@ export const getAllSandboxesAPI = async(session, baseURL, spaceName, activeOnly=
  * but have a status that is different than 'Active'
  * @returns A list of strings containing the relevant info for all alive sandboxes which are not active
  */
-export const getNonActiveAliveSandboxesAPI = async(session, baseURL, spaceName) => {
+export const getNonActiveAliveSandboxesAPI = async (session, baseURL, spaceName) => {
   let badSandboxesList = [];
   const aliveSandboxes = await (await getAllSandboxesAPI(session, baseURL, spaceName)).json();
-  for(const sandboxData of aliveSandboxes){
-      if(sandboxData.details.computed_status !== 'Active'){
-          const sandboxDetails = await (await getSandboxDetailsAPI(session, baseURL, spaceName, sandboxData.id)).json()
-          console.log('Found sandbox that is not active: ' + sandboxData.details.definition.metadata.name);
-          const badSandboxInfo = {'Name':sandboxData.details.definition.metadata.name, 'Status': sandboxData.details.computed_status, 'Errors': sandboxDetails.details.state.errors};
-          badSandboxesList.push(JSON.stringify(badSandboxInfo));
-      }
+  for (const sandboxData of aliveSandboxes) {
+    if (sandboxData.details.computed_status !== 'Active') {
+      const sandboxDetails = await (await getSandboxDetailsAPI(session, baseURL, spaceName, sandboxData.id)).json()
+      console.log('Found sandbox that is not active: ' + sandboxData.details.definition.metadata.name);
+      const badSandboxInfo = { 'Name': sandboxData.details.definition.metadata.name, 'Status': sandboxData.details.computed_status, 'Errors': sandboxDetails.details.state.errors };
+      badSandboxesList.push(JSON.stringify(badSandboxInfo));
+    }
   }
   return badSandboxesList
 }
@@ -259,23 +270,23 @@ export const getNonActiveAliveSandboxesAPI = async(session, baseURL, spaceName) 
  * Waits a given amount of minutes (defaults to 6) until all sandboxes in a given space are active.
  * Will fail test if after waiting some sandboxes are still deploying
  */
-export const waitForSandboxesToBeActiveAPI = async(session, baseURL, spaceName, minutesToWait=6) => {
+export const waitForSandboxesToBeActiveAPI = async (session, baseURL, spaceName, minutesToWait = 6) => {
   console.log('Waiting for launched sandboxes to finish deploying');
   let sandboxes, cont;
-  for(let index = 0; index < 12*minutesToWait; index++) {
-      cont = false
-      sandboxes = await (await getAllSandboxesAPI(session, baseURL, spaceName)).json();
-      for(const sandboxData of sandboxes){
-          if(sandboxData.details.state.current_state === 'deploying'){
-              cont = true;
-              console.log('Sandbox ' + sandboxData.details.definition.metadata.name + ' is still deploying');
-              break;
-          }
+  for (let index = 0; index < 12 * minutesToWait; index++) {
+    cont = false
+    sandboxes = await (await getAllSandboxesAPI(session, baseURL, spaceName)).json();
+    for (const sandboxData of sandboxes) {
+      if (sandboxData.details.state.current_state === 'deploying') {
+        cont = true;
+        console.log('Sandbox ' + sandboxData.details.definition.metadata.name + ' is still deploying');
+        break;
       }
-      if (!cont){
-          break
-      }
-      await new Promise(r => setTimeout(r, 5000)); //wait for 5 seconds
+    }
+    if (!cont) {
+      break
+    }
+    await new Promise(r => setTimeout(r, 5000)); //wait for 5 seconds
   }
   expect(cont, 'We have a problem, some sandboxes are still launching: \n' + JSON.stringify(sandboxes)).toBeFalsy();
   console.log('All sandboxes finished launching');
@@ -283,51 +294,51 @@ export const waitForSandboxesToBeActiveAPI = async(session, baseURL, spaceName, 
 
 export const ExtendSendbox = async (baseURL, space, ID, TIME, session) => {
   const response = await fetch(`${baseURL}/api/spaces/${space}/environments/${ID}/scheduled_end_time?value=${TIME}`, {
-      "method": "PUT",
-      "headers": {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${session}`
-      },
+    "method": "PUT",
+    "headers": {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${session}`
+    },
   });
   return response;
 };
 
-export const getFirstSandboxesAPI = async(session, baseURL, spaceName, count) =>{
+export const getFirstSandboxesAPI = async (session, baseURL, spaceName, count) => {
   let apiUrl = `${baseURL}/api/spaces/${spaceName}/environments?filter=my&count=${count}`;
-  
+
   const response = await fetch(apiUrl, {
     "method": "GET",
     "headers": {
-        'Authorization': `Bearer ${session}`,
-        'Content-Type': 'application/json',
+      'Authorization': `Bearer ${session}`,
+      'Content-Type': 'application/json',
     }
   });
   return response;
 }
 
 
-export const driftCheckAPI = async(session, baseURL, spaceName, sandboxId, grainId) =>{
+export const driftCheckAPI = async (session, baseURL, spaceName, sandboxId, grainId) => {
   const response = fetch(`${baseURL}/api/spaces/${spaceName}/environments/${sandboxId}/driftcheck/${grainId}`, {
     "method": "POST",
     "headers": {
-        'Authorization': `Bearer ${session}`,
-        'Content-Type': 'application/json'
+      'Authorization': `Bearer ${session}`,
+      'Content-Type': 'application/json'
     }
   });
   return response;
 }
 
-export const reconcileDriftAPI = async(session, baseURL, spaceName, sandboxId, grainsIdList) => {
+export const reconcileDriftAPI = async (session, baseURL, spaceName, sandboxId, grainsIdList) => {
   const data = {
-      "grain_ids": grainsIdList
+    "grain_ids": grainsIdList
   }
   const response = await fetch(`${baseURL}/api/spaces/${spaceName}/environments/${sandboxId}/reconcile`, {
-      "method": "POST",
-      "body": JSON.stringify(data),
-      "headers": {
-          'Authorization': `Bearer ${session}`,
-          'Content-Type': 'application/json',
-      }
+    "method": "POST",
+    "body": JSON.stringify(data),
+    "headers": {
+      'Authorization': `Bearer ${session}`,
+      'Content-Type': 'application/json',
+    }
   });
   return response;
 }
@@ -337,20 +348,20 @@ export const reconcileDriftAPI = async(session, baseURL, spaceName, sandboxId, g
  * @param {*} grainId ID of the grain you want to check drift status
  * @param {*} desiredStatus Boolean parameter to indicate if drift should be detected or not
  */
-export const waitForDriftStatusAPI = async(session, baseURL, spaceName, sandboxId, grainId, desiredStatus=true) => {
+export const waitForDriftStatusAPI = async (session, baseURL, spaceName, sandboxId, grainId, desiredStatus = true) => {
   console.log('Waiting for drift detected status in grain to be ' + desiredStatus);
   let detectedDrift = !desiredStatus;
   let sandboxDetails;
-  for(let i=0; i<12; i++){
+  for (let i = 0; i < 12; i++) {
     sandboxDetails = await (await getSandboxDetailsAPI(session, baseURL, spaceName, sandboxId)).json();
     let grains = sandboxDetails.details.state.grains; // list of all sandbox grains
-    for(var grain of grains){
-      if(grain.id === grainId){ // update detection status for relevant grain
+    for (var grain of grains) {
+      if (grain.id === grainId) { // update detection status for relevant grain
         detectedDrift = grain.state.drift.deployment.detected;
         break;
       }
     }
-    if(detectedDrift === desiredStatus){ // end loop if desired status was reached
+    if (detectedDrift === desiredStatus) { // end loop if desired status was reached
       console.log(`Drift detection status in grain '${grainId}' is now ${detectedDrift}`);
       break
     }
@@ -364,18 +375,18 @@ export const waitForDriftStatusAPI = async(session, baseURL, spaceName, sandboxI
  * @param {*} grainId ID of the grain you want to get activity of
  * @returns JSON Object containing the last grain activity as returned from Sandbox Details 
  */
-export const getLastSandboxActivityFromGrainAPI = async(session, baseURL, spaceName, sandboxId, grainId)=>{
+export const getLastSandboxActivityFromGrainAPI = async (session, baseURL, spaceName, sandboxId, grainId) => {
   let sandboxDetails = await (await getSandboxDetailsAPI(session, baseURL, spaceName, sandboxId)).json();
   let lastActivity
   let grains = sandboxDetails.details.state.grains; // list of all sandbox grains
-  for(var grain of grains){
-    if(grain.id === grainId){ // update detection status for relevant grain
+  for (var grain of grains) {
+    if (grain.id === grainId) { // update detection status for relevant grain
       let stages = grain.state.stages;
-      let activities = stages[stages.length-1].activities;
-      lastActivity = activities[activities.length-1];
+      let activities = stages[stages.length - 1].activities;
+      lastActivity = activities[activities.length - 1];
       return lastActivity;
     }
-  }     
+  }
 }
 
 /**
@@ -383,7 +394,7 @@ export const getLastSandboxActivityFromGrainAPI = async(session, baseURL, spaceN
  * @param {*} page assumes page is viewing a certain sandbox already
  * @param {*} expectedText part of text that the error includes. Should have policy specific text
  */
-export const validateSandboxFailedDueToPolicy = async(page, expectedText) =>{
+export const validateSandboxFailedDueToPolicy = async (page, expectedText) => {
   const regExpected = new RegExp(`${expectedText}`);
   await page.waitForSelector('[data-test="sandbox-info-column"] div:has-text("StatusActive")', { timeout: 5 * 60 * 1000 });
   expect(await page.isVisible('[data-test="sandbox-info-column"] div:has-text("StatusActive With Error")', 500), "Sandbox is Active with error!").toBeTruthy();
@@ -393,13 +404,13 @@ export const validateSandboxFailedDueToPolicy = async(page, expectedText) =>{
   await expect(logLocator).toHaveText(regExpected);
 }
 
-export const addCollaboratorToSandbox = async(page, email) =>{
+export const addCollaboratorToSandbox = async (page, email) => {
   await page.getByText('Add').click();
   await selectFromDropbox(page, 'add_collab', email);
   await page.getByRole('button', { name: 'Save' }).click();
 }
 
-export const changeSBCollaboratorAPI = async(session, baseURL, sandboxId, colabEmails, allSpaceMembers = false) =>{
+export const changeSBCollaboratorAPI = async (session, baseURL, sandboxId, colabEmails, allSpaceMembers = false) => {
   const data = {
     "all_space_members": allSpaceMembers,
     "collaborators_emails": colabEmails
@@ -408,22 +419,23 @@ export const changeSBCollaboratorAPI = async(session, baseURL, sandboxId, colabE
     "method": "PUT",
     "body": JSON.stringify(data),
     "headers": {
-        'Authorization': `Bearer ${session}`,
-        'Content-Type': 'application/json',
-        'Accept': '*/*'
+      'Authorization': `Bearer ${session}`,
+      'Content-Type': 'application/json',
+      'Accept': '*/*'
     }
   });
   return response;
 }
 
-export const findSandboxIdByNameAPI = async(session, baseURL, spaceName, sandboxName) =>{
+export const findSandboxIdByNameAPI = async (session, baseURL, spaceName, sandboxName) => {
   let sandboxId;
   const sandboxesJson = await (await getAllSandboxesAPI(session, baseURL, spaceName)).json();
-  for (const sandbox of sandboxesJson){
-    if(sandbox.details.definition.metadata.name === sandboxName){
+  for (const sandbox of sandboxesJson) {
+    if (sandbox.details.definition.metadata.name === sandboxName) {
       sandboxId = sandbox.id;
       break
     }
   }
   return sandboxId;
 }
+

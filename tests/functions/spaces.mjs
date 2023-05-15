@@ -303,3 +303,14 @@ export const addRepositoryAPI = async (session, baseURL, space, repoUrl, token, 
     });
     return resp;
 };
+
+export const getAccountSpacesAPI = async (session, baseURL) => {
+    const response = await fetch(`${baseURL}/api/spaces`, {
+        "method": "GET",
+        "headers": {
+            'Authorization': `Bearer ${session}`,
+            'Content-Type': 'application/json',
+        }
+    });
+    return response;
+  };
