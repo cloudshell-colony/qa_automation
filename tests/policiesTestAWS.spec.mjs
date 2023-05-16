@@ -201,9 +201,9 @@ test.describe('Check AWS policies', () => {
             await page.waitForTimeout(1500);
             await goToSpace(page, space);
             await launchBlueprintFromCatalogPage(page, 's3', inputs)
-            await page.waitForTimeout(1500);
+            await page.waitForTimeout(2000);
             await expect(page.locator('[data-test="request-row-0"]')).toContainText('Pending', { timeout: 6000 });
-            await page.waitForTimeout(1500);
+            await page.waitForTimeout(2000);
             await page.getByText('View Request').click()
             await page.getByText('Cancel the request').click()
             await deletePolicy(page, policyName);
