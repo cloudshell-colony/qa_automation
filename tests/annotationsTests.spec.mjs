@@ -12,6 +12,7 @@ const account = process.env.account;
 const user = process.env.adminEMail
 const timestemp = Math.floor(Date.now() / 1000);
 const id = timestemp.toString().concat('-' + generateUniqueId());
+let sbName
 
 let page;
 
@@ -43,20 +44,39 @@ test.describe('Check AWS policies', () => {
         let AzureBPName = "azure_vm_legacy_wi"
         let AzureInputs = { 'inputs\.resource_group': policyName, 'inputs\.vm_name': "vidovm", 'inputs\.agent': 'qa-aks' }
 
-        await goToSpace(page, space)
-        await launchBlueprintFromCatalogPage(page, AzureBPName, AzureInputs)
-        await page.waitForSelector('[data-test="sandbox-info-column"] div:has-text("StatusActive")', { timeout: 5 * 60 * 1000 });
-        await performAction(page, 'vidovm', '(Deallocate) Azure VM', 'off', 'vm', 'azure')
-        await page.locator('[data-test="sandboxes-nav-link"]').click()
-        await expect(await page.locator('[data-test="sandbox-row-0"]')).toContainText('power: off', { timeout: 10 * 60 * 1000 })
-        await page.locator('[data-test="sandbox-row-0"]').click()
-        await performAction(page, 'vidovm', 'Azure VM', 'on', 'vm', 'azure')
-        await page.locator('[data-test="sandboxes-nav-link"]').click()
-        await expect(await page.locator('[data-test="sandbox-row-0"]')).toContainText('power: on', { timeout: 10 * 60 * 1000 })
-        await page.locator('[data-test="sandbox-row-0"]').click()
-        await endSandbox(page);
-        await page.locator('[data-test="sandboxes-nav-link"]').click()
-        await expect(page.locator('[data-test="sandbox-row-0"]')).toContainText('Ended', { timeout: 10 * 60 * 1000 });
+        try {
+
+            await goToSpace(page, space)
+            sbName = await launchBlueprintFromCatalogPage(page, AzureBPName, AzureInputs)
+            console.log(sbName);
+            await page.waitForSelector('[data-test="sandbox-info-column"] div:has-text("StatusActive")', { timeout: 5 * 60 * 1000 });
+            console.log("Performing power-off action");
+            await performAction(page, 'vidovm', '(Deallocate) Azure VM', 'off', 'vm', 'azure')
+            console.log('Validating Dealocated status..');
+            await expect(page.locator('[data-test="resource-card-vidovm"]')).toContainText('Deallocated', { timeout: 10 * 60 * 1000 })
+            await page.locator('[data-test="sandboxes-nav-link"]').click()
+            console.log('Validating power-off annotation..');
+            await expect(page.locator('[data-test="sandbox-row-0"]')).toContainText('power: off', { timeout: 1 * 60 * 1000 })
+            await page.getByText(sbName).click()
+            console.log('Perform power-on action');
+            await performAction(page, 'vidovm', 'Azure VM', 'on', 'vm', 'azure')
+            console.log('Validating Running status..');
+            await expect(page.locator('[data-test="resource-card-vidovm"]')).toContainText('Running', { timeout: 10 * 60 * 1000 })
+            await page.locator('[data-test="sandboxes-nav-link"]').click()
+            console.log('Validating power-on annotation..');
+            await expect(page.locator('[data-test="sandbox-row-0"]')).toContainText('power: on', { timeout: 1 * 60 * 1000 })
+            await page.getByText(sbName).click()
+            await endSandbox(page);
+            await page.locator('[data-test="sandboxes-nav-link"]').click()
+            await expect(page.locator('[data-test="sandbox-row-0"]')).toContainText('Terminating', { timeout: 10 * 60 * 1000 });
+
+        } catch (error) {
+            console.log('Error occurred: ' + error);
+            await page.locator('[data-test="sandboxes-nav-link"]').click()
+            await page.getByText(sbName).click()
+            await endSandbox(page);
+            throw error;
+        }
 
 
     })
