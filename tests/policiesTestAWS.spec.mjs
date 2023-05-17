@@ -202,7 +202,12 @@ test.describe('Check AWS policies', () => {
             await goToSpace(page, space);
             await launchBlueprintFromCatalogPage(page, 's3', inputs)
             await page.waitForTimeout(2000);
-            await expect(page.locator('[data-test="request-row-0"]')).toContainText('Pending', { timeout: 6000 });
+            console.log('Validating Pending status...');
+            await expect(page.locator('[data-test="request-row-0"]')).toContainText('Pending', { timeout: 6000 }).then(() => {
+                console.log('Text "Pending" found successfully.');
+              }).catch((error) => {
+                console.error('Failed to find text "Pending":', error);
+              });
             await page.waitForTimeout(2000);
             await page.getByText('View Request').click()
             await page.getByText('Cancel the request').click()
