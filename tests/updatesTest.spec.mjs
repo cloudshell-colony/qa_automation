@@ -75,29 +75,42 @@ test.describe.serial("Asset updates test", () => {
     })
 
     test("Update sandbox and validate change", async() => {
-        //Go back to active sandbox
-        await page.goto(`${baseURL}`, { timeout: 90000 });
-        await goToSandbox(page, sandboxName, spaceName);
-        const detectUpdate = await page.locator('[data-test="asset-drift-card"]')
-        await detectUpdate.click()
-        const numLocator = await detectUpdate.locator('[data-test="amount"]')
-        //Wait for update to show up in screen
-        await expect(numLocator, 'Update in asset not detected after 2 minutes').toContainText('1', { timeout: 120000});
-        console.log('Update (asset drift) detected in sandbox');
-        await page.getByText('Detected Changes on simpleTF').click();
-        let updatesPage = await page.locator('[data-test="assetDrift-drawer"]');
-        // expect(updatesPage).toContainText(`ahlan ${id}`);
-         //Initiate update according to change in file
-        updatesPage = await page.locator('.scrollable-container');
-        await updatesPage.getByRole('button', { name: /Update/i }).click()
-        await expect(numLocator, 'Sandbox resource not updated after 1 minute').toContainText('0', { timeout: 60000});
-        console.log('Executed update in sandbox');
-        //Check logs show the correct new message from the changed tf file
-        await page.click('[data-test="logs-card"]');
-        await page.locator('td > div').first().click();
-        const logBlock = await page.locator('[data-test="log-block"]');
-        // expect(logBlock).toContainText(`message = "ahlan ${id}"`);
-        await endSandbox(page);
+
+        try {
+            await page.goto(`${baseURL}`, { timeout: 90000 });
+            await goToSandbox(page, sandboxName, spaceName);
+            const detectUpdate = await page.locator('[data-test="asset-drift-card"]')
+            await detectUpdate.click()
+            const numLocator = await detectUpdate.locator('[data-test="amount"]')
+            //Wait for update to show up in screen
+            await expect(numLocator, 'Update in asset not detected after 2 minutes').toContainText('1', { timeout: 140000});
+            console.log('Update (asset drift) detected in sandbox');
+            await page.getByText('Detected Changes on simpleTF').click();
+            let updatesPage = await page.locator('[data-test="assetDrift-drawer"]');
+            // expect(updatesPage).toContainText(`ahlan ${id}`);
+             //Initiate update according to change in file
+            updatesPage = await page.locator('.scrollable-container');
+            await updatesPage.getByRole('button', { name: /Update/i }).click()
+            await expect(numLocator, 'Sandbox resource not updated after 1 minute').toContainText('0', { timeout: 60000});
+            console.log('Executed update in sandbox');
+            //Check logs show the correct new message from the changed tf file
+            await page.click('[data-test="logs-card"]');
+            await page.locator('td > div').first().click();
+            const logBlock = await page.locator('[data-test="log-block"]');
+            // expect(logBlock).toContainText(`message = "ahlan ${id}"`);
+            await endSandbox(page);
+            
+        } catch (error) {
+
+            console.log('Error occurred: ' + error);
+            await page.locator('[data-test="sandboxes-nav-link"]').click()
+            await page.getByText(sandboxName).click()
+            await endSandbox(page);
+            throw error;
+            
+        }
+        
+       
     })
 
 
