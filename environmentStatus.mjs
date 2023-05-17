@@ -1,7 +1,8 @@
 import * as dotenv from 'dotenv';
 import { getSessionAPI } from "./tests/functions/accounts.mjs";
 import { getFirstSandboxesAPI, getSandboxDetailsAPI } from './tests/functions/sandboxes.mjs';
-const fs = require('fs');
+import fs from 'fs'
+
 
 dotenv.config();
 const baseURL = process.env.baseURL;
@@ -9,7 +10,7 @@ const password = process.env.allAccountsPassword;
 const account = process.env.account;
 const user = process.env.adminEMail;
 let sendboxes;
-const spaceNameList = ['update-test', 'API-tests', 'EndingSB', 'drift-test', 'endlessSB', 'Actions', 'Annotations', 'extend-test', 'PendingTest', 'Workflows', 'bp-validation', 'aws-policies', 'Collaborator'];
+const spaceNameList = ['update-test', 'API-tests', 'drift-api', 'EndingSB', 'drift-test', 'endlessSB', 'Actions', 'Annotations', 'extend-test', 'PendingTest', 'Workflows', 'bp-validation', 'aws-policies', 'Collaborator'];
 let session;
 let ids = [];
 let id;
@@ -27,7 +28,9 @@ for (let i = 0; i < spaceNameList.length; i++) {
         const sbResponse = await sbDetails.json();
         const state = await sbResponse.details.computed_status;
         const error = await sbResponse.details.state.errors;
-        const startTime = await sbResponse.details.state.execution.retention.time;
+        const startTime = await sbResponse.details.state.execution.start_time;
+        const date = new Date(startTime);
+        const formattedDate = date.toLocaleDateString('en-GB');
         switch (state) {
             case 'Terminating':
             case 'Active':
@@ -38,7 +41,7 @@ for (let i = 0; i < spaceNameList.length; i++) {
                     id,
                     spaceName,
                     state,
-                    startTime,
+                    formattedDate,
                     error: JSON.stringify(error)
                 };
                 reportData.push(report);
@@ -49,7 +52,7 @@ for (let i = 0; i < spaceNameList.length; i++) {
 }
 // Convert reportData to CSV string
 const csvContent = reportData.map(report => {
-    return Object.values(report).join(',');
+    return Object.values(report).join('---');
 }).join('\n');
 // Write CSV content to a file
 fs.writeFileSync('report.csv', csvContent, 'utf-8');
