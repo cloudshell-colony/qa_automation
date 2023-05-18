@@ -1,5 +1,8 @@
 
-import * as dotenv from 'dotenv';
+// import * as dotenv from 'dotenv';
+const dotenv = require('dotenv')
+
+
 
 // import './dotenv';
 dotenv.config();
@@ -8,7 +11,7 @@ const { getSessionAPI } = require("./tests/functions/accounts.mjs");
 const { getFirstSandboxesAPI, getSandboxDetailsAPI } = require('./tests/functions/sandboxes.mjs');
 const fs = require('fs');
 
-const baseURL: string = process.env.baseURL;
+let baseURL: string = process.env.baseURL;
 const password: string = process.env.allAccountsPassword;
 const account: string = process.env.account;
 const user: string = process.env.adminEMail
@@ -68,5 +71,7 @@ const csvContent = reportData.map(report => {
 
 
 
+
 export { };
+// export { };
 
