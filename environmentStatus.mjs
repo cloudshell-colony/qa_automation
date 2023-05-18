@@ -19,7 +19,7 @@ session = await getSessionAPI(user, password, baseURL, account);
 console.log(session);
 for (let i = 0; i < spaceNameList.length; i++) {
     const spaceName = spaceNameList[i];
-    sendboxes = await getFirstSandboxesAPI(session, baseURL, spaceName, 10);
+    sendboxes = await getFirstSandboxesAPI(session, baseURL, spaceName, 100);
     const sendboxesJson = await sendboxes.json();
     ids = await sendboxesJson.map((obj) => obj.id);
     for (let k = 0; k < ids.length; k++) {

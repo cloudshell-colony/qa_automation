@@ -15,12 +15,6 @@ export default async (page, target) => {
     case "users":
       await page.click('[data-test="users-tab"]');
       break;
-    // case "roles":
-    //   await page.click('[data-test=""]');
-    //   break;
-    // case "cost":
-    //   await page.click('[data-test=""]');
-    //   break;
     case "account":
       await page.click('[data-test="settings-tab"]');
       break;
