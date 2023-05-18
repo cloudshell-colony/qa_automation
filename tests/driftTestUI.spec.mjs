@@ -36,13 +36,10 @@ test.describe('drift test on UI', () => {
         await page.locator('[data-test="go-to-next-step"]').click()
         selectFromDropbox(page, 'inputs.agent', executionHostName )
         await page.locator('[ data-test="launch-environment"]').click()
-        await page.locator('[data-test="sandboxes-nav-link"]').click()
-        await expect(page.locator('[data-test="sandbox-row-0"]')).toContainText('Launching', { timeout: 6000 });
-        await expect(page.locator('[data-test="sandbox-row-0"]')).toContainText('Active', { timeout: 5 * 60 * 1000 });
-        await page.locator('[data-test="sandbox-row-0"]').click()
+        await page.waitForSelector('[data-test="sandbox-info-column"] div:has-text("StatusActive")', { timeout: 5 * 60 * 1000 });
         const detectDrift = await page.locator('[data-test="deployment-drift-card"]')
         await detectDrift.click()
-        await page.locator('.iKTCU').click()
+        await page.getByText('Check for Drift').click()
         const numLocator = await detectDrift.locator('[data-test="amount"]')
         await expect(numLocator).toContainText('1', { timeout: 120000})
         await detectDrift.click()
