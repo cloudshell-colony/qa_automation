@@ -1,14 +1,12 @@
-import * as dotenv from 'dotenv';
+
+// import * as dotenv from 'dotenv';
+// dotenv.config();
+require('dotenv').config();
 const { getSessionAPI } = require("./tests/functions/accounts.mjs");
 const { getFirstSandboxesAPI, getSandboxDetailsAPI } = require('./tests/functions/sandboxes.mjs');
 const fs = require('fs');
 
-
-
-
-dotenv.config();
-
-const baseURL: string = process.env.baseURL
+const baseURL: string = 'https://preview.qualilabs.net'
 const password: string = process.env.allAccountsPassword;
 const account: string = process.env.account;
 const user: string = process.env.adminEMail

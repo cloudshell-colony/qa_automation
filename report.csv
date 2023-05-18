@@ -1,0 +1,19 @@
+d8Nwzg1hIFcQ---update-test---Launching---16/05/2023---[]
+tftsgj06ttAP---update-test---Active---09/05/2023---[]
+
+9k6J9jCwNmE3---EndingSB---Launching---11/05/2023---[{"message":null},{"message":"operation Deploy failed with message \"Resource temporarily unavailable (agentconnector:5056)\""}]
+64pXm7zFJyfW---EndingSB---Terminating---09/05/2023---[]
+l7s1YUTrAvvf---EndingSB---Terminating---09/05/2023---[]
+LBouB74loadk---EndingSB---Active---17/05/2023---[]
+TzQLUzv1C1xH---EndingSB---Active---17/05/2023---[]
+l48VwaMcuwBA---EndingSB---Terminate Failed---03/05/2023---[{"message":"operation Terminate failed with message \"operation failed\""},{"message":"operation Terminate failed with message \"operation failed\""},{"message":null},{"message":null}]
+2J2FKHd0lrlh---EndingSB---Terminate Failed---20/04/2023---[{"message":"operation Terminate failed with message \"operation failed\""},{"message":"operation Terminate failed with message \"operation failed\""},{"message":null},{"message":null}]
+bVxAqncLsaht---EndingSB---Terminate Failed---20/04/2023---[{"message":null},{"message":null},{"message":"operation Terminate failed with message \"Operation returned an invalid status code 'InternalServerError'\""},{"message":"operation Terminate failed with message \"operation failed\""}]
+
+lk7FtuHPurA2---endlessSB---Active---08/05/2023---[]
+hLloo9AGgzNF---endlessSB---Active---08/05/2023---[]
+
+3FratUPvWGRM---Actions---Terminating---09/05/2023---[]
+
+PmTSmP84mlB0---Workflows---Terminating---09/05/2023---[]
+alwLwErDe51v---Workflows---Terminating---09/05/2023---[{"message":null},{"message":"operation Terminate failed with message \"Operation returned an invalid status code 'InternalServerError'\""}]
