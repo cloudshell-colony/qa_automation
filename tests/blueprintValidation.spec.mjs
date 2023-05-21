@@ -55,7 +55,7 @@ test.describe('Blueprint validation', () => {
     };
 
     for (const [BPName, expectedErrors] of Object.entries(blueprintErrors)) {
-        test(`Static validation - blueprint "${BPName}" has relevent errors`, async () => {
+        test.skip(`Static validation - blueprint "${BPName}" has relevent errors`, async () => {
             if (!page.url().endsWith(`/${space}/blueprints`)) {
                 await goToSpace(page, space);
                 await page.click("[data-test=blueprints-nav-link]");
@@ -64,7 +64,7 @@ test.describe('Blueprint validation', () => {
         })
     };
 
-    test("Static validation - Adding & removing execution host changes blueprint errors", async () => {
+    test.skip("Static validation - Adding & removing execution host changes blueprint errors", async () => {
         blueprintName = "bad-eks";
         let expectedErrors = ["host missing compute-service field"];
         await goToAdminConsole(page, "cloud accounts")

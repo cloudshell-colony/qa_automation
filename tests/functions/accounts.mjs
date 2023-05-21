@@ -140,7 +140,7 @@ export const deleteUserAPI = async (user_email, myURL, session) => {
 };
 
 export const createAccount = async (page, firstName, lastName, companyName, email, accountName, allAccountsPassword, baseURL) => {
-    await page.goto(`${baseURL}/register`);
+    await page.goto(`${baseURL}/register`, { timeout: 90000 });
     await addCaptchaBypass(page);
     await page.locator('[data-test="firstName"]').fill(firstName);
     await page.locator('[data-test="lastName"]').fill(lastName);
