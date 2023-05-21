@@ -11,7 +11,7 @@ const { getSessionAPI } = require("./tests/functions/accounts.mjs");
 const { getFirstSandboxesAPI, getSandboxDetailsAPI } = require('./tests/functions/sandboxes.mjs');
 const fs = require('fs');
 
-let baseURL: string = process.env.baseURL;
+const baseURL: string = process.env.baseURL;
 const password: string = process.env.allAccountsPassword;
 const account: string = process.env.account;
 const user: string = process.env.adminEMail
