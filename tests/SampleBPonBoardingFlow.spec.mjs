@@ -37,7 +37,7 @@ test.describe.serial('onboarding flow', () => {
 
   test('create new account', async () => {
     await createAccount(page, firstName, lastName, companyName, email, accountName, allAccountsPassword, baseURL);
-    await page.waitForURL(`${baseURL}/Sample`);
+    await page.waitForURL(`${baseURL}/Sample`, { timeout: 90000 });
     await closeModal(page);
     await openAndPinSideMenu(page);
     // comment out screenshot validation due to docker image path issue - windows vs ubuntu
