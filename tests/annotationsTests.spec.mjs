@@ -1,6 +1,6 @@
 import test, { expect } from "@playwright/test";
 import { getSessionAPI, loginToAccount } from "./functions/accounts.mjs";
-import { performAction } from "./functions/actions.mjs";
+import { performActionAPI } from "./functions/actions.mjs";
 import { launchBlueprintFromCatalogPage } from "./functions/blueprints.mjs";
 import { closeModal, openAndPinSideMenu, generateUniqueId } from "./functions/general.mjs";
 import { endSandbox, getFirstSandboxesAPI, getSandboxDetailsAPI } from "./functions/sandboxes.mjs";
@@ -13,10 +13,13 @@ const user = process.env.adminEMail
 const timestemp = Math.floor(Date.now() / 1000);
 const id = timestemp.toString().concat('-' + generateUniqueId());
 const numOfenvsTofatch = 1
+const DealocateAction = 'azure-power-off-vm-tf'
+const powerOnAction = 'azure-power-on-vm-tf'
 let sbName;
 let session;
 let page;
 let ids
+
 
 /** Test prerequisites
  * Have account with credentials as saved in .env file
@@ -52,24 +55,38 @@ test.describe('Check AWS policies', () => {
             sbName = await launchBlueprintFromCatalogPage(page, AzureBPName, AzureInputs)
             console.log(sbName);
             await page.waitForSelector('[data-test="sandbox-info-column"] div:has-text("StatusActive")', { timeout: 5 * 60 * 1000 });
-            console.log("Performing power-off action");
-            await performAction(page, 'vidovm', '(Deallocate) Azure VM', 'off', 'vm', 'azure')
-            console.log('Validating Dealocated status..');
-            await expect(page.locator('[data-test="resource-card-vidovm"]')).toContainText('Deallocated', { timeout: 10 * 60 * 1000 })
-            await page.locator('[data-test="sandboxes-nav-link"]').click()
-            console.log('Validating power-off annotation..');
-            const sendboxes = await getFirstSandboxesAPI(session, baseURL, space, numOfenvsTofatch);
+
+            console.log("Performing Dealocate action");
+            // await performAction(page, 'vidovm', '(Deallocate) Azure VM', 'off', 'vm', 'azure')
+            let sendboxes = await getFirstSandboxesAPI(session, baseURL, space, numOfenvsTofatch);
             const sendboxesJson = await sendboxes.json();
             ids = await sendboxesJson.map((obj) => obj.id);
             console.log(ids);
+            let actionResponse = await performActionAPI(session, baseURL, space, ids, AzureBPName, DealocateAction)
+            let actionResponseHeaders = actionResponse.headers
+            console.log('the X-Correlation-Id when post dealocate action is ' + actionResponseHeaders.get('x-correlation-id'));
+            console.log('Validating Dealocated status..');
+            await page.hover('[data-test="environment-views"]');
+            await page.getByText('Resources layout').click();
+            await expect(page.locator('[data-test="resource-card-vidovm"]')).toContainText('Deallocated', { timeout: 10 * 60 * 1000 })
+
+            await page.locator('[data-test="sandboxes-nav-link"]').click()
+            console.log('Validating power-off annotation..');
+            sendboxes = await getFirstSandboxesAPI(session, baseURL, space, numOfenvsTofatch);
             let response = await getSandboxDetailsAPI(session, baseURL, space, ids)
             let headers = response.headers
             console.log('the X-Correlation-Id after validating dealocate action status ' + headers.get('x-correlation-id'));
             await expect(page.locator('[data-test="sandbox-row-0"]')).toContainText('power: off', { timeout: 1 * 60 * 1000 })
+
             await page.getByText(sbName).click()
             console.log('Perform power-on action');
-            await performAction(page, 'vidovm', 'Azure VM', 'on', 'vm', 'azure')
+            // await performAction(page, 'vidovm', 'Azure VM', 'on', 'vm', 'azure')
+            actionResponse = await performActionAPI(session, baseURL, space, ids, AzureBPName, powerOnAction)
+            actionResponseHeaders = actionResponse.headers
+            console.log('the X-Correlation-Id when post power-on action is ' + actionResponseHeaders.get('x-correlation-id'));
             console.log('Validating Running status..');
+            await page.hover('[data-test="environment-views"]');
+            await page.getByText('Resources layout').click();
             await expect(page.locator('[data-test="resource-card-vidovm"]')).toContainText('Running', { timeout: 10 * 60 * 1000 })
             await page.locator('[data-test="sandboxes-nav-link"]').click()
             console.log('Validating power-on annotation..');
@@ -77,6 +94,7 @@ test.describe('Check AWS policies', () => {
             headers = response.headers
             console.log('the X-Correlation-Id after validating running action status is ' + headers.get('x-correlation-id'));
             await expect(page.locator('[data-test="sandbox-row-0"]')).toContainText('power: on', { timeout: 1 * 60 * 1000 })
+
             await page.getByText(sbName).click()
             await endSandbox(page);
             await page.locator('[data-test="sandboxes-nav-link"]').click()
