@@ -1,9 +1,9 @@
 import test, { expect } from "@playwright/test";
-import { loginToAccount } from "./functions/accounts.mjs";
+import { getSessionAPI, loginToAccount } from "./functions/accounts.mjs";
 import { performAction } from "./functions/actions.mjs";
 import { launchBlueprintFromCatalogPage } from "./functions/blueprints.mjs";
 import { closeModal, openAndPinSideMenu, generateUniqueId } from "./functions/general.mjs";
-import { endSandbox } from "./functions/sandboxes.mjs";
+import { endSandbox, getFirstSandboxesAPI, getSandboxDetailsAPI } from "./functions/sandboxes.mjs";
 import { goToSpace } from "./functions/spaces.mjs";
 
 const baseURL = process.env.baseURL
@@ -12,10 +12,11 @@ const account = process.env.account;
 const user = process.env.adminEMail
 const timestemp = Math.floor(Date.now() / 1000);
 const id = timestemp.toString().concat('-' + generateUniqueId());
-let sbName
-
+const numOfenvsTofatch = 1
+let sbName;
+let session;
 let page;
-
+let ids
 
 /** Test prerequisites
  * Have account with credentials as saved in .env file
@@ -34,6 +35,7 @@ test.describe('Check AWS policies', () => {
         await loginToAccount(page, user, account, password, baseURL);
         await closeModal(page);
         await openAndPinSideMenu(page);
+        session = await getSessionAPI(user, password, baseURL, account);
     });
 
 
@@ -56,6 +58,13 @@ test.describe('Check AWS policies', () => {
             await expect(page.locator('[data-test="resource-card-vidovm"]')).toContainText('Deallocated', { timeout: 10 * 60 * 1000 })
             await page.locator('[data-test="sandboxes-nav-link"]').click()
             console.log('Validating power-off annotation..');
+            const sendboxes = await getFirstSandboxesAPI(session, baseURL, space, numOfenvsTofatch);
+            const sendboxesJson = await sendboxes.json();
+            ids = await sendboxesJson.map((obj) => obj.id);
+            console.log(ids);
+            let response = await getSandboxDetailsAPI(session, baseURL, space, ids)
+            let headers = response.headers
+            console.log('the X-Correlation-Id after validating dealocate action status ' + headers.get('x-correlation-id'));
             await expect(page.locator('[data-test="sandbox-row-0"]')).toContainText('power: off', { timeout: 1 * 60 * 1000 })
             await page.getByText(sbName).click()
             console.log('Perform power-on action');
@@ -64,6 +73,9 @@ test.describe('Check AWS policies', () => {
             await expect(page.locator('[data-test="resource-card-vidovm"]')).toContainText('Running', { timeout: 10 * 60 * 1000 })
             await page.locator('[data-test="sandboxes-nav-link"]').click()
             console.log('Validating power-on annotation..');
+            response = await getSandboxDetailsAPI(session, baseURL, space, ids)
+            headers = response.headers
+            console.log('the X-Correlation-Id after validating running action status is ' + headers.get('x-correlation-id'));
             await expect(page.locator('[data-test="sandbox-row-0"]')).toContainText('power: on', { timeout: 1 * 60 * 1000 })
             await page.getByText(sbName).click()
             await endSandbox(page);
