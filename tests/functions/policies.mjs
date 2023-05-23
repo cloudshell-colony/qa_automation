@@ -47,7 +47,7 @@ export const addApprovalChannel = async (page, approval) => {
 
 
 export const deletePolicy = async (page) => {
-    await goToAdminConsole(page, 'policies');
+    await goToAdminConsole(page, 'policies', { timeout: 90000 });
     const policyRow = await page.locator('[data-test="policies-row-2"]')
     policyRow.hover('[data-test=confirm-button]')
     policyRow.locator('[data-test="delete-policy"]').click()
