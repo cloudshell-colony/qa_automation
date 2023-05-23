@@ -2,7 +2,7 @@ export default async (page, target) => {
   // await page.click("[data-test=sidebar-dropdown]");
   // await page.click("[data-test=option__admin]");
   if(!await page.isVisible('[data-test=back-to-spaces]')){
-    await page.click('[data-test="administration-console"]');
+    await page.click('[data-test="administration-console"]', { timeout: 90000 });
   }
   switch (target.toLowerCase()) {
     case "cloud accounts":
