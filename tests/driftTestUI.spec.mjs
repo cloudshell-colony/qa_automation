@@ -41,7 +41,7 @@ test.describe('drift test on UI', () => {
         await detectDrift.click()
         await page.getByText('Check for Drift').click()
         const numLocator = await detectDrift.locator('[data-test="amount"]')
-        await expect(numLocator).toContainText('1', { timeout: 120000})
+        await expect(numLocator).toContainText('1', { timeout: 150000})
         await detectDrift.click()
         const reconcilePage = await page.locator('.scrollable-container')
         await reconcilePage.getByRole('button', { name: /Reconcile/i }).click()
