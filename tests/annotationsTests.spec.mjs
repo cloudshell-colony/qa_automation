@@ -62,7 +62,7 @@ test.describe('Check AWS policies', () => {
             let sendboxes = await getFirstSandboxesAPI(session, baseURL, space, numOfenvsTofatch);
             const sendboxesJson = await sendboxes.json();
             console.log(sendboxesJson);
-            await page.waitForTimeout(3000);
+            await page.waitForTimeout(5000);
             sendboxID = await sendboxesJson[0].id
             console.log('sendbox id is ' + sendboxID);
             let actionResponse = await performActionAPI(session, baseURL, space, sendboxID, AzureBPName, DealocateAction)
