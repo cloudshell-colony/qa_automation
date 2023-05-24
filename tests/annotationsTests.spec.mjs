@@ -13,7 +13,7 @@ const user = process.env.adminEMail;
 const timestemp = Math.floor(Date.now() / 1000);
 const id = timestemp.toString().concat('-' + generateUniqueId());
 const numOfenvsTofatch = 1
-const maxRetries = 3
+const maxRetries = 4
 const DealocateAction = 'azure-power-off-vm-tf'
 const powerOnAction = 'azure-power-on-vm-tf'
 let sbName;

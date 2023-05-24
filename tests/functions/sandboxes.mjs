@@ -439,7 +439,7 @@ export const findSandboxIdByNameAPI = async (session, baseURL, spaceName, sandbo
   return sandboxId;
 }
 
-export const  getSendboxID = async (session, baseURL, space, numOfenvsToFetch, maxRetries = 3)  => {
+export const  getSendboxID = async (session, baseURL, space, numOfenvsToFetch, maxRetries )  => {
   let sendboxID;
   for (let retry = 1; retry <= maxRetries; retry++) {
     try {
