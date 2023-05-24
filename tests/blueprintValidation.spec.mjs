@@ -65,7 +65,7 @@ test.describe('Blueprint validation', () => {
             await page.locator('[data-test="blueprints-nav-link"]').click()
             await page.locator(`[data-test=blueprint-row-${key}]`).click()
             await page.locator('[data-test="designer-tab-yaml"]').click()
-            let errorText = await page.$eval('.epKsqN', element => element.textContent);
+            let errorText = await page.$eval('[data-test="yaml-error"]', element => element.textContent);
             console.log('error text is ' + errorText);
             const expectedErrorMessage = blueprintErrors[key];
             console.log(expectedErrorMessage);
