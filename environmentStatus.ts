@@ -1,15 +1,16 @@
 
-// import * as dotenv from 'dotenv';
-const dotenv = require('dotenv')
+import * as dotenv from 'dotenv';
+// const dotenv = require('dotenv')
 
 
 
-// import './dotenv';
+import './dotenv';
 dotenv.config();
 // require('dotenv').config();
 const { getSessionAPI } = require("./tests/functions/accounts.mjs");
 const { getFirstSandboxesAPI, getSandboxDetailsAPI } = require('./tests/functions/sandboxes.mjs');
-const fs = require('fs');
+// const fs = require('fs');
+import * as fs from 'fs';
 
 const baseURL: string = process.env.baseURL;
 const password: string = process.env.allAccountsPassword;

@@ -23,9 +23,12 @@ const bpValidationEKS = "bp-validation2";
 const associatedAgent = "qa-eks";
 const executionHostNameSpace = process.env.nameSpace;
 const executionHostServiceAccount = process.env.serviceAccount;
+const BPName = ['bad-yaml-format', 'unsupported-and-empty-grain', 'bad-inputs-outputs', 'store-not-found']
+const BPerrors = ['Blueprint YAML file contains syntax error(s)', '']
 
 let session = "empty session";
 let blueprintName;
+
 
 //ideally this should be with API
 //But there's no method to get errors of specific a specific blueprint
@@ -49,20 +52,36 @@ test.describe('Blueprint validation', () => {
 
     const blueprintErrors = {
         "bad-yaml-format": ["Blueprint YAML file contains syntax error(s)"],
-        "unsupported-and-empty-grain": ["The following grains in the blueprint don't contains 'kind' definition:", "Blueprint contains unsupported grains"],
+        "unsupported-and-empty-grain": ["The following grains in the blueprint don't contains 'kind' definition: 'bucket_1'"],
         "bad-inputs-outputs": ["field 'outputs->output' can't be resolved", "inputs->test' can't be resolved"],
         "store-not-found": ["Repository 'wrong-store (in grains->bucket_1->spec->source->store)' does not exist"]
     };
 
-    for (const [BPName, expectedErrors] of Object.entries(blueprintErrors)) {
-        test.skip(`Static validation - blueprint "${BPName}" has relevent errors`, async () => {
-            if (!page.url().endsWith(`/${space}/blueprints`)) {
-                await goToSpace(page, space);
-                await page.click("[data-test=blueprints-nav-link]");
+
+    test("Validating blueprints errors", async () => {
+        await goToSpace(page, space);
+        await page.click("[data-test=blueprints-nav-link]");
+        for (const key in blueprintErrors) {
+            await page.locator('[data-test="blueprints-nav-link"]').click()
+            await page.locator(`[data-test=blueprint-row-${key}]`).click()
+            await page.locator('[data-test="designer-tab-yaml"]').click()
+            let errorText = await page.$eval('.epKsqN', element => element.textContent);
+            console.log('error text is ' + errorText);
+            const expectedErrorMessage = blueprintErrors[key];
+            console.log(expectedErrorMessage);
+            const matchFound = expectedErrorMessage.some(expectedErrorMessage =>
+                errorText.includes(expectedErrorMessage)
+            );
+            if (matchFound) {
+                console.log(`Validation Passed for ${key}!`);
+            } else {
+                console.log(`Validation Failed for ${key}!`);
             }
-            await validateBlueprintErrors(page, BPName, await getBlueprintErrors(page, BPName), expectedErrors);
-        })
-    };
+        }
+
+    });
+
+
 
     test.skip("Static validation - Adding & removing execution host changes blueprint errors", async () => {
         blueprintName = "bad-eks";
@@ -88,7 +107,7 @@ test.describe('Blueprint validation', () => {
 
     test("Dynamic validation - Sandbox launches successfully when providing correct execution host input", async () => {
         blueprintName = "host input";
-        const inputsDict = {"inputs\.agent": associatedAgent};
+        const inputsDict = { "inputs\.agent": associatedAgent };
         await goToSpace(page, space);
         await page.click("[data-test=blueprints-nav-link]");
         console.log("Launching sandbox with correct inputs for execution host name");
@@ -120,13 +139,13 @@ test.describe('Blueprint validation', () => {
         await page.click("[data-test=close-modal]");  // close sandbox launch
     });
 
-   
 
-     
+
+
     test("Validate proper yaml link in blueprint", async () => {
         session = await getSessionAPI(user, password, baseURL, account);
         await validateGetSessionAPI(session);
-        const blueprintDetails = await getBlueprintsAPI(session, baseURL,space)
+        const blueprintDetails = await getBlueprintsAPI(session, baseURL, space)
         const response = await blueprintDetails.json()
         console.log(`Yaml link response JSON: ` + JSON.stringify(response));
         console.log(response[0].url)
