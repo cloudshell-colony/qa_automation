@@ -439,3 +439,25 @@ export const findSandboxIdByNameAPI = async (session, baseURL, spaceName, sandbo
   return sandboxId;
 }
 
+export const  getSendboxID = async (session, baseURL, space, numOfenvsToFetch, maxRetries = 3)  => {
+  let sendboxID;
+  for (let retry = 1; retry <= maxRetries; retry++) {
+    try {
+      let sendboxes = await getFirstSandboxesAPI(session, baseURL, space, numOfenvsToFetch);
+      const sendboxesJson = await sendboxes.json();
+      console.log(sendboxesJson);
+      sendboxID = sendboxesJson[0].id;
+      // console.log('sendbox id is ' + sendboxID);
+      break; // Exit the loop if the sendboxID is successfully obtained
+    } catch (error) {
+      console.error('Error occurred:', error);
+      if (retry === maxRetries) {
+        console.error('Maximum retry attempts reached. Unable to retrieve sendboxID.');
+      } else {
+        console.log(`Retrying... Attempt ${retry}/${maxRetries}`);
+      }
+    }
+  }
+  return sendboxID;
+}
+

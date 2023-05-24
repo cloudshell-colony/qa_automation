@@ -3,23 +3,23 @@ import { getSessionAPI, loginToAccount } from "./functions/accounts.mjs";
 import { performActionAPI } from "./functions/actions.mjs";
 import { launchBlueprintFromCatalogPage } from "./functions/blueprints.mjs";
 import { closeModal, openAndPinSideMenu, generateUniqueId } from "./functions/general.mjs";
-import { endSandbox, getFirstSandboxesAPI, getSandboxDetailsAPI } from "./functions/sandboxes.mjs";
+import { endSandbox, getFirstSandboxesAPI, getSandboxDetailsAPI, getSendboxID } from "./functions/sandboxes.mjs";
 import { goToSpace } from "./functions/spaces.mjs";
 
-const baseURL = process.env.baseURL
+const baseURL = process.env.baseURL;
 const password = process.env.allAccountsPassword;
 const account = process.env.account;
-const user = process.env.adminEMail
+const user = process.env.adminEMail;
 const timestemp = Math.floor(Date.now() / 1000);
 const id = timestemp.toString().concat('-' + generateUniqueId());
 const numOfenvsTofatch = 1
+const maxRetries = 3
 const DealocateAction = 'azure-power-off-vm-tf'
 const powerOnAction = 'azure-power-on-vm-tf'
 let sbName;
 let session;
 let page;
-let ids
-let sendboxID
+let sendboxID;
 
 
 /** Test prerequisites
@@ -58,12 +58,7 @@ test.describe('Check AWS policies', () => {
             await page.waitForSelector('[data-test="sandbox-info-column"] div:has-text("StatusActive")', { timeout: 5 * 60 * 1000 });
 
             console.log("Performing Dealocate action");
-            // await performAction(page, 'vidovm', '(Deallocate) Azure VM', 'off', 'vm', 'azure')
-            let sendboxes = await getFirstSandboxesAPI(session, baseURL, space, numOfenvsTofatch);
-            const sendboxesJson = await sendboxes.json();
-            console.log(sendboxesJson);
-            await page.waitForTimeout(5000);
-            sendboxID = await sendboxesJson[0].id
+            sendboxID = await getSendboxID(session, baseURL, space, numOfenvsTofatch, maxRetries)
             console.log('sendbox id is ' + sendboxID);
             let actionResponse = await performActionAPI(session, baseURL, space, sendboxID, AzureBPName, DealocateAction)
             let actionResponseHeaders = actionResponse.headers
@@ -75,7 +70,6 @@ test.describe('Check AWS policies', () => {
 
             await page.locator('[data-test="sandboxes-nav-link"]').click()
             console.log('Validating power-off annotation..');
-            sendboxes = await getFirstSandboxesAPI(session, baseURL, space, numOfenvsTofatch);
             let response = await getSandboxDetailsAPI(session, baseURL, space, sendboxID)
             let headers = response.headers
             console.log('the X-Correlation-Id after validating dealocate action status ' + headers.get('x-correlation-id'));
@@ -83,7 +77,6 @@ test.describe('Check AWS policies', () => {
 
             await page.getByText(sbName).click()
             console.log('Perform power-on action');
-            // await performAction(page, 'vidovm', 'Azure VM', 'on', 'vm', 'azure')
             actionResponse = await performActionAPI(session, baseURL, space, sendboxID, AzureBPName, powerOnAction)
             actionResponseHeaders = actionResponse.headers
             console.log('the X-Correlation-Id when post power-on action is ' + actionResponseHeaders.get('x-correlation-id'));
@@ -110,7 +103,5 @@ test.describe('Check AWS policies', () => {
             await endSandbox(page);
             throw error;
         }
-
-
     })
 });
