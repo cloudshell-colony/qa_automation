@@ -12,7 +12,10 @@ export const performAction = async (page, resource, instance,  action, actionIns
     await page.getByText(`Power-${action} ${instance}`).hover();
     await page.locator(`[data-test="execute-action-${provider}-power-${action}-${actionInstance}-tf"]`).click();
   }
-
+  
+   // await performAction(page, 'vidovm', 'Azure VM', 'on', 'vm', 'azure')
+ // await performAction(page, 'vidovm', '(Deallocate) Azure VM', 'off', 'vm', 'azure')
+ 
   export const performActionAPI = async (session, baseURL, spaceName, sandboxId, bpName, actionName) => {
     const response = fetch(`${baseURL}/api/spaces/${spaceName}/environments/${sandboxId}/${bpName}/azurerm_virtual_machine.example/run_action/${actionName}`, {
       "method": "POST",
@@ -23,7 +26,7 @@ export const performAction = async (page, resource, instance,  action, actionIns
     });
     return response;
   }
-  
+
 
 
   
