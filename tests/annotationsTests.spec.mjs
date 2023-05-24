@@ -59,7 +59,7 @@ test.describe('Check AWS policies', () => {
 
             console.log("Performing Dealocate action");
             sendboxID = await getSendboxID(session, baseURL, space, numOfenvsTofatch, maxRetries)
-            console.log('sendbox id is ' + sendboxID);
+            console.log('Annotations sendbox id is ' + sendboxID);
             let actionResponse = await performActionAPI(session, baseURL, space, sendboxID, AzureBPName, DealocateAction)
             let actionResponseHeaders = actionResponse.headers
             console.log('the X-Correlation-Id when post dealocate action is ' + actionResponseHeaders.get('x-correlation-id'));
