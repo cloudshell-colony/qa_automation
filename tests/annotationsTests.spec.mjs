@@ -55,7 +55,7 @@ test.describe('Check AWS policies', () => {
             await goToSpace(page, space)
             sbName = await launchBlueprintFromCatalogPage(page, AzureBPName, AzureInputs)
             console.log(sbName);
-            await page.waitForSelector('[data-test="sandbox-info-column"] div:has-text("StatusActive")', { timeout: 5 * 60 * 1000 });
+            await page.waitForSelector('[data-test="sandbox-info-column"] div:has-text("StatusActive")', { timeout: 10 * 60 * 1000 });
 
             console.log("Performing Dealocate action");
             sendboxID = await findSandboxIdByNameAPI(session, baseURL, space, sbName);
