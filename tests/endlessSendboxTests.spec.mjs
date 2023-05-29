@@ -54,6 +54,7 @@ test.describe.serial('Endless sendbox tests', () => {
             }
         } catch (error) {
             console.log(error)
+            throw error;
         }
       
     })
@@ -71,7 +72,7 @@ test.describe.serial('Endless sendbox tests', () => {
                 await page.locator('[data-test="sandbox-row-1"]').click();
                 const detectDrift = await page.locator('[data-test="deployment-drift-card"]')
                 await detectDrift.click()
-                await page.locator('.iKTCU').click()
+                await page.getByText('Check for Drift').click()
                 const numLocator = await detectDrift.locator('[data-test="amount"]')
                 await expect(numLocator).toContainText('1', { timeout: 120000})
                 await detectDrift.click()
@@ -82,6 +83,7 @@ test.describe.serial('Endless sendbox tests', () => {
             }
         } catch (error) {
             console.log(error)
+            throw error;
         }
     })
 })
