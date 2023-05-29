@@ -83,26 +83,38 @@ test.describe('Blueprint validation', () => {
 
 
 
-    test.skip("Static validation - Adding & removing execution host changes blueprint errors", async () => {
+    test("Static validation - Adding & removing execution host changes blueprint errors", async () => {
         blueprintName = "bad-eks";
-        let expectedErrors = ["host missing compute-service field"];
+        let expectedErrors = "The agent 'bp-validation2 (in grains->bucket_12->spec->agent->name)' was not found";
+        let expectedErrorWithAgent = 'bucket_2->spec->agent missing name field'
         await goToAdminConsole(page, "cloud accounts")
         console.log("Associating execution host to space");
         await associateExecutionHost(page, bpValidationEKS, executionHostNameSpace, executionHostServiceAccount, space);
         await goToSpace(page, space);
         await page.click("[data-test=blueprints-nav-link]");
         //get and validate blueprint errors
-        await page.waitForTimeout(10 * 1000); // wait for 10 seconds for blueprint errors to update
+        await page.waitForTimeout(2 * 1000); // wait for 10 seconds for blueprint errors to update
         console.log("Validating blueprint errors after associating execution host");
-        await validateBlueprintErrors(page, blueprintName, await getBlueprintErrors(page, blueprintName), expectedErrors);
+        await page.locator(`[data-test=blueprint-row-${blueprintName}]`).click()
+        await page.locator('[data-test="designer-tab-yaml"]').click()
+        let errorText = await page.$eval('[data-test="yaml-error"]', element => element.textContent);
+        console.log('error text is ' + errorText);
+        expect(await errorText).toContain(expectedErrorWithAgent)
+
         console.log("Removing execution host from space");
         const response = await disassociateExecutionHostAPI(session, baseURL, space, bpValidationEKS);
         expect(response.status, 'Execution host was not removed from space, MUST remove it manually').toBe(200)
-        expectedErrors.unshift(`The agent '${bpValidationEKS}`); //Adding error that should appear after removing EKS
+        // expectedErrors.unshift(`The agent '${bpValidationEKS}`); //Adding error that should appear after removing EKS
         //get and validate blueprint errors
-        await page.waitForTimeout(10 * 1000); // wait for 10 seconds for blueprint errors to update
+        await page.waitForTimeout(2 * 1000); // wait for 10 seconds for blueprint errors to update
         console.log("Validating blueprint errors after removing execution host");
-        await validateBlueprintErrors(page, blueprintName, await getBlueprintErrors(page, blueprintName), expectedErrors);
+        await page.locator('[data-test="blueprints-nav-link"]').click()
+        await page.locator(`[data-test=blueprint-row-${blueprintName}]`).click()
+        await page.locator('[data-test="designer-tab-yaml"]').click()
+        errorText = await page.$eval('[data-test="yaml-error"]', element => element.textContent);
+        console.log('error text is ' + errorText);
+        expect(await errorText).toContain(expectedErrors)
+       
     });
 
     test("Dynamic validation - Sandbox launches successfully when providing correct execution host input", async () => {
