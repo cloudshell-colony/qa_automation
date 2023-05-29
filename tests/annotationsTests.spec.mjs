@@ -53,9 +53,11 @@ test.describe('Check AWS policies', () => {
         try {
 
             await goToSpace(page, space)
+            console.time('Time to launch azure vm with annotations')
             sbName = await launchBlueprintFromCatalogPage(page, AzureBPName, AzureInputs)
             console.log(sbName);
             await page.waitForSelector('[data-test="sandbox-info-column"] div:has-text("StatusActive")', { timeout: 10 * 60 * 1000 });
+            console.timeEnd('Time to launch azure vm with annotations')
 
             console.log("Performing Dealocate action");
             sendboxID = await findSandboxIdByNameAPI(session, baseURL, space, sbName);
