@@ -65,7 +65,7 @@ test.describe('Check AWS policies', () => {
             let actionResponse = await performActionAPI(session, baseURL, space, sendboxID, AzureBPName, DealocateAction)
             console.log('response of performActionAPI is '+JSON.stringify(actionResponse));
             let actionResponseHeaders = actionResponse.headers
-            console.log('the X-Correlation-Id when post dealocate action is ' + actionResponseHeaders.get('x-correlation-id'));
+            console.log('the X-Correlation-Id for sendboxID ' + sendboxID+ 'with sendbox name '+sbName + 'when post dealocate action is ' + actionResponseHeaders.get('x-correlation-id'));
             console.log('Validating Dealocated status..');
             await page.hover('[data-test="environment-views"]');
             await page.getByText('Resources layout').click();
@@ -75,14 +75,14 @@ test.describe('Check AWS policies', () => {
             console.log('Validating power-off annotation..');
             let response = await getSandboxDetailsAPI(session, baseURL, space, sendboxID);
             let headers = response.headers;
-            console.log('the X-Correlation-Id after validating dealocate action status ' + headers.get('x-correlation-id'));
+            console.log('the X-Correlation-Id for sendboxID ' + sendboxID+ 'with sendbox name '+sbName + 'after validating dealocate action status ' + headers.get('x-correlation-id'));
             await expect(page.locator('[data-test="sandbox-row-0"]')).toContainText('power: off', { timeout: 1 * 60 * 1000 });
 
             await page.getByText(sbName).click();
             console.log('Perform power-on action');
             actionResponse = await performActionAPI(session, baseURL, space, sendboxID, AzureBPName, powerOnAction);
             actionResponseHeaders = actionResponse.headers;
-            console.log('the X-Correlation-Id when post power-on action is ' + actionResponseHeaders.get('x-correlation-id'));
+            console.log('the X-Correlation-Id for sendboxID ' + sendboxID+ 'with sendbox name '+sbName + ' when post power-on action is ' + actionResponseHeaders.get('x-correlation-id'));
             console.log('Validating Running status..');
             await page.hover('[data-test="environment-views"]');
             await page.getByText('Resources layout').click();
@@ -91,7 +91,7 @@ test.describe('Check AWS policies', () => {
             console.log('Validating power-on annotation..');
             response = await getSandboxDetailsAPI(session, baseURL, space, sendboxID);
             headers = response.headers;
-            console.log('the X-Correlation-Id after validating running action status is ' + headers.get('x-correlation-id'));
+            console.log('the X-Correlation-Id for sendboxID ' + sendboxID+ 'with sendbox name '+sbName + ' after validating running action status is ' + headers.get('x-correlation-id'));
             await expect(page.locator('[data-test="sandbox-row-0"]')).toContainText('power: on', { timeout: 1 * 60 * 1000 });
 
             await page.getByText(sbName).click();
