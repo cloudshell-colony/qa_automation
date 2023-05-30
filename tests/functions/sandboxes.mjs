@@ -352,7 +352,7 @@ export const waitForDriftStatusAPI = async (session, baseURL, spaceName, sandbox
   console.log('Waiting for drift detected status in grain to be ' + desiredStatus);
   let detectedDrift = !desiredStatus;
   let sandboxDetails;
-  for (let i = 0; i < 12; i++) {
+  for (let i = 0; i < 18; i++) {
     sandboxDetails = await (await getSandboxDetailsAPI(session, baseURL, spaceName, sandboxId)).json();
     let grains = sandboxDetails.details.state.grains; // list of all sandbox grains
     for (var grain of grains) {
