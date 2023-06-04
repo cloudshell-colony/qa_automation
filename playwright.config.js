@@ -52,7 +52,7 @@ const config = {
     // /*
     {
       name: 'chromium',
-      // testMatch: /.driftTestUI.spec.mjs/,
+      // testMatch: /.annotationsTests.spec.mjs/,
       use: {
         ...devices['Desktop Chrome'],
       },
