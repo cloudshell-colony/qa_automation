@@ -104,7 +104,6 @@ test.describe('Blueprint validation', () => {
         console.log("Removing execution host from space");
         const response = await disassociateExecutionHostAPI(session, baseURL, space, bpValidationEKS);
         expect(response.status, 'Execution host was not removed from space, MUST remove it manually').toBe(200)
-        // expectedErrors.unshift(`The agent '${bpValidationEKS}`); //Adding error that should appear after removing EKS
         //get and validate blueprint errors
         await page.waitForTimeout(2 * 1000); // wait for 10 seconds for blueprint errors to update
         console.log("Validating blueprint errors after removing execution host");
@@ -123,12 +122,9 @@ test.describe('Blueprint validation', () => {
         await goToSpace(page, space);
         await page.click("[data-test=blueprints-nav-link]");
         console.log("Launching sandbox with correct inputs for execution host name");
-        // await page.pause()
         await launchBlueprintFromBPList(page, blueprintName, inputsDict);
-        // await catchErrorUI(page, 'Sandbox launch');
         await page.waitForSelector('[data-test="sandbox-info-column"]');
         console.log("Waiting for sandbox to end launch");
-        // await validateSBisActive(page);
         await page.waitForTimeout(10 * 1000);
         await page.waitForSelector('[data-test="sandbox-info-column"] div:has-text("StatusActive")', { timeout: 5 * 60 * 1000 });
         console.log("Ending sandbox");
