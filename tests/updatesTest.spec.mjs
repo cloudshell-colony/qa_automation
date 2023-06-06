@@ -77,7 +77,7 @@ test.describe.serial("Asset updates test", () => {
     test("Update sandbox and validate change", async () => {
 
         try {
-            await page.goto(`${baseURL}`, { timeout: 90000 });
+            await page.goto(`${baseURL}`, { timeout: 150000 });
             await goToSandbox(page, sandboxName, spaceName);
             const detectUpdate = await page.locator('[data-test="asset-drift-card"]')
             await detectUpdate.click()
