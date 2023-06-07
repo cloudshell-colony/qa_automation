@@ -427,17 +427,32 @@ export const changeSBCollaboratorAPI = async (session, baseURL, sandboxId, colab
   return response;
 }
 
+// export const findSandboxIdByNameAPI = async (session, baseURL, spaceName, sandboxName) => {
+//   let sandboxId;
+//   const sandboxesJson = await (await getAllSandboxesAPI(session, baseURL, spaceName)).json();
+//   for (const sandbox of sandboxesJson) {
+//     if (sandbox.details.definition.metadata.name === sandboxName) {
+//       sandboxId = sandbox.id;
+//       break
+//     }
+//   }
+//   return sandboxId;
+// }
+
 export const findSandboxIdByNameAPI = async (session, baseURL, spaceName, sandboxName) => {
   let sandboxId;
   const sandboxesJson = await (await getAllSandboxesAPI(session, baseURL, spaceName)).json();
-  for (const sandbox of sandboxesJson) {
+
+  for (let i = 0; i < sandboxesJson.length; i++) {
+    const sandbox = sandboxesJson[i];
     if (sandbox.details.definition.metadata.name === sandboxName) {
       sandboxId = sandbox.id;
-      break
+      break;
     }
   }
+
   return sandboxId;
-}
+};
 
 export const  getSendboxID = async (session, baseURL, space, numOfenvsToFetch, maxRetries )  => {
   let sendboxID;
