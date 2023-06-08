@@ -69,8 +69,8 @@ test.describe.serial("Asset updates test", () => {
         await page.locator(`[data-test=blueprint-row-${blueprintNameWithMD}]`).click()
         await page.getByRole('tab', { name: 'Instructions' }).click()
 
-        await page.waitForSelector('iframe[src="https://d2e9m83oslj2p1.cloudfront.net/a63b5c51-6436-4a69-b80c-0a3daea1137b/torque-documentation/instructions-with-image.html"]');
-        const iframeElementHandle = await page.$('iframe[src="https://d2e9m83oslj2p1.cloudfront.net/a63b5c51-6436-4a69-b80c-0a3daea1137b/torque-documentation/instructions-with-image.html"]');
+        await page.waitForSelector('iframe[src="https://d2e9m83oslj2p1.cloudfront.net/86234c96-435d-4865-b25e-828552c00f85/torque-documentation/instructions-with-image.html"]');
+        const iframeElementHandle = await page.$('iframe[src="https://d2e9m83oslj2p1.cloudfront.net/86234c96-435d-4865-b25e-828552c00f85/torque-documentation/instructions-with-image.html"]');
         const frame = await iframeElementHandle.contentFrame();
         const jsonFrame = JSON.stringify(frame)
         console.log('the frame is ' + jsonFrame);
@@ -97,8 +97,8 @@ test.describe.serial("Asset updates test", () => {
         await page.hover('[data-test="environment-views"]');
         await page.getByText('Resources layout').click();
         await page.getByRole('tab', { name: 'Instructions' }).click()
-        await page.waitForSelector('iframe[src="https://d2e9m83oslj2p1.cloudfront.net/a63b5c51-6436-4a69-b80c-0a3daea1137b/torque-documentation/instructions-with-image.html"]');
-        const iframeElementHandle = await page.$('iframe[src="https://d2e9m83oslj2p1.cloudfront.net/a63b5c51-6436-4a69-b80c-0a3daea1137b/torque-documentation/instructions-with-image.html"]');
+        await page.waitForSelector('iframe[src="https://d2e9m83oslj2p1.cloudfront.net/86234c96-435d-4865-b25e-828552c00f85/torque-documentation/instructions-with-image.html"]');
+        const iframeElementHandle = await page.$('iframe[src="https://d2e9m83oslj2p1.cloudfront.net/86234c96-435d-4865-b25e-828552c00f85/torque-documentation/instructions-with-image.html"]');
         const frame = await iframeElementHandle.contentFrame();
         const jsonFrame = JSON.stringify(frame)
         console.log('the frame is ' + jsonFrame);
