@@ -25,7 +25,7 @@ inputs:
 instructions:
   source:
     store: qa_automation
-    path: instructions/torque-documentation/my-index.md
+    path: instructions/torque-documentation/instructions-with-image.md
 
 grains:
   first:
