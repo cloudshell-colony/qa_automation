@@ -1,0 +1,59 @@
+spec_version: 2-preview
+
+inputs:
+  compute_service_name:
+#     type: string
+    type: agent
+  Application Version:
+    type: string
+    default: "0.4.3"
+    description: "Version of the robotShop micorservices application"
+  DB Size:
+    type: string
+    default: "small"
+    description: "The instance type of the RDS instance. Small, medium, or large."
+    allowed-values: ["small", "medium", "large"]
+  DB Engine Version:
+    type: string
+    default: "8.0.26"
+    description: "Version of RDS MySQL DB Engine. Default is 5.7"
+  env_test:
+    type: string
+    default: "val1"
+    description: "environment variable test"
+    
+instructions:
+  source:
+    store: blueprints
+    path: instructions/torque-documentation/my-index.md
+
+grains:
+  first:
+    kind: terraform
+    spec:
+      env-vars:
+        - env1: '{{ .inputs.env_test }}'
+      source:
+        path: terraform/simple-tf-module
+        store: blueprints
+      agent:
+        name: '{{.inputs.compute_service_name}}'
+      inputs:
+        - test: '1-{{.inputs.env_test}}-2'
+      outputs:
+        - output2
+        
+  second:
+   kind: terraform
+   depends-on: first
+   spec:
+     env-vars:
+       - env1: '{{ .inputs.env_test }}'
+     source:
+       path: terraform/simple-tf-module
+       store: blueprints
+     agent:
+       name: '{{.inputs.compute_service_name}}'
+     inputs:
+       - test_input1: '1-{{.grains.first.outputs.output2}}-2'
+       - test_input2: '1-{{.inputs.env_test}}-2'
