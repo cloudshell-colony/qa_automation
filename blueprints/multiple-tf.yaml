@@ -51,7 +51,7 @@ grains:
        - env1: '{{ .inputs.env_test }}'
      source:
        path: terraform/simple-tf-module
-       store: blueprints
+       store: qa_automation
      agent:
        name: '{{.inputs.compute_service_name}}'
      inputs:
