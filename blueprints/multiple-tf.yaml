@@ -24,7 +24,7 @@ inputs:
     
 instructions:
   source:
-    store: blueprints
+    store: qa_automation
     path: instructions/torque-documentation/my-index.md
 
 grains:
@@ -35,7 +35,7 @@ grains:
         - env1: '{{ .inputs.env_test }}'
       source:
         path: terraform/simple-tf-module
-        store: blueprints
+        store: qa_automation
       agent:
         name: '{{.inputs.compute_service_name}}'
       inputs:
