@@ -63,7 +63,7 @@ test.describe.serial("Asset updates test", () => {
         await page.locator('input:has-text("Sign in")').click();
         console.log('Signed in to github');
         //Edit tf file
-        await page.goto('https://github.com/cloudshell-colony/qa_automation/blob/main/simpleTF/main.tf');
+        await page.goto('https://github.com/cloudshell-colony/qa_automation/blob/main/terraform/simpleTF/main.tf');
         await page.keyboard.press("e");
         await page.locator('pre[role="presentation"]').first().click();
         await page.keyboard.press("Control+A");
