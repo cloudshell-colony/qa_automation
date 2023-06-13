@@ -1,7 +1,6 @@
 import { expect, test } from "@playwright/test";
 import { closeModal, generateUniqueId, openAndPinSideMenu, selectFromDropbox } from "./functions/general.mjs";
 import { getSessionAPI, loginToAccount, validateGetSessionAPI } from "./functions/accounts.mjs";
-// import { goToSpace } from "./functions/spaces.mjs";
 import { endSandbox } from "./functions/sandboxes.mjs";
 import { generateRepoSpecificKeys, goToSpace } from "./functions/spaces.mjs";
 
@@ -18,17 +17,18 @@ const blueprintNameWithMD = 'multiple-tf'
 const blueprintName = 'multiple-tf-2'
 const instructionText = 'blah blah blah instructions instructions instructions woohoo'
 const newText = 'New Text ' + id
+const iframeSelector = 'iframe[src="https://d2e9m83oslj2p1.cloudfront.net/86234c96-435d-4865-b25e-828552c00f85/torque-documentation/instructions-with-image.html"]'
 
 
 /** Test prerequisites
  * Have account with credentials as saved in .env file
  * @spaceName should exist in the account
- * space should have repo	https://github.com/Amir-Omazgin/Assets associated
+ * space should have repo https://github.com/cloudshell-colony/qa_automation associated
  * and simpleTF asset auto-generated to a published blueprint
  * @executionHostName agent should be associated to space
  */
 
-test.describe.serial("Asset updates test", () => {
+test.describe.serial("Instructions Tests", () => {
     let page;
     let session;
     let repoKeys;
@@ -51,7 +51,7 @@ test.describe.serial("Asset updates test", () => {
     //     await stopAndValidateAllSBsCompleted(page);
     // });
 
-    test.skip("Validate instructions on multiple-tf-2 blueprint", async () => {
+    test("Validate instructions on multiple-tf-2 blueprint", async () => {
         await goToSpace(page, spaceName);
         await page.locator('[data-test="blueprints-nav-link"]').click()
         await page.locator(`[data-test=blueprint-row-${blueprintName}]`).click()
@@ -62,7 +62,7 @@ test.describe.serial("Asset updates test", () => {
 
     })
 
-    test.skip("Validate instructions on multiple-tf-2 catalog", async () => {
+    test("Validate instructions on multiple-tf-2 catalog", async () => {
         await goToSpace(page, spaceName);
         await page.locator('[data-test="catalog-nav-link"]').click()
         await page.locator(`[data-test=catalog-bp-${blueprintName}]`).click()
@@ -72,14 +72,14 @@ test.describe.serial("Asset updates test", () => {
 
     })
 
-    test.skip("Validate instructions on multiple-tf with MD ", async () => {
+    test("Validate instructions on multiple-tf with MD ", async () => {
         await goToSpace(page, spaceName);
         await page.locator('[data-test="blueprints-nav-link"]').click()
         await page.locator(`[data-test=blueprint-row-${blueprintNameWithMD}]`).click()
         await page.getByRole('tab', { name: 'Instructions' }).click()
 
-        await page.waitForSelector('iframe[src="https://d2e9m83oslj2p1.cloudfront.net/86234c96-435d-4865-b25e-828552c00f85/torque-documentation/instructions-with-image.html"]');
-        const iframeElementHandle = await page.$('iframe[src="https://d2e9m83oslj2p1.cloudfront.net/86234c96-435d-4865-b25e-828552c00f85/torque-documentation/instructions-with-image.html"]');
+        await page.waitForSelector(iframeSelector);
+        const iframeElementHandle = await page.$(iframeSelector);
         const frame = await iframeElementHandle.contentFrame();
         const jsonFrame = JSON.stringify(frame)
         console.log('the frame is ' + jsonFrame);
@@ -94,7 +94,7 @@ test.describe.serial("Asset updates test", () => {
         }
     })
 
-    test.skip("Launch multiple-tf and validate instructions ", async () => {
+    test("Launch multiple-tf and validate instructions ", async () => {
         await goToSpace(page, spaceName);
         await page.locator('[data-test="blueprints-nav-link"]').click()
         const multipleTF = await page.locator(`[data-test=blueprint-row-${blueprintNameWithMD}]`)
@@ -106,8 +106,8 @@ test.describe.serial("Asset updates test", () => {
         await page.hover('[data-test="environment-views"]');
         await page.getByText('Resources layout').click();
         await page.getByRole('tab', { name: 'Instructions' }).click()
-        await page.waitForSelector('iframe[src="https://d2e9m83oslj2p1.cloudfront.net/86234c96-435d-4865-b25e-828552c00f85/torque-documentation/instructions-with-image.html"]');
-        const iframeElementHandle = await page.$('iframe[src="https://d2e9m83oslj2p1.cloudfront.net/86234c96-435d-4865-b25e-828552c00f85/torque-documentation/instructions-with-image.html"]');
+        await page.waitForSelector(iframeSelector);
+        const iframeElementHandle = await page.$(iframeSelector);
         const frame = await iframeElementHandle.contentFrame();
         const jsonFrame = JSON.stringify(frame)
         console.log('the frame is ' + jsonFrame);
@@ -138,7 +138,6 @@ test.describe.serial("Asset updates test", () => {
         const mdContentLocator = await page.locator('pre').filter({ hasText: 'New Text' })
         const mdContent = await mdContentLocator.textContent()
         console.log('the content is ' + mdContent);
-        // const newMdContent = id
         console.log('the new MD is ' + id);
         // Delete the content
         const mdElement = await mdContentLocator.first();
@@ -152,46 +151,25 @@ test.describe.serial("Asset updates test", () => {
         await page.keyboard.type(newText); // Type the new content
         await page.click('button:has-text("Commit changes")');
         await page.click('button:has-text("Commit changes")');
-
-        // Validate change in ENV
-        // await page.goto(`${baseURL}`, { timeout: 150000 });
-        // await goToSpace(page, spaceName);
-        // await page.locator('[data-test="catalog-nav-link"]').click()
-        // await page.locator(`[data-test=catalog-bp-${blueprintNameWithMD}]`).click()
-        // await page.waitForSelector('iframe[src="https://d2e9m83oslj2p1.cloudfront.net/86234c96-435d-4865-b25e-828552c00f85/torque-documentation/instructions-with-image.html"]');
-        // const iframeElementHandle = await page.$('iframe[src="https://d2e9m83oslj2p1.cloudfront.net/86234c96-435d-4865-b25e-828552c00f85/torque-documentation/instructions-with-image.html"]');
-        // const frame = await iframeElementHandle.contentFrame();
-        // const jsonFrame = JSON.stringify(frame)
-        // console.log('the frame is ' + jsonFrame);
-
-        // const paragraphElement = await frame.waitForSelector('p'); 
-        // const textContent = await paragraphElement.textContent(); 
-        // console.log('new thext is: ' + newText);
-        // console.log('text from instructions: ' + textContent); 
-        // expect(textContent).toContain(newText)
-
     })
 
     test("Validate updated instructions on multiple-tf catalog", async () => {
         await page.goto(`${baseURL}`, { timeout: 150000 });
         await goToSpace(page, spaceName);
-       
         await page.locator('[data-test="catalog-nav-link"]').click()
         await page.locator(`[data-test=catalog-bp-${blueprintNameWithMD}]`).click()
-        await page.waitForTimeout(10 * 1000);
-        await page.reload();
-        await page.waitForSelector('iframe[src="https://d2e9m83oslj2p1.cloudfront.net/86234c96-435d-4865-b25e-828552c00f85/torque-documentation/instructions-with-image.html"]');
-        const iframeElementHandle = await page.$('iframe[src="https://d2e9m83oslj2p1.cloudfront.net/86234c96-435d-4865-b25e-828552c00f85/torque-documentation/instructions-with-image.html"]');
+        await page.waitForTimeout(15 * 1000);
+        await page.reload({ bypassCache: true });
+        await page.waitForTimeout(5 * 1000);
+        await page.reload({ bypassCache: true });
+        await page.waitForSelector(iframeSelector);
+        const iframeElementHandle = await page.$(iframeSelector);
         const frame = await iframeElementHandle.contentFrame();
         const jsonFrame = JSON.stringify(frame)
         console.log('the frame is ' + jsonFrame);
-     
-
         const paragraphElement = await frame.waitForSelector('p'); 
         const textContent = await paragraphElement.textContent(); 
-
         console.log(textContent); 
-       
         expect(textContent).toContain(newText, {timeout: 1 * 60 * 1000 })
     })
 });
