@@ -159,9 +159,9 @@ test.describe.serial("Instructions Tests", () => {
         await page.locator('[data-test="catalog-nav-link"]').click()
         await page.locator(`[data-test=catalog-bp-${blueprintNameWithMD}]`).click()
         await page.waitForTimeout(15 * 1000);
-        await page.reload({ bypassCache: true });
+        await page.reload();
         await page.waitForTimeout(5 * 1000);
-        await page.reload({ bypassCache: true });
+        await page.reload();
         await page.waitForSelector(iframeSelector);
         const iframeElementHandle = await page.$(iframeSelector);
         const frame = await iframeElementHandle.contentFrame();
