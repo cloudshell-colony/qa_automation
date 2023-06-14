@@ -125,9 +125,11 @@ test.describe.serial('Multiple blueprints onBoarding API', () => {
         test(`Launching blueprint "${blueprintData.name}"`, async () => {
             const resp = await launchBlueprintAPI(session, baseURL, blueprintData.name, spaceName, blueprintData.inputs, repoName);
             const jsonResponse = await resp.json()
-            console.log('the json of SB in repoOnBoardingAPI is '+ jsonResponse);
-            expect(resp.status, 'Sandbox launch failed, received following error: ' + JSON.stringify(jsonResponse)).toBe(202);
+            console.log('the json of SB in repoOnBoardingAPI is '+ JSON.stringify(jsonResponse));
             sandboxId = await jsonResponse.id;
+            console.log('the envID is '+ sandboxId);
+            expect(resp.status, 'Sandbox launch failed, received following error: ' + JSON.stringify(jsonResponse)).toBe(202);
+         
             console.log(`Created sandbox with id ${sandboxId} from blueprint ${blueprintData.name}`);
         })
     };

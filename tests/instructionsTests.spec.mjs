@@ -154,7 +154,7 @@ test.describe.serial("Instructions Tests", () => {
     })
 
     test("Validate updated instructions on multiple-tf catalog", async () => {
-        await page.goto(`${baseURL}`, { timeout: 150000 });
+        await page.goto(`${baseURL}`, {timeout: 150000, waitUntil: 'load'});
         await goToSpace(page, spaceName);
         await page.locator('[data-test="catalog-nav-link"]').click()
         await page.locator(`[data-test=catalog-bp-${blueprintNameWithMD}]`).click()
