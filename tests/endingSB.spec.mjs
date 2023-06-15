@@ -1,8 +1,8 @@
-import { expect, test } from "@playwright/test";
+import { test } from "@playwright/test";
 import { getSessionAPI, loginToAccount } from "./functions/accounts.mjs";
 import { launchBlueprintAPI } from "./functions/blueprints.mjs";
 import { closeModal, generateUniqueId, openAndPinSideMenu } from "./functions/general.mjs";
-import { endSandbox, validateSBisActiveAPI } from "./functions/sandboxes.mjs";
+import { endSandboxAPI, findSandboxIdByNameAPI, validateSBisActiveAPI, validateSBisEndedAPI } from "./functions/sandboxes.mjs";
 import { goToSpace } from "./functions/spaces.mjs";
 
 const baseURL = process.env.baseURL
@@ -11,7 +11,6 @@ const account = process.env.account
 const user = process.env.adminEMail
 const timestemp = Math.floor(Date.now() / 1000);
 const id = timestemp.toString().concat('-' + generateUniqueId());
-const space = "EndingSB"
 const AWSBPName = "autogen_create-ec2-instance"
 const AzureBPName = "autogen_azure_vm_legacy_wi"
 const AWSExecutionHostName = "qa-eks";
@@ -19,6 +18,7 @@ const AzureExecutionHostName = "qa-aks";
 const EC2Inputs = { ami: "ami-0cd01c7fb16a9b497", instance_type: "t3.micro", agent: AWSExecutionHostName }
 const AzureInputs = { resource_group: AzureBPName + '-' + id, vm_name: "vidovm", agent: AzureExecutionHostName }
 const repoName = 'qtorque'
+const spaceName = 'EndingSB'
 let duration
 let session
 let ID
@@ -44,47 +44,51 @@ test.describe.serial('End sendbox tests', () => {
     });
 
     test(" End azure vm  ", async () => {
-        await goToSpace(page, space)
+        await goToSpace(page, spaceName)
         await page.locator('[data-test="sandboxes-nav-link"]').click()
         try {
             const sandboxRowLocator = page.locator('[data-test="sandbox-row-0"]');
             const sandboxRowText = await sandboxRowLocator.textContent();
-            const sandboxRowExists = sandboxRowText.includes('Active', { timeout:5000 });
-    
+            const sandboxRowExists = sandboxRowText.includes('Active', { timeout: 5000 });
+            const element = await sandboxRowLocator.locator('a.envNameLink');
+            const sandboxName = await element.textContent();
+            console.log(sandboxName);
+          
             if (sandboxRowExists) {
-                await page.locator('[data-test="sandbox-row-0"]').click();
-                console.log('Terminating azure vm..')
-                await endSandbox(page);
-                console.time('Time to end azure vm')
-                await expect( await page.locator('[data-test="sandbox-row-0"]')).toContainText('Terminating',{ timeout: 10 * 60 * 1000 })
-                await expect( await page.locator('[data-test="sandbox-row-0"]')).toContainText('Ended',{ timeout: 10 * 60 * 1000 })
-                // await expect( await page.locator('[data-test="sandbox-row-1"]')).toBeHidden({ timeout: 10 * 60 * 1000 })
-                console.timeEnd('Time to end azure vm')
+              const id = await findSandboxIdByNameAPI(session, baseURL, spaceName, sandboxName)
+              console.log('the id is '+ id);
+              console.log(`Ending ${sandboxName}`);
+              console.time('Time to end azure vm')
+              await endSandboxAPI(session, baseURL, spaceName, id)
+              await validateSBisEndedAPI(session, baseURL, id, spaceName)
+              console.timeEnd('Time to end azure vm')
             } else {
             }
         } catch (error) {
             console.log(error)
         }
-      
+
     })
 
     test(" End aws ec2", async () => {
-        await goToSpace(page, space)
+        await goToSpace(page, spaceName)
         await page.locator('[data-test="sandboxes-nav-link"]').click()
-       
+
         try {
             const sandboxRowLocator = page.locator('[data-test="sandbox-row-1"]');
             const sandboxRowText = await sandboxRowLocator.textContent();
-            const sandboxRowExists = sandboxRowText.includes('Active', { timeout:5000 });
-
+            const sandboxRowExists = sandboxRowText.includes('Active', { timeout: 5000 });
+            const element = await sandboxRowLocator.locator('a.envNameLink');
+            const sandboxName = await element.textContent();
+            console.log(sandboxName);
+          
             if (sandboxRowExists) {
-                await page.locator('[data-test="sandbox-row-1"]').click();
-                console.log('Terminating aws ec2..')
-                await endSandbox(page);
+                const id = await findSandboxIdByNameAPI(session, baseURL, spaceName, sandboxName)
+                console.log('the id is '+ id);
+                console.log(`Ending ${sandboxName}`);
                 console.time('Time to end aws ec2')
-                await expect( await page.locator('[data-test="sandbox-row-1"]')).toContainText('Terminating',{ timeout: 10 * 60 * 1000 })
-                await expect( await page.locator('[data-test="sandbox-row-1"]')).toContainText('Ended',{ timeout: 10 * 60 * 1000 })
-                // await expect( await page.locator('[data-test="sandbox-row-0"]')).toBeHidden({ timeout: 10 * 60 * 1000 })
+                await endSandboxAPI(session, baseURL, spaceName, id)
+                await validateSBisEndedAPI(session, baseURL, id, spaceName)
                 console.timeEnd('Time to end aws ec2')
             } else {
             }
@@ -95,26 +99,26 @@ test.describe.serial('End sendbox tests', () => {
 
     test("Create and validate new aws ec2", async () => {
         console.log('Launching aws ec2..')
-        const response = await launchBlueprintAPI(session, baseURL, AWSBPName, space, EC2Inputs, repoName, duration = "")
+        const response = await launchBlueprintAPI(session, baseURL, AWSBPName, spaceName, EC2Inputs, repoName, duration = "")
         const responseJson = await response.json()
         console.log(responseJson)
         ID = responseJson.id
-        console.log('aws ec2 ID is: '+ID)
+        console.log('aws ec2 ID is: ' + ID)
         console.time('Time to launch ec2')
-        await validateSBisActiveAPI(session, baseURL, ID, space)
+        await validateSBisActiveAPI(session, baseURL, ID, spaceName)
         console.timeEnd('Time to launch ec2')
     })
 
 
     test("Create and validate new azure vm", async () => {
         console.log('Launching azure vm..')
-        const response = await launchBlueprintAPI(session, baseURL, AzureBPName, space, AzureInputs, repoName, duration = "")
+        const response = await launchBlueprintAPI(session, baseURL, AzureBPName, spaceName, AzureInputs, repoName, duration = "")
         const responseJson = await response.json()
         console.log(responseJson)
         ID = responseJson.id
-        console.log('Azure vm ID is: '+ID)
+        console.log('Azure vm ID is: ' + ID)
         console.time('Time to launch azure vm')
-        await validateSBisActiveAPI(session, baseURL, ID, space)
+        await validateSBisActiveAPI(session, baseURL, ID, spaceName)
         console.timeEnd('Time to launch azure vm')
     })
 
