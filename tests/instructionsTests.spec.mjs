@@ -62,7 +62,36 @@ test.describe.serial("Instructions Tests", () => {
 
     })
 
+    test("Change TF file in github", async () => {
+        await page.goto('https://github.com/cloudshell-colony/qa_automation');
+        //Sign in to github
+        await page.locator('header[role="banner"] >> text=Sign in').click();
+        await page.locator('input[name="login"]').fill(repoKeys.userName);
+        await page.locator('input[name="password"]').fill(repoKeys.password);
+        await page.locator('input:has-text("Sign in")').click();
+        console.log('Signed in to github');
+        //Edit tf file
+        await page.goto('https://github.com/cloudshell-colony/qa_automation/edit/main/instructions/torque-documentation/instructions-with-image.md');
+        const mdContentLocator = await page.locator('pre').filter({ hasText: 'New Text' })
+        const mdContent = await mdContentLocator.textContent()
+        console.log('the content is ' + mdContent);
+        console.log('the new MD is ' + id);
+        // Delete the content
+        const mdElement = await mdContentLocator.first();
+        await mdElement.click(); // Ensure the element is focused before typing
+        await page.keyboard.press('End'); // Move the cursor to the end of the text content
+        await page.keyboard.down('Shift'); // Hold the Shift key for selection
+        await page.keyboard.press('Home'); // Select the existing text content
+        await page.keyboard.up('Shift'); // Release the Shift key
+        await page.keyboard.press('Backspace'); // Delete the selected text
+
+        await page.keyboard.type(newText); // Type the new content
+        await page.click('button:has-text("Commit changes")');
+        await page.click('button:has-text("Commit changes")');
+    })
+
     test("Validate instructions on multiple-tf-2 catalog", async () => {
+        await page.goto(`${baseURL}`, {timeout: 150000, waitUntil: 'load'});
         await goToSpace(page, spaceName);
         await page.locator('[data-test="catalog-nav-link"]').click()
         await page.locator(`[data-test=catalog-bp-${blueprintName}]`).click()
@@ -125,36 +154,9 @@ test.describe.serial("Instructions Tests", () => {
         await expect(page.locator('[data-test="sandbox-row-0"]')).toContainText('Terminating', { timeout: 2 * 60 * 1000 });
     })
 
-    test("Change TF file in github", async () => {
-        await page.goto('https://github.com/cloudshell-colony/qa_automation');
-        //Sign in to github
-        await page.locator('header[role="banner"] >> text=Sign in').click();
-        await page.locator('input[name="login"]').fill(repoKeys.userName);
-        await page.locator('input[name="password"]').fill(repoKeys.password);
-        await page.locator('input:has-text("Sign in")').click();
-        console.log('Signed in to github');
-        //Edit tf file
-        await page.goto('https://github.com/cloudshell-colony/qa_automation/edit/main/instructions/torque-documentation/instructions-with-image.md');
-        const mdContentLocator = await page.locator('pre').filter({ hasText: 'New Text' })
-        const mdContent = await mdContentLocator.textContent()
-        console.log('the content is ' + mdContent);
-        console.log('the new MD is ' + id);
-        // Delete the content
-        const mdElement = await mdContentLocator.first();
-        await mdElement.click(); // Ensure the element is focused before typing
-        await page.keyboard.press('End'); // Move the cursor to the end of the text content
-        await page.keyboard.down('Shift'); // Hold the Shift key for selection
-        await page.keyboard.press('Home'); // Select the existing text content
-        await page.keyboard.up('Shift'); // Release the Shift key
-        await page.keyboard.press('Backspace'); // Delete the selected text
-
-        await page.keyboard.type(newText); // Type the new content
-        await page.click('button:has-text("Commit changes")');
-        await page.click('button:has-text("Commit changes")');
-    })
+ 
 
     test("Validate updated instructions on multiple-tf catalog", async () => {
-        await page.goto(`${baseURL}`, {timeout: 150000, waitUntil: 'load'});
         await goToSpace(page, spaceName);
         await page.locator('[data-test="catalog-nav-link"]').click()
         await page.locator(`[data-test=catalog-bp-${blueprintNameWithMD}]`).click()
