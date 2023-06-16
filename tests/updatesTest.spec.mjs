@@ -86,7 +86,7 @@ test.describe.serial("Asset updates test", () => {
             await expect(numLocator, 'Update in asset not detected after 2 minutes').toContainText('1', { timeout: 140000 });
             console.log('Update (asset drift) detected in sandbox');
             await page.getByText('Update Options').click()
-            const UpdateText = await page.locator('.hKAvAP').textContent()
+            const UpdateText = await page.locator('.ihMppf').textContent()
             const updatedText = UpdateText.replace('+', '');
             console.log('the text is ' + updatedText);
             expect(updatedText).toContain(`value = "ahlan ${id}"`)
