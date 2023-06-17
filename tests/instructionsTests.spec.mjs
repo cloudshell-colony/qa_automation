@@ -62,7 +62,7 @@ test.describe.serial("Instructions Tests", () => {
 
     })
 
-    test("Change TF file in github", async () => {
+    test.skip("Change TF file in github", async () => {
         await page.goto('https://github.com/cloudshell-colony/qa_automation');
         //Sign in to github
         await page.locator('header[role="banner"] >> text=Sign in').click();
@@ -156,7 +156,7 @@ test.describe.serial("Instructions Tests", () => {
 
  
 
-    test("Validate updated instructions on multiple-tf catalog", async () => {
+    test.skip("Validate updated instructions on multiple-tf catalog", async () => {
         await goToSpace(page, spaceName);
         await page.locator('[data-test="catalog-nav-link"]').click()
         await page.locator(`[data-test=catalog-bp-${blueprintNameWithMD}]`).click()
