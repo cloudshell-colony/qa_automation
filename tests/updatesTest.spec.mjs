@@ -48,13 +48,13 @@ test.describe.serial("Asset updates test", () => {
     //     await stopAndValidateAllSBsCompleted(page);
     // });
 
-    test.skip("Launch simple TF sandbox", async () => {
+    test("Launch simple TF sandbox", async () => {
         await goToSpace(page, spaceName);
         sandboxName = await launchBlueprintFromCatalogPage(page, blueprintName, inputs)
         await validateSBisActive(page);
     })
 
-    test.skip("Change TF file in github", async () => {
+    test("Change TF file in github", async () => {
         await page.goto('https://github.com/cloudshell-colony/qa_automation');
         //Sign in to github
         await page.locator('header[role="banner"] >> text=Sign in').click();
@@ -65,24 +65,26 @@ test.describe.serial("Asset updates test", () => {
         //Edit tf file
         await page.goto('https://github.com/cloudshell-colony/qa_automation/blob/main/terraform/simpleTF/main.tf');
         await page.keyboard.press("e");
-        await page.locator('pre[role="presentation"]').first().click();
+        await page.waitForTimeout(1000);
         await page.keyboard.press("Control+A");
+        await page.waitForTimeout(500);
         await page.keyboard.press("Delete");
+        await page.waitForTimeout(500);
         await page.keyboard.type(tfText);
         await page.click('button:has-text("Commit changes")');
         await page.click('button:has-text("Commit changes")');
         console.log('Changed TF file to \n' + tfText);
     })
 
-    test.skip("Update sandbox and validate change", async () => {
+    test("Update sandbox and validate change", async () => {
 
         try {
-            await page.goto(`${baseURL}`, {timeout: 150000, waitUntil: 'load'});
+            await page.goto(`${baseURL}`, { timeout: 150000, waitUntil: 'load' });
             await goToSandbox(page, sandboxName, spaceName);
             const detectUpdate = await page.locator('[data-test="asset-drift-card"]')
             await detectUpdate.click()
             const numLocator = await detectUpdate.locator('[data-test="amount"]')
-            //Wait for update to show up in screen
+            console.log(' Wait for update to show up in screen');
             await expect(numLocator, 'Update in asset not detected after 2 minutes').toContainText('1', { timeout: 140000 });
             console.log('Update (asset drift) detected in sandbox');
             await page.getByText('Update Options').click()
