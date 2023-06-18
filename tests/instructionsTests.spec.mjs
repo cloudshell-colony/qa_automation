@@ -62,7 +62,7 @@ test.describe.serial("Instructions Tests", () => {
 
     })
 
-    test.skip("Change TF file in github", async () => {
+    test("Change TF file in github", async () => {
         await page.goto('https://github.com/cloudshell-colony/qa_automation');
         //Sign in to github
         await page.locator('header[role="banner"] >> text=Sign in').click();
@@ -72,7 +72,7 @@ test.describe.serial("Instructions Tests", () => {
         console.log('Signed in to github');
         //Edit tf file
         await page.goto('https://github.com/cloudshell-colony/qa_automation/edit/main/instructions/torque-documentation/instructions-with-image.md');
-        const mdContentLocator = await page.locator('pre').filter({ hasText: 'New Text' })
+        const mdContentLocator = await page.getByText('New Text')
         const mdContent = await mdContentLocator.textContent()
         console.log('the content is ' + mdContent);
         console.log('the new MD is ' + id);
@@ -91,7 +91,7 @@ test.describe.serial("Instructions Tests", () => {
     })
 
     test("Validate instructions on multiple-tf-2 catalog", async () => {
-        await page.goto(`${baseURL}`, {timeout: 150000, waitUntil: 'load'});
+        await page.goto(`${baseURL}`, { timeout: 150000, waitUntil: 'load' });
         await goToSpace(page, spaceName);
         await page.locator('[data-test="catalog-nav-link"]').click()
         await page.locator(`[data-test=catalog-bp-${blueprintName}]`).click()
@@ -154,14 +154,12 @@ test.describe.serial("Instructions Tests", () => {
         await expect(page.locator('[data-test="sandbox-row-0"]')).toContainText('Terminating', { timeout: 2 * 60 * 1000 });
     })
 
- 
 
-    test.skip("Validate updated instructions on multiple-tf catalog", async () => {
+
+    test("Validate updated instructions on multiple-tf catalog", async () => {
         await goToSpace(page, spaceName);
         await page.locator('[data-test="catalog-nav-link"]').click()
         await page.locator(`[data-test=catalog-bp-${blueprintNameWithMD}]`).click()
-        await page.waitForTimeout(15 * 1000);
-        await page.reload();
         await page.waitForTimeout(5 * 1000);
         await page.reload();
         await page.waitForSelector(iframeSelector);
@@ -169,9 +167,9 @@ test.describe.serial("Instructions Tests", () => {
         const frame = await iframeElementHandle.contentFrame();
         const jsonFrame = JSON.stringify(frame)
         console.log('the frame is ' + jsonFrame);
-        const paragraphElement = await frame.waitForSelector('p'); 
-        const textContent = await paragraphElement.textContent(); 
-        console.log(textContent); 
-        expect(textContent).toContain(newText, {timeout: 1 * 60 * 1000 })
+        const paragraphElement = await frame.waitForSelector('p');
+        const textContent = await paragraphElement.textContent();
+        console.log(textContent);
+        expect(textContent).toContain(newText, { timeout: 1 * 60 * 1000 })
     })
 });
