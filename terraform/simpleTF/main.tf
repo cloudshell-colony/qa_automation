@@ -1,4 +1,3 @@
-  }70880961yr21u"
-  }output "message" {
-    value = "ahlan 1687087544vsx5xx"
+output "message" {
+    value = "ahlan 1687088354x98it7"
   }
