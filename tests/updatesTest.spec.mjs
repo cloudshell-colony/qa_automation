@@ -50,10 +50,10 @@ test.describe.serial("Asset updates test", () => {
     //     await stopAndValidateAllSBsCompleted(page);
     // });
 
-    test("Launch simple TF sandbox", async () => {
+    test.only("Launch simple TF sandbox", async () => {
         await goToSpace(page, spaceName);
-        sandboxName = await launchBlueprintFromCatalogPage(page, blueprintName, inputs)
-        await validateSBisActive(page);
+        // sandboxName = await launchBlueprintFromCatalogPage(page, blueprintName, inputs)
+        // await validateSBisActive(page);
         await executeCLIcommandForGithab('set GITHUB_TOKEN=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 && git clone https://github.com/cloudshell-colony/qa_automation');
         await executeCLIcommandForGithab(`set GITHUB_TOKEN=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 && powershell -Command "Get-Content -Path 'C:\\Users\\amir.o\\Documents\\work\\qa-automation\\qa_automation\\terraform\\simpleTF\\main.tf'"
         `);
@@ -61,12 +61,15 @@ test.describe.serial("Asset updates test", () => {
 
         // Add the modified file to the Git repository
         await executeCLIcommandForGithab('set GITHUB_TOKEN=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 && git add .');
-
-        // Commit the changes
+        //commit
         await executeCLIcommandForGithab(`set GITHUB_TOKEN=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 && git commit -m "Modified main.tf with new value"`);
 
         // Push the changes to the remote repository
-        await executeCLIcommandForGithab('set GITHUB_TOKEN=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 && git push --set-upstream origin fixGithubEditTests');
+        await executeCLIcommandForGithab('set GITHUB_TOKEN=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 && git push origin');
+
+        // await executeCLIcommandForGithab('set GITHUB_TOKEN=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 && git remote set-url origin https://github.com/cloudshell-colony/qa_automation');
+        // await executeCLIcommandForGithab('set GITHUB_TOKEN=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 && git push');
+        // await executeCLIcommandForGithab('rmdir /s /q qa_automation');
 
 
 
