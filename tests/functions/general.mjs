@@ -102,6 +102,20 @@ export const executeCLIcommand = async (command) => {
     });
 };
 
+export const executeCLIcommandForGithab = async (command) => {
+    console.log('running the following CLI command: ' + command);
+
+    try {
+        const output = execSync(command).toString();
+        console.log('output:', output);
+        return output;
+      } catch (error) {
+        console.log(`error: ${error.message}`);
+        expect(error).toBeNull();
+        return null;
+      }
+};
+
 export const overwriteAndSaveToFile = async (fielName, fileContent) => {
     fs.writeFile(fielName, fileContent, function (err) {
         if (err) throw err;
@@ -149,10 +163,10 @@ export const afterTestCleanup = async (page, accountName, baseURL, spaceName, fi
     // add when bug 11268 is fixed
     // await catchErrorUI(page, 'Delete account'); 
     await page.close();
-   
+
 };
 
-export const afterTestCleanupAPI = async(session, baseURL, spaceName, filePath = "enter real if needed") =>{
+export const afterTestCleanupAPI = async (session, baseURL, spaceName, filePath = "enter real if needed") => {
     // execution host is not mandatory, and should be used only when execution host is created during the test
     console.log(`Stopping all Sbs after test complteted in space ${spaceName}`);
     await stopAndValidateAllSBsCompletedAPI(session, baseURL, spaceName);
@@ -161,14 +175,14 @@ export const afterTestCleanupAPI = async(session, baseURL, spaceName, filePath =
     // delete execution host in k8s
     if (filePath !== "enter real if needed") {
         console.log(`Deleting all kubernetes resources created from file ${filePath}`);
-        const res =  execSync(`kubectl delete -f ${filePath}`, {encoding: 'utf8'});
+        const res = execSync(`kubectl delete -f ${filePath}`, { encoding: 'utf8' });
         console.log(res);
         try {
             fs.unlinkSync(filePath);
             console.log("File removed:", filePath);
-          } catch (err) {
+        } catch (err) {
             console.error(err);
-          }
+        }
     }
 }
 
@@ -234,17 +248,17 @@ export const openFromChecklist = async (page, whatToOpen) => {
     await page.click(`[${pleaseOpen}]`);
 };
 
-export const handlePopUpWithCondition = async(page, shouldPop, datatest, time=3000) =>{
-    try{
-        await page.waitForSelector(`[data-test=${datatest}]`, {timeout:time});
+export const handlePopUpWithCondition = async (page, shouldPop, datatest, time = 3000) => {
+    try {
+        await page.waitForSelector(`[data-test=${datatest}]`, { timeout: time });
     }
-    catch {};
+    catch { };
     let visi = await page.isVisible(`[data-test=${datatest}]`);
-    if (await visi){
-        if (shouldPop){
+    if (await visi) {
+        if (shouldPop) {
             await page.click(`[data-test=${datatest}]`);
         }
-        else{
+        else {
             expect(visi, 'Got unexpected pop-up message during function').toBeFalsy();
         }
     }
@@ -255,7 +269,7 @@ export const handlePopUpWithCondition = async(page, shouldPop, datatest, time=30
     // }
 };
 
-export function generateUniqueId(){
+export function generateUniqueId() {
     var firstPart = (Math.random() * 46656) | 0;
     var secondPart = (Math.random() * 46656) | 0;
     firstPart = ("000" + firstPart.toString(36)).slice(-3);
@@ -263,7 +277,7 @@ export function generateUniqueId(){
     return firstPart + secondPart;
 }
 
-export const catchErrorUI = async(page, operationName = 'Operation', waitTime=3000) =>{
+export const catchErrorUI = async (page, operationName = 'Operation', waitTime = 3000) => {
     let err;
     try {
         err = await page.locator("[data-testid=error-details-text]", { timeout: waitTime }).innerText();
@@ -273,9 +287,9 @@ export const catchErrorUI = async(page, operationName = 'Operation', waitTime=30
     expect(visi, `${operationName} failed, received following error: ` + err).toBeFalsy();
 }
 
-export const deleteK8SResourcesFromFile = async(path) =>{
+export const deleteK8SResourcesFromFile = async (path) => {
     console.log(`Deleting all kubernetes resources created from file ${path}`);
-    const res = execSync(`kubectl delete -f ${path}`, {encoding: 'utf8'});
+    const res = execSync(`kubectl delete -f ${path}`, { encoding: 'utf8' });
     console.log(res);
     fs.unlink(path, (err) => {
         if (err) throw err;

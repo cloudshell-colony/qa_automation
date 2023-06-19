@@ -1,9 +1,11 @@
 import { test, expect } from "@playwright/test";
-import { closeModal, generateUniqueId, openAndPinSideMenu } from "./functions/general.mjs";
+import { closeModal, executeCLIcommand, executeCLIcommandForGithab, generateUniqueId, openAndPinSideMenu } from "./functions/general.mjs";
 import { loginToAccount } from "./functions/accounts.mjs";
 import { launchBlueprintFromCatalogPage } from "./functions/blueprints.mjs";
 import { endSandbox, goToSandbox, validateSBisActive } from "./functions/sandboxes.mjs";
 import { generateRepoSpecificKeys, goToSpace } from "./functions/spaces.mjs";
+
+
 
 const baseURL = process.env.baseURL;
 const password = process.env.allAccountsPassword;
@@ -48,13 +50,33 @@ test.describe.serial("Asset updates test", () => {
     //     await stopAndValidateAllSBsCompleted(page);
     // });
 
-    test("Launch simple TF sandbox", async () => {
+    test.only("Launch simple TF sandbox", async () => {
         await goToSpace(page, spaceName);
-        sandboxName = await launchBlueprintFromCatalogPage(page, blueprintName, inputs)
-        await validateSBisActive(page);
+        // sandboxName = await launchBlueprintFromCatalogPage(page, blueprintName, inputs)
+        // await validateSBisActive(page);
+        await executeCLIcommandForGithab('set GITHUB_TOKEN=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 && git clone https://github.com/cloudshell-colony/qa_automation');
+        await executeCLIcommandForGithab(`set GITHUB_TOKEN=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 && powershell -Command "Get-Content -Path 'C:\\Users\\amir.o\\Documents\\work\\qa-automation\\qa_automation\\terraform\\simpleTF\\main.tf'"
+        `);
+        await executeCLIcommandForGithab(`set GITHUB_TOKEN=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 && powershell -Command "((Get-Content -Path 'C:\\Users\\amir.o\\Documents\\work\\qa-automation\\qa_automation\\terraform\\simpleTF\\main.tf') -replace 'value = \\"ahlan .*\\\"', 'value = \\"ahlan ${id}\\"') | Set-Content -Path 'C:\\Users\\amir.o\\Documents\\work\\qa-automation\\qa_automation\\terraform\\simpleTF\\main.tf'"`);
+
+        // Add the modified file to the Git repository
+        await executeCLIcommandForGithab('set GITHUB_TOKEN=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 && git add . qa_automation/terraform/simpleTF/main.tf');
+
+        // Commit the changes
+        await executeCLIcommandForGithab(`set GITHUB_TOKEN=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 && git commit -m "Modified main.tf with new value"`);
+
+        // Push the changes to the remote repository
+        await executeCLIcommandForGithab('set GITHUB_TOKEN=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 && git push');
+
+
+
+
+
+
     })
 
-    test("Change TF file in github", async () => {
+    test.skip("Change TF file in github", async () => {
+
         await page.goto('https://github.com/cloudshell-colony/qa_automation');
         //Sign in to github
         await page.locator('header[role="banner"] >> text=Sign in').click();
@@ -79,7 +101,9 @@ test.describe.serial("Asset updates test", () => {
     test("Update sandbox and validate change", async () => {
 
         try {
-            await page.goto(`${baseURL}`, { timeout: 150000, waitUntil: 'load' });
+
+
+            // await page.goto(`${baseURL}`, { timeout: 150000, waitUntil: 'load' });
             await goToSandbox(page, sandboxName, spaceName);
             const detectUpdate = await page.locator('[data-test="asset-drift-card"]')
             await detectUpdate.click()
