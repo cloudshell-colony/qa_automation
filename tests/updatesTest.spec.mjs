@@ -60,13 +60,13 @@ test.describe.serial("Asset updates test", () => {
         await executeCLIcommandForGithab(`set GITHUB_TOKEN=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 && powershell -Command "((Get-Content -Path 'C:\\Users\\amir.o\\Documents\\work\\qa-automation\\qa_automation\\terraform\\simpleTF\\main.tf') -replace 'value = \\"ahlan .*\\\"', 'value = \\"ahlan ${id}\\"') | Set-Content -Path 'C:\\Users\\amir.o\\Documents\\work\\qa-automation\\qa_automation\\terraform\\simpleTF\\main.tf'"`);
 
         // Add the modified file to the Git repository
-        await executeCLIcommandForGithab('set GITHUB_TOKEN=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 && git add . qa_automation/terraform/simpleTF/main.tf');
+        await executeCLIcommandForGithab('set GITHUB_TOKEN=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 && git add .');
 
         // Commit the changes
         await executeCLIcommandForGithab(`set GITHUB_TOKEN=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 && git commit -m "Modified main.tf with new value"`);
 
         // Push the changes to the remote repository
-        await executeCLIcommandForGithab('set GITHUB_TOKEN=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 && git push');
+        await executeCLIcommandForGithab('set GITHUB_TOKEN=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 && git push --set-upstream origin fixGithubEditTests');
 
 
 
