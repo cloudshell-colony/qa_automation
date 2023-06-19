@@ -66,7 +66,7 @@ test.describe.serial("Asset updates test", () => {
         await executeCLIcommandForGithab(`set GITHUB_TOKEN=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 && git commit -m "Modified main.tf with new value"`);
 
         // Push the changes to the remote repository
-        await executeCLIcommandForGithab('set GITHUB_TOKEN=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 && git push.autoSetupRemote');
+        await executeCLIcommandForGithab('set GITHUB_TOKEN=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 && git push');
 
 
 
