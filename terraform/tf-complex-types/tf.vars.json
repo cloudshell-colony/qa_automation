@@ -1,0 +1,18 @@
+{
+  "test_liquid": "some liquid",
+  "test_string": "this is my string",
+  "test_list_string": [
+    "a",
+    "b",
+    "c"
+  ],
+  "test_bool": false,
+  "test_map_string": {
+    "key1": "val1",
+    "key2": "val2"
+  },
+  "test_object": {
+    "key1": "val1",
+    "key2": 4
+  }
+}
