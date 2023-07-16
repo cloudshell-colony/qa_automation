@@ -1,0 +1,18 @@
+spec_version: 2
+description: Simple s3 buckets provisioning
+
+
+grains:
+    bucket_1:
+    kind: terraform
+    spec: 
+      source:
+        path: https://github.com/QualiNext/qa-blueprint-validation/tree/master/terraform
+      agent:
+        name: eks
+      inputs:
+        - region: us-west-1
+        - acl: private
+        - name: 'test-bucket-1-s3-{{ sandboxid | downcase }}'
+      outputs:
+        - s3_bucket_arn

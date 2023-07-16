@@ -1,0 +1,26 @@
+spec_version: 2
+description: Input execution host
+
+inputs:
+  compute:
+    type: string
+    display-style: normal
+    default: "eks"
+    description: "compute service"
+
+outputs:
+  output:
+    value: '{{.grains.simple.outputs.wrong}}'
+
+grains:
+  simple:
+    kind: terraform
+    spec:
+      source:
+        path: https://github.com/QualiNext/qa-bp-validation.git//terraform
+      agent:
+        name: '{{.inputs.compute}}'
+      inputs:
+        - test: '{{.inputs.test}}'
+      outputs:
+        - test

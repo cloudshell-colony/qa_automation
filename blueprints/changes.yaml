@@ -1,0 +1,26 @@
+spec_version: 2
+description: Simple s3 buckets provisioning
+
+
+outputs:
+  bucket_1:
+    value: '{{ .grains.bucket_1.outputs.s3_bucket_arn }}'
+  test:
+    value: '{{ .grains.bucket_1.outputs.test }}'
+
+
+grains:
+  bucket_1:
+    kind: terraform
+    spec: 
+      source:
+        store: asaf-assets
+        path: s3
+      agent:
+        name: asaf-eks
+      inputs:
+        - acl: private
+        - name: 'asaf-test-bucket-1-s3-{{ sandboxid | downcase }}'
+      outputs:
+        - s3_bucket_arn
+        - test

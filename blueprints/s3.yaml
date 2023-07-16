@@ -1,0 +1,47 @@
+spec_version: 2
+description: Auto generated blueprint for terraform module s3
+# blueprint inputs can be provided by the user, API or CI plugin when creating an environment from this blueprint.
+inputs:
+  acl:
+    type: string
+    default: private
+  name:
+    type: string
+    default: asaf-bucket2
+  region:
+    type: string
+    default: eu-west-1
+  user:
+    type: string
+    default: none
+  agent:
+    type: agent
+# blueprint outputs define which data that was generated during environment provisioning will be returned to the user, API or CI.
+outputs:
+  s3_bucket_arn:
+    value: '{{ .grains.s3.outputs.s3_bucket_arn }}'
+grains:
+  s3:
+    kind: terraform
+    spec:
+      source:
+        store: qa-bp-validation
+        path: s3
+      agent:
+      # The Torque agent that will be used to provision the environment.
+        name: '{{ .inputs.agent }}'
+        # A service account annotated with a role ARN with permissions to run the asset
+        # service-account: <service-account-name>
+      inputs:
+      - acl: '{{ .inputs.acl }}'
+      - name: '{{ .inputs.name }}'
+      - region: '{{ .inputs.region }}'
+      - user: '{{ .inputs.user }}'
+      # The environment variables declared in this section will be available during the grain deployment as well as the grain destroy phase
+      # env-vars:
+      # - VAR_NAME: var value
+      env-vars: []
+      outputs:
+      - s3_bucket_arn
+    # The terraform version that will be used to deploy the module
+    tf-version: 1.3.9
