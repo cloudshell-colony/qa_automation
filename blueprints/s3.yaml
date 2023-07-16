@@ -25,7 +25,7 @@ grains:
     kind: terraform
     spec:
       source:
-        store: qa_automation
+        store: qa-bp-validation
         path: s3
       agent:
       # The Torque agent that will be used to provision the environment.
