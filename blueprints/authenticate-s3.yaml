@@ -16,9 +16,9 @@ inputs:
     default: none
   agent:
     type: agent
-   AWS_ACCESS_KEY:
+  AWS_ACCESS_KEY:
     type: string
-   AWS_SECRET_KEY:
+  AWS_SECRET_KEY:
     type: string  
 # blueprint outputs define which data that was generated during environment provisioning will be returned to the user, API or CI.
 outputs:
