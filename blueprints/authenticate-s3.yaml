@@ -38,9 +38,9 @@ grains:
       - region: '{{ .inputs.region }}'
       - user: '{{ .inputs.user }}'
       - AWS_ACCESS_KEY:
-         type: string
+        type: string
       -AWS_SECRET_KEY:
-         type: string
+        type: string
       # The environment variables declared in this section will be available during the grain deployment as well as the grain destroy phase
       # env-vars:
       # - VAR_NAME: var value
