@@ -16,10 +16,6 @@ inputs:
     default: none
   agent:
     type: agent
-  AWS_ACCESS_KEY:
-    type: string
-  AWS_SECRET_KEY:
-    type: string  
 # blueprint outputs define which data that was generated during environment provisioning will be returned to the user, API or CI.
 outputs:
   s3_bucket_arn:
@@ -31,6 +27,8 @@ grains:
       source:
         store: qa_automation
         path: terraform/s3
+      authentication: 
+       - Amir-aws-credentials  
       agent:
       # The Torque agent that will be used to provision the environment.
         name: '{{ .inputs.agent }}'
@@ -41,13 +39,10 @@ grains:
       - name: '{{ .inputs.name }}'
       - region: '{{ .inputs.region }}'
       - user: '{{ .inputs.user }}'
-    
       # The environment variables declared in this section will be available during the grain deployment as well as the grain destroy phase
       # env-vars:
       # - VAR_NAME: var value
-      env-vars: 
-        - AWS_ACCESS_KEY: '{{ .inputs.AWS_ACCESS_KEY }}'
-        - AWS_SECRET_KEY: '{{ .inputs.AWS_SECRET_KEY }}'
+      env-vars: []
       outputs:
       - s3_bucket_arn
     # The terraform version that will be used to deploy the module
