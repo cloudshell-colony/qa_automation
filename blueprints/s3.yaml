@@ -27,6 +27,8 @@ grains:
       source:
         store: qa_automation
         path: terraform/s3
+      authentication: 
+       - Amir-aws-credentials  
       agent:
       # The Torque agent that will be used to provision the environment.
         name: '{{ .inputs.agent }}'
