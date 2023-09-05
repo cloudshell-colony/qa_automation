@@ -16,6 +16,10 @@ inputs:
     default: none
   agent:
     type: agent
+   AWS_ACCESS_KEY:
+    type: string
+   AWS_SECRET_KEY:
+    type: string  
 # blueprint outputs define which data that was generated during environment provisioning will be returned to the user, API or CI.
 outputs:
   s3_bucket_arn:
@@ -37,10 +41,7 @@ grains:
       - name: '{{ .inputs.name }}'
       - region: '{{ .inputs.region }}'
       - user: '{{ .inputs.user }}'
-      - AWS_ACCESS_KEY:
-        type: string
-      -AWS_SECRET_KEY:
-        type: string
+    
       # The environment variables declared in this section will be available during the grain deployment as well as the grain destroy phase
       # env-vars:
       # - VAR_NAME: var value
