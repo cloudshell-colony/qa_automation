@@ -29,7 +29,7 @@ grains:
     nginx:
     second:
     kind: helm
-    depends-on:first
+    depends-on: first
     spec:
       source:
         store: qa_automation
