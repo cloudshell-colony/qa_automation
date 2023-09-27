@@ -39,5 +39,5 @@ grains:
       namespace: '{{ inputs.namespace }}'
       commands:
         - dep up helm/nginx
-      inputs:
-        - serviceName: "my-service-account-{{ sandboxid | downcase }}"
+      # inputs:
+      #   - serviceName: "my-service-account-{{ sandboxid | downcase }}"
