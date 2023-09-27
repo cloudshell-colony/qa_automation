@@ -1,0 +1,43 @@
+spec_version: 2
+description: Blueprint for nginx helm chart 
+
+inputs:
+  host_name:
+    type: string
+    default: "eks"
+  namespace:
+    type: string
+    default: "qa-automation"
+
+grains:
+  nginx:
+  first:
+    kind: helm
+    spec:
+      source:
+        store: qa_automation
+        path: helm/nginx
+      agent:
+        name: '{{ .inputs.host_name }}'
+      namespace: '{{ inputs.namespace }}'
+      commands:
+        - dep up helm/nginx
+      inputs:
+        - serviceName: "my-service-account-{{ sandboxid | downcase }}"
+        
+        
+  nginx:
+  second:
+    kind: helm
+    depends-on: first
+    spec:
+      source:
+        store: qa_automation
+        path: helm/nginx
+      agent:
+        name: '{{ .inputs.host_name }}'
+      namespace: '{{ inputs.namespace }}'
+      commands:
+        - dep up helm/nginx
+      inputs:
+        - serviceName: "my-service-account-{{ sandboxid | downcase }}"
