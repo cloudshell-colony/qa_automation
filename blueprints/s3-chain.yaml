@@ -1,0 +1,60 @@
+spec_version: 2-preview
+#test009
+description: create and write content to s3 bucket
+
+inputs:
+  bucket_name:
+    type: string
+  content:
+    type: string
+    default: this is a default content
+  compute_service_name:
+    type: agent    
+
+outputs:
+   the_output:
+     value: '{{.grains.create_bucket.outputs.s3_bucket_arn }}'
+
+grains:
+  prepare:
+    kind: terraform
+    spec:
+      source:
+        path: terraform/simple-tf-module
+        store: test-spec2-public
+      agent:
+        name: '{{.inputs.compute_service_name}}'
+      inputs:
+        - test_input2: "prepare s3"      
+          
+  create_bucket: 
+    kind: terraform
+    depends-on: prepare
+    spec: 
+      source:
+        path: terraform/s3
+        store: test-spec2-public
+      agent:
+        name: '{{ .inputs.compute_service_name }}'
+      inputs:
+        - region: eu-west-1
+        - acl: private
+        - name: '{{ .inputs.bucket_name }}'
+      outputs:
+        - s3_bucket_arn
+        
+  create_object:
+    kind: terraform
+    depends-on: create_bucket
+    spec: 
+      source:
+        path: terraform/s3-write
+        store: test-spec2-public
+      agent:
+        name: '{{ .inputs.compute_service_name }}'
+      inputs:
+        - region: eu-west-1        
+        - object_key: 'object-key'
+        - bucket_arn: '{{ .grains.create_bucket.outputs.s3_bucket_arn }}'
+        - bucket_name: '{{ .inputs.bucket_name }}'
+        - content: '{{ .inputs.content }}'
