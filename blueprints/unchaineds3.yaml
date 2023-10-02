@@ -1,0 +1,60 @@
+spec_version: 2-preview
+
+description: create and write content to s3 bucket
+
+inputs:
+  bucket_name:
+    type: string
+  bucket1_name:
+    type: string  
+  content:
+    type: string
+    default: this is a default content
+  compute_service_name:
+    type: agent    
+
+# outputs:
+#   the_output:
+#     value: 'in {{sandboxId}}, used bucket {{.inputs.bucket_name}} and parameters: param1={{.params.param1}}, snowflake={{params.snowflake}}, space_param={{params.space_param}}'
+
+grains:
+  prepare:
+    kind: terraform
+    spec:
+      source:
+        path: terraform/simple-tf-module
+        store: qa_automation
+      agent:
+        name: '{{.inputs.compute_service_name}}'
+      inputs:
+        - test_input2: "prepare s3"      
+          
+  create_bucket: 
+    kind: terraform
+    spec: 
+      source:
+        path: terraform/s3
+        store: qa_automation
+      agent:
+        name: '{{ .inputs.compute_service_name }}'
+      inputs:
+        - region: eu-west-1
+        - acl: private
+        - name: '{{ .inputs.bucket_name }}'
+      outputs:
+        - s3_bucket_arn
+  
+  create_bucket1: 
+    kind: terraform
+    spec: 
+      source:
+        path: terraform/s3
+        store: qa_automation
+      agent:
+        name: '{{ .inputs.compute_service_name }}'
+      inputs:
+        - region: eu-west-1
+        - acl: private
+        - name: '{{ .inputs.bucket1_name }}'
+      outputs:
+        - s3_bucket_arn
