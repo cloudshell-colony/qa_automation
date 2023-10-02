@@ -65,7 +65,7 @@ resource "aws_iam_user_policy_attachment" "attachment" {
     policy_arn = aws_iam_policy.policy[0].arn
 }
 
-output "created_bucket_name" {
-  value = aws_s3_bucket.bucket.name
+output "s3_bucket_arn" {
+  value = aws_s3_bucket.bucket.arn
 }
 
