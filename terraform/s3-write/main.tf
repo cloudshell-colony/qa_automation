@@ -10,7 +10,7 @@ locals {
   initiator = "probably torque"
 }
 
-resource "aws_s3_object" "object" {
+resource "aws_s3_bucket_object" "object" {
   bucket  = "${var.bucket_name}"
   key     = "${var.object_key}.json"
   #content = "{ \"Content\": \"${var.content}\"}"
