@@ -55,6 +55,6 @@ grains:
       inputs:
         - region: eu-west-1
         - acl: private
-        - name: '{{ .inputs.bucket_name }}'
+        - name: '{{ .outputs.create_bucket }}'
       outputs:
         - s3_bucket_arn
