@@ -21,7 +21,7 @@ grains:
     spec:
       source:
         path: terraform/simple-tf-module
-        store: test-spec2-public
+        store: qa_automation
       agent:
         name: '{{.inputs.compute_service_name}}'
       inputs:
@@ -33,7 +33,7 @@ grains:
     spec: 
       source:
         path: terraform/s3
-        store: test-spec2-public
+        store: qa_automation
       agent:
         name: '{{ .inputs.compute_service_name }}'
       inputs:
@@ -49,7 +49,7 @@ grains:
     spec: 
       source:
         path: terraform/s3-write
-        store: test-spec2-public
+        store: qa_automation
       agent:
         name: '{{ .inputs.compute_service_name }}'
       inputs:
