@@ -13,9 +13,9 @@ inputs:
   compute_service_name:
     type: agent    
 
-# outputs:
-#   the_output:
-#     value: 'in {{sandboxId}}, used bucket {{.inputs.bucket_name}} and parameters: param1={{.params.param1}}, snowflake={{params.snowflake}}, space_param={{params.space_param}}'
+outputs:
+  s3_bucket_arn:
+    value: '{{ .grains.s3.outputs.s3_bucket_arn }}'   
 
 grains:
   prepare:
