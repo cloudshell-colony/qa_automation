@@ -46,6 +46,7 @@ grains:
   
   create_bucket1: 
     kind: terraform
+    depends-on: create_bucket
     spec: 
       source:
         path: terraform/s3
