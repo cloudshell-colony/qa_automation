@@ -18,7 +18,7 @@ Outputs:
     Value: !GetAtt 
       - MyBucket
       - DomainName
-Description: Creates an S3 Bucket1697018843lciqpp
+Description: Creates an S3 Bucket1697097918ufvde9
 Resources:
   MyBucket:
     Type: 'AWS::S3::Bucket'
