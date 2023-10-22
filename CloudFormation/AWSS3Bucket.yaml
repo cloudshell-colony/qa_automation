@@ -35,4 +35,6 @@ Resources:
       WebsiteConfiguration:
         IndexDocument: index.html
         ErrorDocument: error.html
-  
+      Tags:
+         Key: activity
+         Value: update
