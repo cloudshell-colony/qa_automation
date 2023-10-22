@@ -36,5 +36,5 @@ Resources:
         IndexDocument: index.html
         ErrorDocument: error.html
       Tags:
-        -Key: activity
+       - Key: activity
          Value: update
