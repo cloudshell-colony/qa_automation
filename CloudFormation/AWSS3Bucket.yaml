@@ -23,6 +23,9 @@ Resources:
   MyBucket:
     Type: 'AWS::S3::Bucket'
     Properties:
+      Tags:
+       - Key: activity
+         Value: update16980558251tpc5c   
       PublicAccessBlockConfiguration:
         BlockPublicAcls: true
         BlockPublicPolicy: true
@@ -35,6 +38,4 @@ Resources:
       WebsiteConfiguration:
         IndexDocument: index.html
         ErrorDocument: error.html
-      Tags:
-       - Key: activity
-         Value: update16980558251tpc5c
+
