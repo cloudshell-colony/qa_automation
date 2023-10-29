@@ -35,7 +35,7 @@ grains:
       scripts:
         post-tf-plan:
           source:
-            store: tomer_playground
+            store: qa_automation
             path: scripts/print.sh
           arguments: 'koko_plan'  
       inputs:
