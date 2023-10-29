@@ -37,7 +37,7 @@ grains:
           source:
             store: qa_automation
             path: scripts/print.sh
-          arguments: 'koko_plan'  
+          arguments: '{{.inputs.ACCOUNT_ID}}'  
       inputs:
       - acl: '{{ .inputs.acl }}'
       - name: '{{ .inputs.name }}'
