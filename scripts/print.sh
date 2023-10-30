@@ -1,4 +1,18 @@
-echo "2- plan path is: $TORQUE_TF_PLAN_PATH"
+!/bin/bash
+expected_path = "/storage/a03263e/workspace/terraform.plan"
+path = $TORQUE_TF_PLAN_PATH
+
+if [ "path" != "$expected_path" ]; then
+  echo "Error: path does not match the expected value ('$expected_path')."
+  exit 1
+fi
+echo "path is valid: 'path'"
+
+
+
+
+
+# echo "2- plan path is: $TORQUE_TF_PLAN_PATH"
 # echo "$TORQUE_TF_EXECUTABLE -chdir=$TORQUE_TF_MODULE_PATH state rm $1"
 # #!/bin/bash
 
@@ -13,7 +27,7 @@ echo "2- plan path is: $TORQUE_TF_PLAN_PATH"
 # # Execute the command
 # $command
 
-#!/bin/bash
+# !/bin/bash
 
 # expected_agent="qa-eks"
 # input_agent="{{ .inputs.agent }}"
