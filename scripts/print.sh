@@ -3,12 +3,13 @@
 expected_path="/storage/a03263e/workspace/terraform.plan"
 path="$TORQUE_TF_PLAN_PATH"
 
-if [ "$path" != "$expected_path" ]; then
+if [["$expected_path" == *"$path"* ]]; then
   echo $path
-  echo "Error: path does not match the expected value ('$expected_path')."
+  echo "path is valid: '$path'"
+else
+  echo "Error: path ('$path') is not a part of the expected path ('$expected_path')."
   exit 1
 fi
-echo "path is valid: '$path'"
 
 
 
