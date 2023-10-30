@@ -1,7 +1,7 @@
 #!/bin/bash
 
 expected_path="/storage/a03263e/workspace/terraform.plan"
-path="$TORQUE_TF_EXECUTABLE"
+path="$TORQUE_TF_PLAN_PATH"
 
 if [ "$path" != "$expected_path" ]; then
   echo $path
