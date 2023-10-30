@@ -1,4 +1,4 @@
-!/bin/bash
+# !/bin/bash
 expected_path = "/storage/a03263e/workspace/terraform.plan"
 path = $TORQUE_TF_PLAN_PATH
 
