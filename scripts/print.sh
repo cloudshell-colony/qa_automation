@@ -1,12 +1,14 @@
-# !/bin/bash
-expected_path = "/storage/a03263e/workspace/terraform.plan"
-path = $TORQUE_TF_PLAN_PATH
+#!/bin/bash
 
-if [ "path" != "$expected_path" ]; then
+expected_path="/storage/a03263e/workspace/terraform.plan"
+path="$TORQUE_TF_PLAN_PATH"
+
+if [ "$path" != "$expected_path" ]; then
   echo "Error: path does not match the expected value ('$expected_path')."
   exit 1
 fi
-echo "path is valid: 'path'"
+echo "path is valid: '$path'"
+
 
 
 
