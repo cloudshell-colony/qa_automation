@@ -3,7 +3,7 @@
 expected_path="/workspace/terraform.plan"
 path="$TORQUE_TF_PLAN_PATH"
 
-if [[ "$path" == *"$expected_path"*]]; then
+if [["$path" == *"$expected_path"*]]; then
   echo $path
   echo "path is valid: '$path'"
 else
