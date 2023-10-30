@@ -1,5 +1,5 @@
 # echo "2- plan path is: $TORQUE_TF_PLAN_PATH"
-echo "$TORQUE_TF_EXECUTABLE -chdir=$TORQUE_TF_MODULE_PATH state rm $1"
+# echo "$TORQUE_TF_EXECUTABLE -chdir=$TORQUE_TF_MODULE_PATH state rm $1"
 # #!/bin/bash
 
 # # Define some variables
@@ -12,6 +12,19 @@ echo "$TORQUE_TF_EXECUTABLE -chdir=$TORQUE_TF_MODULE_PATH state rm $1"
 
 # # Execute the command
 # $command
+
+#!/bin/bash
+
+expected_agent="qa-eks"
+input_agent="{{ .inputs.agent }}"
+
+if [ "$input_agent" != "$expected_agent" ]; then
+  echo "Error: Input agent does not match the expected value ('$expected_agent')."
+  exit 1
+fi
+
+echo "Input agent is valid: '$input_agent'"
+
 
 
 
