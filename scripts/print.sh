@@ -19,6 +19,7 @@ expected_agent="qa-eks"
 input_agent="{{ .inputs.agent }}"
 
 if [ "$input_agent" != "$expected_agent" ]; then
+  echo "{{ .inputs.agent }}"
   echo "Error: Input agent does not match the expected value ('$expected_agent')."
   exit 1
 fi
