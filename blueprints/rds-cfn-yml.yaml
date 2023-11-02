@@ -23,11 +23,11 @@ outputs:
 
 grains:
   rds-cfn:
-    kind: CloudFormation
+    kind: cloudformation
     spec:
       source:
         store: qa_automation
-        path: cloudformation/rds/rds.yaml
+        path: CloudFormation/rds/rds.yaml
       inputs:
       - DBUsername: '{{ .inputs.user }}'
       - DBPassword: '{{ .inputs.password }}'
