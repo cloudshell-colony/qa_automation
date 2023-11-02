@@ -41,5 +41,4 @@ grains:
       outputs:
       - InstanceId
       region: '{{ .inputs.region }}'
-      authentication:
-      - '{{ .inputs.s3_credentials }}'
+    
