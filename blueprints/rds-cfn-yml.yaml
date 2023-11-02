@@ -1,0 +1,42 @@
+spec_version: 2
+description: CloudFormation RDS
+# blueprint inputs can be provided by the user, API or CI plugin when creating an environment from this blueprint.
+inputs:
+  user:
+    type: string
+    default: user123
+    description: Access Control value
+  password:
+    type: string
+  region:
+    type: string
+    default: eu-west-1
+  s3_credentials:
+    type: credentials
+    description: AWS credentials name to use for this blueprint (In Administration-->Credentials)
+
+# blueprint outputs define which data that was generated during environment provisioning will be returned to the user, API or CI.
+outputs:
+  db_id:
+    value: '{{ .grains.rds-cfn.outputs.InstanceId }}'
+    quick: true
+
+grains:
+  rds-cfn:
+    kind: cloudformation
+    spec:
+      source:
+        store: private-blueprints
+        path: cloudformation/rds/rds.yaml
+      inputs:
+      - DBUsername: '{{ .inputs.user }}'
+      - DBPassword: '{{ .inputs.password }}'
+      env-vars: []
+      template-storage:
+        bucket-name: torque-internal-bucket
+        region: eu-west-1
+      outputs:
+      - InstanceId
+      region: '{{ .inputs.region }}'
+      authentication:
+      - '{{ .inputs.s3_credentials }}'

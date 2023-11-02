@@ -1,0 +1,100 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: CloudFormation template for EC2 and VPN resources
+
+Resources:
+  MyVPC:
+    Type: AWS::EC2::VPC
+    Properties:
+      CidrBlock: 10.0.0.0/16
+
+  MyPeerVPC:
+    Type: AWS::EC2::VPC
+    Properties:
+      CidrBlock: 10.1.0.0/16
+
+  MySecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: My Security Group
+      SecurityGroupIngress:
+        - CidrIp: 0.0.0.0/0
+          IpProtocol: -1
+
+  MyCustomerGateway:
+    Type: AWS::EC2::CustomerGateway
+    Properties:
+      BgpAsn: 65534
+      IpAddress: 12.1.2.3
+      Type: ipsec.1
+
+  MyKeyPair:
+    Type: AWS::EC2::KeyPair
+    Properties:
+      KeyName: MyKeyPair
+
+  MyLaunchTemplate:
+    Type: AWS::EC2::LaunchTemplate
+    Properties:
+      LaunchTemplateName: MyLaunchTemplate
+      VersionDescription: Initial version
+      LaunchTemplateData:
+        BlockDeviceMappings:
+          - DeviceName: /dev/sda1
+            Ebs:
+              VolumeSize: 8
+        KeyName: !Ref MyKeyPair
+        SecurityGroupIds:
+          - !GetAtt MySecurityGroup.GroupId
+        InstanceType: t2.micro
+
+  MyVolume:
+    Type: AWS::EC2::Volume
+    Properties:
+      AvailabilityZone: us-east-1a
+      Size: 8
+      VolumeType: gp2
+
+  MyVPCPeeringConnection:
+    Type: AWS::EC2::VPCPeeringConnection
+    Properties:
+      PeerVpcId: !Ref MyPeerVPC
+      VpcId: !Ref MyVPC
+  
+  MyVPNGateway:
+    Type: AWS::EC2::VPNGateway
+    Properties:
+      Type: ipsec.1
+
+  MyVPNConnection:
+    Type: AWS::EC2::VPNConnection
+    Properties:
+      CustomerGatewayId: !Ref MyCustomerGateway
+      StaticRoutesOnly: false
+      Type: ipsec.1
+      VpnGatewayId: !Ref MyVPNGateway
+    DependsOn: MyVPNGateway
+
+Outputs:
+  CustomerGatewayId:
+    Description: The ID of the Customer Gateway
+    Value: !Ref MyCustomerGateway
+
+  KeyPairName:
+    Description: The name of the Key Pair
+    Value: MyKeyPair
+
+  LaunchTemplateName:
+    Description: The name of the Launch Template
+    Value: MyLaunchTemplate
+
+  VolumeId:
+    Description: The ID of the EBS Volume
+    Value: !Ref MyVolume
+
+  VPCPeeringConnectionId:
+    Description: The ID of the VPC Peering Connection
+    Value: !Ref MyVPCPeeringConnection
+
+  VPNConnectionId:
+    Description: The ID of the VPN Connection
+    Value: !Ref MyVPNConnection
