@@ -25,8 +25,8 @@ grains:
     kind: cloudformation
     spec:
       source:
-        store: private-blueprints
-        path: cloudformation/rds/rds.json
+        store: qa_automation
+        path: CloudFormation/rds/rds.json
       inputs:
       - DBUsername: '{{ .inputs.user }}'
       - DBPassword: '{{ .inputs.password }}'
