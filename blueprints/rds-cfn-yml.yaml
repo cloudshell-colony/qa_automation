@@ -26,7 +26,7 @@ grains:
     kind: cloudformation
     spec:
       source:
-        store: private-blueprints
+        store: qa_automation
         path: cloudformation/rds/rds.yaml
       inputs:
       - DBUsername: '{{ .inputs.user }}'
