@@ -25,7 +25,7 @@ outputs:
 
 grains:
   rds-cfn:
-    kind: cloudformation
+    kind: CloudFormation
     spec:
       source:
         store: qa_automation
