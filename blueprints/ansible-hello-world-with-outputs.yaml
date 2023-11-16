@@ -29,3 +29,9 @@ grains:
               ansible_connection: local
       outputs:
         - output1
+      scripts:
+        pre-tf-init:
+          source:
+            store: qa_automation
+            path: scripts/print2.sh
+         arguments: '{{ .inputs.agent }}'   
