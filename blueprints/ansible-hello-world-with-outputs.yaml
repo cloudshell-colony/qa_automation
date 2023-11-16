@@ -30,8 +30,8 @@ grains:
       outputs:
         - output1
       scripts:
-        pre-tf-init:
+       pre-tf-init:
           source:
             store: qa_automation
             path: scripts/print2.sh
-        arguments: '{{ .inputs.agent }}'   
+       arguments: '{{ .inputs.agent }}'   
