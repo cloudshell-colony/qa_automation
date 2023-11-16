@@ -1,0 +1,36 @@
+kind: blueprint
+spec: 2
+spec_version: 2-preview
+description: Blueprint with nginx kubernetes grain.
+
+inputs:
+  namespace:
+    type: string
+    display-style: normal
+    default: "default"
+    description: "Kubernetes namespace for sandbox to be ran in."
+  host_name:
+    type: agent
+    display-style: normal
+    description: "execution host name"
+
+grains:
+  nginx:
+    kind: kubernetes
+    spec:
+      source:
+        path: github.com/QualiNext/test-spec2-public//manifests/nginx/nginxmanifest.yaml
+      namespace: '{{ .inputs.namespace }}'
+      env-vars:
+      - test: newValue
+      tags:
+        auto-tag: false
+      agent:
+        name: '{{.inputs.host_name}}'
+        service-account: "default"
+        kubernetes:
+          pod-labels:
+          - labelK8SKey: labelK8SValue
+          nodeSelector:
+          - app: torque
+  
