@@ -21,4 +21,4 @@ grains:
         path: manifests/manifest_nginx/nginxmanifest.yaml
       namespace: "{{ .inputs.namespace }}"
       agent:
-        name: "{{ .inputs.host_name }}"
+        name: "{{ .inputs.agent}}"
