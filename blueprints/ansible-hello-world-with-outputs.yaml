@@ -34,4 +34,4 @@ grains:
           source:
             store: qa_automation
             path: scripts/print2.sh
-         arguments: '{{ .inputs.agent }}'   
+        arguments: '{{ .inputs.agent }}'   
