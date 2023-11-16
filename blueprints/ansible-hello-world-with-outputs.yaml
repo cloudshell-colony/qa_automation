@@ -16,7 +16,7 @@ grains:
     kind: ansible
     spec: 
       source:
-        store: test-spec2-public
+        store: qa_automation
         path: ansible/hello_world_with_outputs.yaml
       agent:
         name: '{{ .inputs.agent }}'
