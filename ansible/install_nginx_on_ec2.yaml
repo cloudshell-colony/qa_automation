@@ -1,0 +1,34 @@
+---
+- name: Installed Nginx on EC2 Instance
+  hosts: ec2_instance
+  gather_facts: no
+  connection: ssh
+  tasks:
+    - name: Wait for system to become reachable
+      wait_for_connection:
+        delay: '{{ connection_delay }}'
+        timeout: '{{ connection_timeout }}'
+
+    - name: Update apt cache
+      apt:
+        update_cache: yes
+
+    - name: Install Nginx
+      apt:
+        name: nginx
+        state: present
+
+    - name: Start Nginx service
+      service:
+        name: nginx
+        state: started
+        enabled: yes
+      register: nginx_service_result
+
+- name: Export playbook outputs
+  hosts: localhost
+  tasks:
+    - name: Export outputs
+      torque.collections.export_torque_outputs:
+        outputs: 
+          nginx_service_result: '{{ hostvars["ec2_instance"]["nginx_service_result"]["status"] }}'

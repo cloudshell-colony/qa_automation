@@ -1,0 +1,20 @@
+- name: A test playbook that checks variables and inventory file entries
+  connection: ssh
+  hosts: all
+  tasks:
+    - name: Display passed variables
+      debug:
+        msg: "test_var1: '{{ test_var1 }}' test_var2: '{{ test_var2 }}'"
+
+    - name: Display gathered facts
+      debug:
+        msg: "distribution: '{{ ansible_facts['distribution'] }}' os_family: '{{ ansible_facts['os_family'] }}'"
+
+    - name: Store echo result in a variable
+      ansible.builtin.shell: echo $SSH_CLIENT
+      register: echo_result
+
+    - name: Print stored stdout_lines result
+      debug:
+        msg: "{{ echo_result['stdout_lines'] }}"
+

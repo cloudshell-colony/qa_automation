@@ -1,0 +1,63 @@
+spec_version: 2-preview
+description: Deployes a vm from a template on a vcenter with tf and configures it with ansible playbook
+
+
+inputs:
+  agent:
+    type: agent
+  virtual_machine_template_name:
+    display-style: normal
+    type: string
+    description: vm template name
+
+  virtual_machine_name:
+    display-style: normal
+    type: string
+    description: deployed vm name
+
+  network_name:
+    display-style: normal
+    type: string
+    description: target network name
+
+
+outputs:
+  virtual_machine_name:
+    value: '{{ .grains.virtual_machine.outputs.vsphere_virtual_machine_name }}'
+
+  virtual_machine_ip:
+    value: '{{ .grains.virtual_machine.outputs.vsphere_virtual_machine_default_ip_address }}'
+
+
+grains:
+  virtual_machine:
+    kind: terraform
+    spec:
+      inputs:
+        - virtual_machine_template_name: '{{ .inputs.virtual_machine_template_name }}'
+        - virtual_machine_name: '{{ .inputs.virtual_machine_name }}'
+        - network_name: '{{ .inputs.network_name }}'
+      outputs:
+        - vsphere_virtual_machine_name
+        - vsphere_virtual_machine_default_ip_address
+      source:
+        path: github.com/QualiNext/test-spec2-public//terraform/vm-from-template-wait-for-ip
+      agent:
+        name: '{{ .inputs.agent }}'
+
+  apache_install:
+    depends-on: virtual_machine
+    kind: ansible
+    spec: 
+      source:
+        path: https://github.com/QualiNext/test-spec2-public//ansible/install_httpd_centos.yaml
+      agent:
+        name: '{{ .inputs.agent }}'
+      inventory-file:
+        all:
+          hosts:
+            vcenter_machine:
+              ansible_host: '{{ .grains.virtual_machine.outputs.vsphere_virtual_machine_default_ip_address }}'
+              ansible_user: root
+              ansible_password: Password1
+

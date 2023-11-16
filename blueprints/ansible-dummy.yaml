@@ -1,0 +1,47 @@
+spec_version: 2-preview
+description: ansible dummy
+
+# This bp requires 2 containers with ssh server to be runnings
+# ansible runner will try to connect to them to execute a playbook
+# on them
+# Example command to run a container with ssh server:
+# docker run -d \
+#   --name=test_machine \
+#   -e PUID=1000 \
+#   -e PGID=1000 \
+#   -e TZ=Europe/London \
+#   -e SUDO_ACCESS=false \
+#   -e PASSWORD_ACCESS=true \
+#   -e USER_PASSWORD=1111 \
+#   -e USER_NAME=testuser \
+#   -p PUT_ANSIBLE_PORT_HERE:2222 \
+#   lscr.io/linuxserver/openssh-server:latest
+
+grains:
+  grain_1:
+    kind: ansible
+    spec: 
+      source:
+        path: https://github.com/QualiNext/test-spec2-public//ansible/test_playbook.yaml
+      agent:
+        name: docker-agent
+
+      inventory-file:
+        all:
+          hosts:
+            docker_host_one:
+              ansible_host: host.docker.internal
+              ansible_port: 22
+              test_var1: 'testing pattern evaluation-{{ sandboxid | downcase }}'
+
+            docker_host_two:
+              ansible_host: host.docker.internal
+              ansible_port: 23
+
+          vars:
+            ansible_user: testuser
+            ansible_password: 1111
+            test_var1: amazing variable value
+            test_var2: 256
+
+

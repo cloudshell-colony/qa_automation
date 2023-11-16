@@ -1,0 +1,16 @@
+spec_version: 2-preview
+description: ansible invalid
+
+inputs:
+  agent:
+    type: agent
+
+grains:
+  grain_1:
+    kind: ansible
+    spec: 
+      source:
+        store: test-spec2-public
+        path: ansible/invalid_ansible.yaml
+      agent:
+        name: '{{ .inputs.agent }}'

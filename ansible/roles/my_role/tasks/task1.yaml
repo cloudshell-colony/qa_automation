@@ -1,0 +1,4 @@
+---
+- name: Task 1
+  debug:
+    msg: "This is task 1"

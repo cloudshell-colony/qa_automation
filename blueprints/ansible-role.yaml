@@ -1,0 +1,21 @@
+spec_version: 2-preview
+description: ansible playbook with a role
+
+inputs:
+  agent:
+    type: agent
+
+grains:
+  ansible_grain:
+    kind: ansible
+    spec: 
+      source:
+        store: test-spec2-public
+        path: ansible/my_playbook.yaml
+      agent:
+        name: '{{ .inputs.agent }}'
+      inventory-file:
+        all:
+          hosts:
+            127.0.0.1:
+              ansible_connection: local

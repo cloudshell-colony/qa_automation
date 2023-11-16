@@ -1,0 +1,8 @@
+---
+- name: Example Playbook
+  hosts: localhost
+  gather_facts: false
+
+  tasks:
+    - name: Failing Task
+      command: /path/to/nonexistent/command

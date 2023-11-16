@@ -1,0 +1,25 @@
+spec_version: 2-preview
+description: ansible hello world
+
+inputs:
+  agent:
+    type: agent
+  name:
+    type: string
+
+grains:
+  grain_1:
+    kind: ansible
+    spec: 
+      source:
+        store: test-spec2-public
+        path: ansible/hello_world.yaml
+      agent:
+        name: '{{ .inputs.agent }}'
+      inputs:
+        - name: '{{ .inputs.name }}'
+      inventory-file:
+        localhost:
+          hosts:
+            127.0.0.1:
+              ansible_connection: local

@@ -1,0 +1,31 @@
+spec_version: 2-preview
+description: ansible hello world
+
+inputs:
+  agent:
+    type: agent
+  name:
+    type: string
+
+outputs:
+  ansible_output1:
+    value: '{{.grains.grain_1.outputs.output1}}'
+
+grains:
+  grain_1:
+    kind: ansible
+    spec: 
+      source:
+        store: test-spec2-public
+        path: ansible/hello_world_with_outputs.yaml
+      agent:
+        name: '{{ .inputs.agent }}'
+      inputs:
+        - name: '{{ .inputs.name }}'
+      inventory-file:
+        localhost:
+          hosts:
+            127.0.0.1:
+              ansible_connection: local
+      outputs:
+        - output1

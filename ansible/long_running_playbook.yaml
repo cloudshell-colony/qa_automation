@@ -1,0 +1,8 @@
+- name: Long running playbook
+  connection: ssh
+  hosts: all
+  tasks:
+    - name: Pause for 5 minutes
+      ansible.builtin.pause:
+        minutes: 5
+
