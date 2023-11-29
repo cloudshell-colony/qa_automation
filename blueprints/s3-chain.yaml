@@ -56,6 +56,6 @@ grains:
       inputs:
         - region: eu-west-1        
         - object_key: 'object-key'
-        - bucket_arn: '{{ .grains.create_bucket.outputs.s3_bucket_arn }}'
+        # - bucket_arn: '{{ .grains.create_bucket.outputs.s3_bucket_arn }}'
         - bucket_name: '{{ .inputs.bucket_name_object }}'
         - content: '{{ .inputs.content }}'
