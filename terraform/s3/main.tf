@@ -22,7 +22,7 @@ resource "aws_s3_bucket" "bucket" {
   force_destroy = true
 
   tags = {
-    Name        = "My bucket"
+    Name        = "My buckets"
     Environment = "Dev"
     A_NEW_TAG = "NEW TAG BUT WITH A"
     A_NEWEST_TAG = "A_NEWEST_TAG"
