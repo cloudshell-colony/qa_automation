@@ -5,6 +5,8 @@ description: create and write content to s3 bucket
 inputs:
   bucket_name:
     type: string
+  bucket_name_new:
+    type: string  
   content:
     type: string
     default: this is a default content
@@ -45,7 +47,7 @@ grains:
   
   create_bucket1: 
     kind: terraform
-    depends-on: create_bucket
+    # depends-on: create_bucket
     spec: 
       source:
         path: terraform/s3
@@ -55,6 +57,6 @@ grains:
       inputs:
         - region: eu-west-1
         - acl: private
-        - name: '{{ .inputs.bucket_name }}'
+        - name: '{{ .inputs.bucket_name_new }}'
       outputs:
         - s3_bucket_arn
