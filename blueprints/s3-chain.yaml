@@ -5,8 +5,6 @@ description: create and write content to s3 bucket
 inputs:
   bucket_name:
     type: string
-  bucket_name_object:
-    type: string
   content:
     type: string
     default: this is a default content
@@ -47,6 +45,7 @@ grains:
         
   create_object:
     kind: terraform
+    depends-on: create_bucket
     spec: 
       source:
         path: terraform/s3-write
@@ -56,6 +55,6 @@ grains:
       inputs:
         - region: eu-west-1        
         - object_key: 'object-key'
-        # - bucket_arn: '{{ .grains.create_bucket.outputs.s3_bucket_arn }}'
-        - bucket_name: '{{ .inputs.bucket_name_object }}'
+        - bucket_arn: '{{ .grains.create_bucket.outputs.s3_bucket_arn }}'
+        - bucket_name: '{{ .inputs.bucket_name }}'
         - content: '{{ .inputs.content }}'
