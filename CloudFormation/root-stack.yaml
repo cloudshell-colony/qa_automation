@@ -1,0 +1,15 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: Root Stack
+
+Parameters:
+  ImageId:
+    Type: AWS::EC2::Image::Id
+    Default: ami-0e42de9d667b232f7
+
+Resources:
+  NestedStack1:
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      TemplateURL: https://quali-qa-automation.s3.eu-west-1.amazonaws.com/nested-stack1.yaml
+      Parameters:
+        ImageId: !Ref ImageId  # Pass ImageId to Nested Stack 1
