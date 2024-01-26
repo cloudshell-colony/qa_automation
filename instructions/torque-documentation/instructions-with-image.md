@@ -1,6 +1,6 @@
 
 ## APPLICATION ENVIRONMENTS - Anytime. Anywhere.
-New Text 1706211397ii2r0b
+New Text 1706255364h79606
 
 Torque is a SaaS software product that serves as an Environment-as-a-Service (EaaS) control plane, allowing you to deploy and manage cloud environments comprising the infrastructure, applications, and any dependencies or external services that the environments' applications or services rely on. It leverages your existing IaC and container files from technological platforms, such as Terraform, Ansible, CloudFormation, Kubernetes manifests, Helm, as well as your own bash/python scripts for enhanced flexibility and configuration. Torque ingests these by connecting to and scanning your git source control repositories, and turns them into blueprints, which can be used as single-asset blueprints, or added as building blocks in multi-asset blueprints. These blueprints can then be published as a self-service catalog for your cloud environment end-users to browse and consume without having the keys to the underlying cloud(s), or deployed and tested via a CI/CD process or through your organization's ticketing systemfvb, while having strict policy guardrails. For details, see Architecture.
 
