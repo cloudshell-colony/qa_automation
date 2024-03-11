@@ -25,7 +25,7 @@ Resources:
     Properties:
       Tags:
        - Key: activity
-         Value: update1710099390nudpnx
+         Value: update1710182468fsb44v
       PublicAccessBlockConfiguration:
         BlockPublicAcls: true
         BlockPublicPolicy: true
