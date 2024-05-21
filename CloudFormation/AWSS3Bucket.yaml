@@ -25,7 +25,7 @@ Resources:
     Properties:
       Tags:
        - Key: activity
-         Value: update171628703768ryvo
+         Value: update1716297855esiefl
       PublicAccessBlockConfiguration:
         BlockPublicAcls: true
         BlockPublicPolicy: true
