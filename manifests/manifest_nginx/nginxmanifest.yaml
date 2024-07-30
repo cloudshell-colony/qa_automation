@@ -11,7 +11,7 @@ spec:
     metadata:
       labels:
         app: nginx
-        tier: backend1722282637qdjklc
+        tier: backend1722363185vnhave
     spec:
       containers:
       - name: nginx
