@@ -1,5 +1,4 @@
-
-# test
+Parameters:
   AccessControl:
     Type: String
     Default: PublicRead
