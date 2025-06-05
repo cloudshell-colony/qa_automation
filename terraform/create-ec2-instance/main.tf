@@ -1,7 +1,7 @@
 provider "aws" {
   default_tags {
     tags = {
-      Name  = "SSH instance"
+      Name  = "E2E_EC2"
     }
   }
   region = "eu-west-1"
@@ -66,7 +66,7 @@ data "aws_ami" "ubuntu" {
 
   filter {
     name   = "name"
-    values = ["ubuntu/images/hvm-ssd/ubuntu-bionic-18.04-amd64-server-*"]
+    values = ["ubuntu/images/hvm-ssd/ubuntu-*-arm64-server-*""]
   }
 
   filter {
