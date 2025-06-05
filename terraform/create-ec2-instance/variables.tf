@@ -3,9 +3,3 @@ variable "instance_type" {
   type        = string
   default     = "t4g.nano"
 }
-
-variable "ami" {
-  description = "(Optional) AMI to use for the instance. Defaults to latest Ubuntu 18.04 LTS"
-  type        = string
-  default     = ""
-}
