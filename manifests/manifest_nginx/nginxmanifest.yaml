@@ -11,7 +11,7 @@ spec:
     metadata:
       labels:
         app: nginx
-        tier: backend1759002243nmaztv
+        tier: backend1759088591cpursu
     spec:
       containers:
       - name: nginx
